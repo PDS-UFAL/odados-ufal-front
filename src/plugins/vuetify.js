@@ -5,7 +5,11 @@ import 'vuetify/dist/vuetify.min.css';
 Vue.use(Vuetify);
 
 const opts = {
+  customVariables: ['~/assets/variables.scss'],
   theme: {
+    options: {
+      customProperties: true,
+    },
     themes: {
       light: {
         primary: '#0098DA',
