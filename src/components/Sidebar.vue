@@ -3,7 +3,6 @@
     permanent
     fixed
     color="grey-1"
-    overlay-color="red"
     class="white--text"
     width="256px"
   >
