@@ -56,7 +56,7 @@
           {
             title: 'Formulários',
             icon: 'mdi-text-box',
-            path: '/about',
+            path: '/forms',
           },
         ],
       };
