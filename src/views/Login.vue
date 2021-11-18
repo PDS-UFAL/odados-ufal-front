@@ -4,29 +4,35 @@
       <v-col sm="12" md="6" v-show="$vuetify.breakpoint.mdAndUp">
         <v-img :src="backgroundImage" height="100%" class="image" />
       </v-col>
+
       <v-col sm="12" md="6" class="d-flex justify-center align-center">
         <v-card
-          max-width="370px"
-          width="100%"
-          elevation="4"
+          max-width="400px"
+          width="80%"
+          elevation="5"
           class="d-flex flex-column pa-6"
         >
-          <v-card-title class="pa-0 mb-4">Login</v-card-title>
+          <v-card-title class="pa-0 mb-8">Login</v-card-title>
+
           <v-text-field
             v-model="title"
             :rules="rules"
             label="E-mail"
             outlined
           ></v-text-field>
+
           <v-text-field
             v-model="title"
             :rules="rules"
             label="Senha"
+            type="password"
             outlined
           ></v-text-field>
-          <v-btn text right class="justify-end">Esqueceu a senha?</v-btn>
-          <v-card-actions>
-            <v-btn light block color="primary"> Entrar </v-btn>
+
+          <a class="mt-n6 v-btn__content justify-end">Esqueceu a senha?</a>
+
+          <v-card-actions class="pa-0 mt-8">
+            <v-btn light block large color="primary"> Entrar </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
