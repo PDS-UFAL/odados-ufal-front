@@ -2,7 +2,7 @@
   <v-navigation-drawer
     permanent
     fixed
-    color="grey-1"
+    color="cloudy-grey"
     class="white--text"
     width="256px"
   >
