@@ -13,11 +13,11 @@ const opts = {
     themes: {
       light: {
         primary: '#0098DA',
+        green: '#6AD90B',
+        red: '#D91636',
+        yellow: '#D9D016',
         'snow-white': '#F8F9FA',
-        'grey-1': '#353B42',
-        'green-1': '#6AD90B',
-        'red-1': '#D91636',
-        'yellow-1': '#D9D016',
+        'cloudy-grey': '#353B42',
       },
     },
   },

@@ -2,7 +2,7 @@
   <div class="home">
     <v-row class="d-flex justify-end align-center px-6 mt-3">
       <v-btn x-large fab dark color="white" elevation="0">
-        <v-icon color="grey-1"> mdi-account-circle </v-icon>
+        <v-icon color="cloudy-grey"> mdi-account-circle </v-icon>
       </v-btn>
     </v-row>
     <v-row class="mx-6">
@@ -15,8 +15,8 @@
             <v-col class="d-flex justify-end">
               <v-checkbox
                 v-model="ex4"
-                color="yellow-1"
-                value="yellow-1"
+                color="yellow"
+                value="yellow"
                 hide-details
               ></v-checkbox>
             </v-col>
@@ -35,8 +35,8 @@
             <v-col class="d-flex justify-end">
               <v-checkbox
                 v-model="ex4"
-                color="red-1"
-                value="red-1"
+                color="red"
+                value="red"
                 hide-details
               ></v-checkbox>
             </v-col>
@@ -55,8 +55,8 @@
             <v-col class="d-flex justify-end">
               <v-checkbox
                 v-model="ex4"
-                color="green-1"
-                value="green-1"
+                color="green"
+                value="green"
                 hide-details
               ></v-checkbox>
             </v-col>
@@ -113,7 +113,7 @@
             <div class="d-flex justify-end">
               <div cols="6" class="mr-2 d-flex">Formulário {{ i + 1 }}</div>
               <v-spacer></v-spacer>
-              <v-avatar color="green-1" size="15"></v-avatar>
+              <v-avatar color="green" size="15"></v-avatar>
               <div class="ml-2">100%</div>
               <div class="ml-6 mr-2 align-center">10/11/2021 - 16/11/2021</div>
             </div>
@@ -170,6 +170,5 @@
         return `${day}/${month}/${year}`;
       },
     },
-    components: {},
   };
 </script>
