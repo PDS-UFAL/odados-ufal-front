@@ -4,7 +4,7 @@ import authApi from '@/api/auth';
 
 export default {
   async executeLogin(store, { payload }) {
-    await authApi.executeLogin(payload);
+    return await authApi.executeLogin(payload);
   },
   async setAuthToken({ commit }, { token }) {
     if (!token) return;
