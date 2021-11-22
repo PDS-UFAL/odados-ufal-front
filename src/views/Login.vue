@@ -63,7 +63,6 @@
     methods: {
       ...mapActions(['executeLogin', 'setAlert', 'setAuthToken']),
       async login() {
-        console.log(this.email, this.password);
         const payload = {
           user: {
             email: this.email,
