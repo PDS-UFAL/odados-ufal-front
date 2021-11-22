@@ -1,10 +1,21 @@
 <template>
   <v-app id="app">
     <router-view />
+
+    <Alert />
   </v-app>
 </template>
 
-<script></script>
+<script>
+  import Alert from '@/components/Alert.vue';
+
+  export default {
+    name: 'Login',
+    components: {
+      Alert,
+    },
+  };
+</script>
 
 <style lang="scss">
   body {
