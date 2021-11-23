@@ -15,24 +15,29 @@
           <v-card-title class="pa-0 mb-8">Login</v-card-title>
 
           <v-text-field
-            v-model="title"
-            :rules="rules"
+            v-model="email"
             label="E-mail"
+            :error="error"
             outlined
           ></v-text-field>
 
           <v-text-field
-            v-model="title"
-            :rules="rules"
+            v-model="password"
             label="Senha"
-            type="password"
+            :type="passwordType"
+            :error="error"
+            :append-icon="passwordTypeIcon"
+            @click:append="togglePassword"
+            @keyup.enter="login"
             outlined
           ></v-text-field>
 
           <a class="mt-n6 v-btn__content justify-end">Esqueceu a senha?</a>
 
           <v-card-actions class="pa-0 mt-8">
-            <v-btn light block large color="primary"> Entrar </v-btn>
+            <v-btn light block large color="primary" @click="login">
+              Entrar
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -41,12 +46,51 @@
 </template>
 
 <script>
+  import { mapActions } from 'vuex';
+
   export default {
     name: 'Login',
     data: () => {
       return {
+        error: false,
+        passwordType: 'password',
+        passwordTypeIcon: 'mdi-eye',
+        email: null,
+        password: null,
         backgroundImage: require('@/assets/login/background.png'),
       };
+    },
+    methods: {
+      ...mapActions(['executeLogin', 'setAlert', 'setAuthToken']),
+      async login() {
+        const payload = {
+          user: {
+            email: this.email,
+            password: this.password,
+          },
+        };
+
+        try {
+          const res = await this.executeLogin({ payload });
+
+          await this.setAuthToken({ token: res.data.token });
+
+          this.$router.push('/');
+        } catch (err) {
+          this.error = true;
+          this.setAlert({
+            alertMessage: err.response.data.error,
+            alertColor: 'red',
+          });
+        }
+      },
+      togglePassword() {
+        this.passwordType =
+          this.passwordType === 'password' ? 'text' : 'password';
+
+        this.passwordTypeIcon =
+          this.passwordType === 'password' ? 'mdi-eye' : 'mdi-eye-off';
+      },
     },
   };
 </script>
