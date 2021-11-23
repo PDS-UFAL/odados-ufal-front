@@ -4,7 +4,7 @@
     <div
       :class="{
         'side-margin': $vuetify.breakpoint.mdAndUp,
-        'bottom-margin': !$vuetify.breakpoint.mdAndUp,
+        'bottom-margin': $vuetify.breakpoint.smAndDown,
       }"
     >
       <router-view />
