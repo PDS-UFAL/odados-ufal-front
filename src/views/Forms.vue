@@ -114,17 +114,6 @@
         </v-data-table>
       </v-col>
     </v-row>
-
-    <div class="add-btn">
-      <v-tooltip left>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn fab color="primary" v-bind="attrs" v-on="on">
-            <v-icon>mdi-plus</v-icon>
-          </v-btn>
-        </template>
-        <span>Novo formulário</span>
-      </v-tooltip>
-    </div>
   </v-container>
 </template>
 
@@ -215,11 +204,3 @@
     },
   };
 </script>
-
-<style scoped lang="scss">
-  .add-btn {
-    position: fixed;
-    bottom: 32px;
-    right: 32px;
-  }
-</style>
