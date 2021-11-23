@@ -28,14 +28,14 @@
             :error="error"
             :append-icon="passwordTypeIcon"
             @click:append="togglePassword"
-            v-on:keyup.enter="login()"
+            @keyup.enter="login"
             outlined
           ></v-text-field>
 
           <a class="mt-n6 v-btn__content justify-end">Esqueceu a senha?</a>
 
           <v-card-actions class="pa-0 mt-8">
-            <v-btn light block large color="primary" @click="login()">
+            <v-btn light block large color="primary" @click="login">
               Entrar
             </v-btn>
           </v-card-actions>

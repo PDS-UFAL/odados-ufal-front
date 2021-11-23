@@ -10,7 +10,6 @@
   import Alert from '@/components/Alert.vue';
 
   export default {
-    name: 'Login',
     components: {
       Alert,
     },

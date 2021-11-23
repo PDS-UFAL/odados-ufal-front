@@ -9,7 +9,9 @@
       {{ alertMessage }}
 
       <template v-slot:action="{ attrs }">
-        <v-btn text v-bind="attrs" @click="setAlertState(false)"> Close </v-btn>
+        <v-btn text v-bind="attrs" @click="setAlertState(false)">
+          Fechar
+        </v-btn>
       </template>
     </v-snackbar>
   </div>
