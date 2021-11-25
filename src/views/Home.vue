@@ -207,6 +207,13 @@
           }[status] || 'primary'
         );
       },
+      translatedStatus(status) {
+        return {
+          open: 'Aberto',
+          finished: 'Fechado',
+          not_started: 'Não iniciado',
+        }[status];
+      },
     },
     computed: {
       dateRangeText() {
