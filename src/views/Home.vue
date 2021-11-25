@@ -1,25 +1,8 @@
 <template>
   <v-container>
-            <v-col class="d-flex justify-start" cols="8">
-              <v-card-title> Abertos </v-card-title>
-            </v-col>
-            <v-col class="d-flex justify-end">
-              <v-checkbox
-                v-model="ex4"
-                color="yellow"
-                value="yellow"
-                hide-details
-              ></v-checkbox>
-            </v-col>
-          </v-row>
-          <v-card-subtitle class="d-flex justify-start">
-            <h1>10</h1>
-          </v-card-subtitle>
-        </v-card>
-      </v-col>
-      <v-col cols="12" sm="6" md="4">
-        <v-card elevation="0" class="px-2" style="border: 2px solid #d91636">
-          <v-row>
+    <v-row>
+      <filter-cards :options="filters" @clickOption="changeFilter" />
+    </v-row>
 
     <v-row class="my-8">
       <v-col cols="12" xs="12" md="4">
@@ -124,19 +107,39 @@
 
 <script>
   import { formatDate } from '@/utils/formatDate';
+  import FilterCards from '@/components/FilterCards.vue';
 
   export default {
     name: 'Home',
-    data: (vm) => {
+    components: {
+      FilterCards,
+    },
+    data: () => {
       return {
-        ex4: ['orange', 'red', 'green'],
-        items: [
-          'Data de início',
-          'Abertos',
-          'Finalizados',
-          'Pendentes',
-          'Data de fim',
+        filters: [
+          {
+            title: 'Abertos',
+            status: 'opened',
+            amount: 10,
+            color: 'yellow',
+            active: false,
+          },
+          {
+            title: 'Não iniciados',
+            status: 'not_started',
+            amount: 3,
+            color: 'red',
+            active: false,
+          },
+          {
+            title: 'Finalizados',
+            status: 'finished',
+            amount: 7,
+            color: 'green',
+            active: false,
+          },
         ],
+
         sortableItems: [
           { text: 'Nome', value: 'name' },
           { text: 'Data de início', value: 'initial_date' },
@@ -184,6 +187,9 @@
       };
     },
     methods: {
+      changeFilter(filterIndex, value) {
+        this.filters[filterIndex].active = value;
+      },
       setDates(dates) {
         this.selectedDates = dates.sort();
       },
@@ -192,11 +198,6 @@
           ? 'Intervalo selecionado'
           : formatDate(this.selectedDates[0]) || '-';
       },
-      formatDate(date) {
-        if (!date) return null;
-
-        const [year, month, day] = date.split('-');
-        return `${day}/${month}/${year}`;
     },
     computed: {
       dateRangeText() {
