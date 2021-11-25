@@ -1,25 +1,13 @@
 <template>
   <v-container>
-    <!-- <v-fab-transition right> -->
-
-    <!-- </v-fab-transition> -->
-    <v-row class="d-flex justify-end align-center px-0 ml-3 mt-3">
-      <v-btn x-large fab dark color="white" elevation="0">
-        <v-icon color="grey-1"> mdi-account-circle </v-icon>
-      </v-btn>
-    </v-row>
-
-    <v-row class="d-flex align-center justify-start pa-0">
-      <!-- <v-col> -->
+    <v-row class="d-flex align-center justify-start pa-0 my-8">
       <v-btn @click="back" text fab class="flex-grow-0">
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
       <h3>Novo formulário</h3>
-      <!-- </v-col>
-      <v-col> </v-col> -->
     </v-row>
 
-    <v-row class="my-8 ma-2">
+    <v-row class="my-8 mx-2">
       <v-col cols="12" xs="12" md="4" class="pa-0">
         <v-text-field
           name="search"
@@ -70,28 +58,38 @@
       </v-col>
     </v-row>
 
-    <v-row class="my-4 ma-2">
+    <v-row class="my-4 mx-2">
       <h3>Quem vai responder?</h3>
     </v-row>
 
     <v-row>
-      <v-card elevation="3" class="px-2 mt-4 ma-3">
+      <v-card elevation="3" class="px-2 mt-4 ma-3" width="100%">
         <v-col class="d-flex align-center justify-end">
-          <v-btn text>Marcar todos</v-btn>
-          <v-btn text>Desmarcar todos</v-btn>
+          <div v-if="selected.length == 0">
+            <v-btn @click="checkAll" text>Marcar todos</v-btn>
+            <v-btn disabled text>Desmarcar todos</v-btn>
+          </div>
+          <div v-else>
+            <v-btn disabled text>Marcar todos</v-btn>
+            <v-btn @click="undo" text>Desmarcar todos</v-btn>
+          </div>
         </v-col>
 
         <v-row class="mx-4">
-          <div v-for="i in 22" :key="i">
-            <v-col md="2" class="px-5">
-              <v-checkbox v-model="checkbox" label="Setor"></v-checkbox>
+          <div v-for="sector in sectors" :key="sector.name">
+            <v-col class="px-4">
+              <v-checkbox
+                v-model="selected"
+                :value="sector.name"
+                :label="sector.name"
+              ></v-checkbox>
             </v-col>
           </div>
         </v-row>
       </v-card>
     </v-row>
 
-    <v-row class="pt-6 ma-2">
+    <v-row class="pt-6 mx-2">
       <h3>Perguntas</h3>
       <v-spacer></v-spacer>
       <v-btn text color="primary">
@@ -100,18 +98,10 @@
       </v-btn>
     </v-row>
 
-    <div class="d-flex align-center justify-end ml-6">
+    <div class="add-btn">
       <v-tooltip left>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            color="primary"
-            fab
-            large
-            bottom
-            right
-            v-bind="attrs"
-            v-on="on"
-          >
+          <v-btn fab color="primary" v-bind="attrs" v-on="on">
             <v-icon>mdi-check</v-icon>
           </v-btn>
         </template>
@@ -128,7 +118,30 @@
     name: 'CreateForms',
     data: () => {
       return {
-        checkbox: false,
+        sectors: [
+          {
+            name: 'Setor 1',
+          },
+          {
+            name: 'Setor 2',
+          },
+          {
+            name: 'Setor 3',
+          },
+          {
+            name: 'Setor 4',
+          },
+          {
+            name: 'Setor 5',
+          },
+          {
+            name: 'Setor 6',
+          },
+          {
+            name: 'Setor 7',
+          },
+        ],
+        selected: [],
         dates: [],
         showDatepicker: false,
       };
@@ -140,6 +153,19 @@
       setDates(dates) {
         this.dates = dates.sort();
       },
+      checkAll() {
+        this.selected = [...this.sectors.map((sector) => sector.name)];
+        console.log(this.selected);
+      },
+      undo() {
+        this.selected = [];
+        console.log(this.selected);
+      },
+      dateTitle() {
+        return this.dates.length === 2
+          ? 'Intervalo selecionado'
+          : formatDate(this.dates[0]) || '-';
+      },
     },
     computed: {
       dateRangeText() {
@@ -149,3 +175,11 @@
     },
   };
 </script>
+
+<style scoped lang="scss">
+  .add-btn {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+  }
+</style>
