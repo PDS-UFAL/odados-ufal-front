@@ -5,6 +5,9 @@
       :class="{
         'side-margin': $vuetify.breakpoint.mdAndUp,
         'bottom-margin': $vuetify.breakpoint.smAndDown,
+        'pa-4': true,
+        'py-md-8': true,
+        'px-md-16': true,
       }"
     >
       <router-view />
@@ -27,6 +30,7 @@
   .side-margin {
     margin-left: 256px;
   }
+
   .bottom-margin {
     margin-bottom: 96px;
   }
