@@ -198,6 +198,15 @@
           ? 'Intervalo selecionado'
           : formatDate(this.selectedDates[0]) || '-';
       },
+      chipStatusColor(status) {
+        return (
+          {
+            open: 'yellow',
+            finished: 'green',
+            not_started: 'red',
+          }[status] || 'primary'
+        );
+      },
     },
     computed: {
       dateRangeText() {
