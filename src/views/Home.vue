@@ -90,26 +90,34 @@
       </v-col>
     </v-row>
 
-    <v-row class="mx-8">
-      <v-expansion-panels>
-        <v-expansion-panel v-for="(item, i) in 5" :key="i">
-          <v-expansion-panel-header class="pa-3 mt-1">
-            <div class="d-flex justify-end">
-              <div cols="6" class="mr-2 d-flex">Formulário {{ i + 1 }}</div>
-              <v-spacer></v-spacer>
-              <v-avatar color="green" size="15"></v-avatar>
-              <div class="ml-2">100%</div>
-              <div class="ml-6 mr-2 align-center">10/11/2021 - 16/11/2021</div>
-            </div>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat.
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels>
+    <v-row class="mx-0">
+      <v-col class="pa-0">
+        <v-data-table
+          :headers="headers"
+          :items="forms"
+          class="elevation-2"
+          disable-pagination
+          hide-default-footer
+          :disable-sort="$vuetify.breakpoint.smAndDown"
+        >
+          <template v-slot:item.status="{ item }">
+            <v-icon size="17" :color="chipStatusColor(item.status)">
+              mdi-checkbox-blank-circle
+            </v-icon>
+            {{ translatedStatus(item.status) }}
+          </template>
+
+          <template v-slot:item.actions="{}">
+            <v-btn small icon>
+              <v-icon> mdi-eye </v-icon>
+            </v-btn>
+
+            <v-btn small icon>
+              <v-icon> mdi-delete </v-icon>
+            </v-btn>
+          </template>
+        </v-data-table>
+      </v-col>
     </v-row>
   </v-container>
 </template>
@@ -135,24 +143,40 @@
           { text: 'Data de fim', value: 'end_date' },
         ],
 
-        date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-          .toISOString()
-          .substr(0, 10),
-        menu: false,
-        modal: false,
-        dateFormatted: vm.formatDate(
-          new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-            .toISOString()
-            .substr(0, 10),
-        ),
-        menu2: false,
-      };
-    },
-    watch: {
-      date() {
-        this.dateFormatted = this.formatDate(this.date);
-      },
-    },
+        headers: [
+          {
+            text: 'Nome',
+            value: 'name',
+            sortable: false,
+            align: 'start',
+            width: '40%',
+          },
+          { text: 'Status', value: 'status', sortable: false, width: '20%' },
+          { text: 'Data inicial', value: 'startDate', sortable: false },
+          { text: 'Data final', value: 'endDate', sortable: false },
+          { text: 'Ações', value: 'actions', sortable: false, align: 'end' },
+        ],
+
+        forms: [
+          {
+            name: 'Formulário 1',
+            status: 'open',
+            startDate: '10/10/2021',
+            endDate: '10/11/2021',
+          },
+          {
+            name: 'Formulário 2',
+            status: 'finished',
+            startDate: '10/10/2021',
+            endDate: '10/11/2021',
+          },
+          {
+            name: 'Formulário 3',
+            status: 'not_started',
+            startDate: '01/12/2021',
+            endDate: '30/01/2022',
+          },
+        ],
 
         sortBy: 'name',
         showDatepicker: false,
