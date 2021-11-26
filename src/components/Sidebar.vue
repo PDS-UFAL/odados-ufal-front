@@ -2,7 +2,7 @@
   <v-navigation-drawer
     permanent
     fixed
-    color="grey-1"
+    color="cloudy-grey"
     class="white--text"
     width="256px"
   >
@@ -45,21 +45,11 @@
 <script>
   export default {
     name: 'Sidebar',
-    data: () => {
-      return {
-        items: [
-          {
-            title: 'Home',
-            icon: 'mdi-home',
-            path: '/',
-          },
-          {
-            title: 'Formulários',
-            icon: 'mdi-text-box',
-            path: '/forms',
-          },
-        ],
-      };
+    props: {
+      items: {
+        type: Array,
+        default: () => [],
+      },
     },
   };
 </script>
