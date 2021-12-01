@@ -24,6 +24,11 @@ const routes = [
         name: 'CreateForms',
         component: () => import('@/views/CreateForms.vue'),
       },
+      {
+        path: '/notifications',
+        name: 'Notifications',
+        component: () => import('@/views/Notifications.vue'),
+      },
     ],
   },
   {

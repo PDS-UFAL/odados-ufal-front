@@ -224,11 +224,3 @@
     },
   };
 </script>
-
-<style scoped lang="scss">
-  .add-btn {
-    position: fixed;
-    bottom: 32px;
-    right: 32px;
-  }
-</style>

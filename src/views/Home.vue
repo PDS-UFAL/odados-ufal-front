@@ -1,175 +1,227 @@
 <template>
-  <div class="home">
-    <v-row class="d-flex justify-end align-center px-6 mt-3">
-      <v-btn x-large fab dark color="white" elevation="0">
-        <v-icon color="grey-1"> mdi-account-circle </v-icon>
-      </v-btn>
+  <v-container>
+    <v-row>
+      <filter-cards :options="filters" @clickOption="changeFilter" />
     </v-row>
-    <v-row class="mx-6">
-      <v-col cols="12" sm="6" md="4">
-        <v-card elevation="0" class="px-2" style="border: 2px solid #d9d016">
-          <v-row>
-            <v-col class="d-flex justify-start" cols="8">
-              <v-card-title> Abertos </v-card-title>
-            </v-col>
-            <v-col class="d-flex justify-end">
-              <v-checkbox
-                v-model="ex4"
-                color="yellow-1"
-                value="yellow-1"
-                hide-details
-              ></v-checkbox>
-            </v-col>
-          </v-row>
-          <v-card-subtitle class="d-flex justify-start">
-            <h1>10</h1>
-          </v-card-subtitle>
-        </v-card>
+
+    <v-row class="my-8">
+      <v-col cols="12" xs="12" md="4">
+        <v-text-field
+          name="search"
+          label="Pesquisar"
+          prepend-inner-icon="mdi-magnify"
+          outlined
+          dense
+          clearable
+          hide-details
+        />
       </v-col>
-      <v-col cols="12" sm="6" md="4">
-        <v-card elevation="0" class="px-2" style="border: 2px solid #d91636">
-          <v-row>
-            <v-col class="d-flex justify-start" cols="8">
-              <v-card-title> Não iniciados </v-card-title>
-            </v-col>
-            <v-col class="d-flex justify-end">
-              <v-checkbox
-                v-model="ex4"
-                color="red-1"
-                value="red-1"
-                hide-details
-              ></v-checkbox>
-            </v-col>
-          </v-row>
-          <v-card-subtitle class="d-flex justify-start">
-            <h1>3</h1>
-          </v-card-subtitle>
-        </v-card>
+
+      <v-col cols="12" xs="12" md="2" class="py-0 mt-md-3 pr-md-0">
+        <span class="d-flex justify-md-end align-center mt-md-2">
+          Ordenar por:
+        </span>
       </v-col>
-      <v-col cols="12" sm="6" md="4">
-        <v-card elevation="0" class="px-2" style="border: 2px solid #6ad90b">
-          <v-row>
-            <v-col class="d-flex justify-start" cols="8">
-              <v-card-title> Finalizados </v-card-title>
-            </v-col>
-            <v-col class="d-flex justify-end">
-              <v-checkbox
-                v-model="ex4"
-                color="green-1"
-                value="green-1"
-                hide-details
-              ></v-checkbox>
-            </v-col>
-          </v-row>
-          <v-card-subtitle class="d-flex justify-start">
-            <h1>10</h1>
-          </v-card-subtitle>
-        </v-card>
+
+      <v-col cols="12" xs="12" md="3" class="pt-0 pt-md-3">
+        <v-select
+          v-model="sortBy"
+          :items="sortableItems"
+          :menu-props="{ 'offset-y': true }"
+          dense
+          outlined
+          hide-details
+        />
       </v-col>
-    </v-row>
-    <v-row class="mx-6">
-      <v-col cols="12" md="4" sm="4">
-        <v-text-field label="Pesquisar" outlined dense></v-text-field>
-      </v-col>
-      <v-col cols="4" sm="3" md="2">
-        <span class="d-flex justify-end align-center mt-2">Ordenar por:</span>
-      </v-col>
-      <v-col class="d-flex" cols="8" sm="8" md="3">
-        <v-select :items="items" dense outlined clearable></v-select>
-      </v-col>
-      <v-col cols="12" sm="6" md="3">
+
+      <v-col cols="12" xs="12" md="3">
         <v-menu
-          v-model="menu2"
+          v-model="showDatepicker"
           :close-on-content-click="false"
-          :nudge-right="40"
+          :nudge-right="0"
           transition="scale-transition"
+          max-width="290px"
+          min-width="290px"
           offset-y
-          min-width="auto"
         >
           <template v-slot:activator="{ on, attrs }">
             <v-text-field
-              v-model="dateFormatted"
-              prepend-icon="mdi-calendar"
-              label="Data"
-              readonly
-              v-bind="attrs"
               v-on="on"
-              outlined
+              v-bind="attrs"
+              label="Criado em"
+              :value="dateRangeText"
+              prepend-inner-icon="mdi-calendar"
               dense
-            ></v-text-field>
+              readonly
+              outlined
+              clearable
+              hide-details
+              @click:clear="selectedDates = []"
+              @click:prepend-inner="showDatepicker = true"
+            />
           </template>
           <v-date-picker
-            v-model="date"
-            @input="menu2 = false"
+            color="primary"
+            v-model="selectedDates"
             locale="pt-br"
-          ></v-date-picker>
+            range
+            scrollable
+            @change="setDates"
+            :title-date-format="dateTitle"
+          />
         </v-menu>
       </v-col>
     </v-row>
-    <v-row class="mx-8">
-      <v-expansion-panels>
-        <v-expansion-panel v-for="(item, i) in 5" :key="i">
-          <v-expansion-panel-header class="pa-3 mt-1">
-            <div class="d-flex justify-end">
-              <div cols="6" class="mr-2 d-flex">Formulário {{ i + 1 }}</div>
-              <v-spacer></v-spacer>
-              <v-avatar color="green-1" size="15"></v-avatar>
-              <div class="ml-2">100%</div>
-              <div class="ml-6 mr-2 align-center">10/11/2021 - 16/11/2021</div>
-            </div>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat.
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels>
+
+    <v-row class="mx-0">
+      <v-col class="pa-0">
+        <v-data-table
+          :headers="headers"
+          :items="forms"
+          class="elevation-2"
+          disable-pagination
+          hide-default-footer
+          :disable-sort="$vuetify.breakpoint.smAndDown"
+        >
+          <template v-slot:item.status="{ item }">
+            <v-icon size="17" :color="chipStatusColor(item.status)">
+              mdi-checkbox-blank-circle
+            </v-icon>
+            {{ translatedStatus(item.status) }}
+          </template>
+
+          <template v-slot:item.actions="{}">
+            <v-btn small icon>
+              <v-icon> mdi-eye </v-icon>
+            </v-btn>
+
+            <v-btn small icon>
+              <v-icon> mdi-delete </v-icon>
+            </v-btn>
+          </template>
+        </v-data-table>
+      </v-col>
     </v-row>
-  </div>
+  </v-container>
 </template>
 
 <script>
+  import { formatDate } from '@/utils/formatDate';
+  import FilterCards from '@/components/FilterCards.vue';
+
   export default {
     name: 'Home',
-    data: (vm) => {
+    components: {
+      FilterCards,
+    },
+    data: () => {
       return {
-        ex4: ['orange', 'red', 'green'],
-        items: [
-          'Data de início',
-          'Abertos',
-          'Finalizados',
-          'Pendentes',
-          'Data de fim',
+        filters: [
+          {
+            title: 'Abertos',
+            status: 'opened',
+            amount: 10,
+            color: 'yellow',
+            active: false,
+          },
+          {
+            title: 'Não iniciados',
+            status: 'not_started',
+            amount: 3,
+            color: 'red',
+            active: false,
+          },
+          {
+            title: 'Finalizados',
+            status: 'finished',
+            amount: 7,
+            color: 'green',
+            active: false,
+          },
         ],
-        date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-          .toISOString()
-          .substr(0, 10),
-        menu: false,
-        modal: false,
-        dateFormatted: vm.formatDate(
-          new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-            .toISOString()
-            .substr(0, 10),
-        ),
-        menu2: false,
+
+        sortableItems: [
+          { text: 'Nome', value: 'name' },
+          { text: 'Data de início', value: 'initial_date' },
+          { text: 'Data de fim', value: 'end_date' },
+        ],
+
+        headers: [
+          {
+            text: 'Nome',
+            value: 'name',
+            sortable: false,
+            align: 'start',
+            width: '40%',
+          },
+          { text: 'Status', value: 'status', sortable: false, width: '20%' },
+          { text: 'Data inicial', value: 'startDate', sortable: false },
+          { text: 'Data final', value: 'endDate', sortable: false },
+          { text: 'Ações', value: 'actions', sortable: false, align: 'end' },
+        ],
+
+        forms: [
+          {
+            name: 'Formulário 1',
+            status: 'open',
+            startDate: '10/10/2021',
+            endDate: '10/11/2021',
+          },
+          {
+            name: 'Formulário 2',
+            status: 'finished',
+            startDate: '10/10/2021',
+            endDate: '10/11/2021',
+          },
+          {
+            name: 'Formulário 3',
+            status: 'not_started',
+            startDate: '01/12/2021',
+            endDate: '30/01/2022',
+          },
+        ],
+
+        sortBy: 'name',
+        showDatepicker: false,
+        selectedDates: [],
       };
     },
-    watch: {
-      date() {
-        this.dateFormatted = this.formatDate(this.date);
-      },
-    },
-
     methods: {
-      formatDate(date) {
-        if (!date) return null;
-
-        const [year, month, day] = date.split('-');
-        return `${day}/${month}/${year}`;
+      changeFilter(filterIndex, value) {
+        this.filters[filterIndex].active = value;
+      },
+      setDates(dates) {
+        this.selectedDates = dates.sort();
+      },
+      dateTitle() {
+        return this.selectedDates.length === 2
+          ? 'Intervalo selecionado'
+          : formatDate(this.selectedDates[0]) || '-';
+      },
+      chipStatusColor(status) {
+        return (
+          {
+            open: 'yellow',
+            finished: 'green',
+            not_started: 'red',
+          }[status] || 'primary'
+        );
+      },
+      translatedStatus(status) {
+        return {
+          open: 'Aberto',
+          finished: 'Fechado',
+          not_started: 'Não iniciado',
+        }[status];
       },
     },
-    components: {},
+    computed: {
+      dateRangeText() {
+        const formattedDates = this.selectedDates.map((date) =>
+          formatDate(date),
+        );
+        return formattedDates.join(' à ');
+      },
+    },
   };
 </script>
