@@ -28,6 +28,11 @@
             icon: 'mdi-text-box',
             path: '/forms',
           },
+          {
+            title: 'Notificações',
+            icon: 'mdi-bell',
+            path: '/notifications',
+          },
         ],
       };
     },
