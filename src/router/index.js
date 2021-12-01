@@ -6,7 +6,6 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: '/',
-    name: 'BaseLoggedIn',
     component: () => import('@/components/BaseLoggedIn.vue'),
     children: [
       {
