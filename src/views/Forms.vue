@@ -114,6 +114,22 @@
         </v-data-table>
       </v-col>
     </v-row>
+    <div class="add-btn">
+      <v-tooltip left>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            @click="createForms"
+            fab
+            color="primary"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+        </template>
+        <span>Novo formulário</span>
+      </v-tooltip>
+    </div>
   </v-container>
 </template>
 
@@ -183,6 +199,9 @@
         return this.dates.length === 2
           ? 'Intervalo selecionado'
           : formatDate(this.dates[0]) || '-';
+      },
+      createForms() {
+        this.$router.push('/createForms');
       },
     },
     computed: {

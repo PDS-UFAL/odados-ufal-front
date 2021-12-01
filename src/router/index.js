@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
+import store from '@/store';
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -17,6 +19,11 @@ const routes = [
         path: '/forms',
         name: 'Forms',
         component: () => import('@/views/Forms.vue'),
+      },
+      {
+        path: '/createForms',
+        name: 'CreateForms',
+        component: () => import('@/views/CreateForms.vue'),
       },
       {
         path: '/notifications',
@@ -36,6 +43,14 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  if (to.name !== 'Login' && !store.getters.authenticated) {
+    next({ name: 'Login' });
+  } else {
+    next();
+  }
 });
 
 export default router;

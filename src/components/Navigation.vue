@@ -24,8 +24,8 @@
             path: '/',
           },
           {
-            title: 'Formulários',
-            icon: 'mdi-text-box',
+            title: 'Novo Formulário',
+            icon: 'mdi-text-box-plus',
             path: '/forms',
           },
           {
