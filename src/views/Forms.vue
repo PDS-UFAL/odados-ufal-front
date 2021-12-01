@@ -114,7 +114,6 @@
         </v-data-table>
       </v-col>
     </v-row>
-
     <div class="add-btn">
       <v-tooltip left>
         <template v-slot:activator="{ on, attrs }">
