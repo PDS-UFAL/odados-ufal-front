@@ -14,7 +14,7 @@
       <v-col cols="12" sm="3" md="4" lg="3" class="text-right">
         <span>{{ relativeTime }}</span>
 
-        <v-btn icon @click="emitDelete(index)">
+        <v-btn icon @click="emitDelete">
           <v-icon>mdi-delete</v-icon>
         </v-btn>
       </v-col>
@@ -76,8 +76,8 @@
       },
     },
     methods: {
-      emitDelete(index) {
-        this.$emit('delete', index);
+      emitDelete() {
+        this.$emit('delete', this.index);
       },
     },
   };
