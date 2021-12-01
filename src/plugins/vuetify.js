@@ -18,6 +18,7 @@ const opts = {
         yellow: '#D9D016',
         'snow-white': '#F8F9FA',
         'cloudy-grey': '#353B42',
+        'muddy-grey': '#666666',
       },
     },
   },
