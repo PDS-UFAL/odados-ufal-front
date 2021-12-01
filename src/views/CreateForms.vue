@@ -65,14 +65,15 @@
     <v-row>
       <v-card elevation="3" class="px-2 mt-4 ma-3" width="100%">
         <v-col class="d-flex align-center justify-end">
-          <div v-if="selected.length == 0">
-            <v-btn @click="checkAll" text>Marcar todos</v-btn>
-            <v-btn disabled text>Desmarcar todos</v-btn>
-          </div>
-          <div v-else>
-            <v-btn disabled text>Marcar todos</v-btn>
-            <v-btn @click="undo" text>Desmarcar todos</v-btn>
-          </div>
+          <v-btn
+            @click="checkAll"
+            :disabled="selected.length == sectors.length"
+            text
+            >Marcar todos</v-btn
+          >
+          <v-btn :disabled="selected.length == 0" text bottom @click="undo"
+            >Desmarcar todos</v-btn
+          >
         </v-col>
 
         <v-row class="mx-4">
@@ -155,11 +156,9 @@
       },
       checkAll() {
         this.selected = [...this.sectors.map((sector) => sector.name)];
-        console.log(this.selected);
       },
       undo() {
         this.selected = [];
-        console.log(this.selected);
       },
       dateTitle() {
         return this.dates.length === 2
