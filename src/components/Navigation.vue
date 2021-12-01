@@ -26,7 +26,7 @@
           {
             title: 'Novo Formulário',
             icon: 'mdi-text-box-plus',
-            path: '/forms',
+            path: '/createForms',
           },
           {
             title: 'Notificações',
