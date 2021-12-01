@@ -31,23 +31,27 @@
     props: {
       index: {
         type: Number,
-        default: null,
+        required: true,
       },
       title: {
         type: String,
         default: null,
+        required: true,
       },
       date: {
         type: String,
         default: null,
+        required: true,
       },
       level: {
         type: Number,
         default: 0,
+        required: true,
       },
       viewed: {
         type: Boolean,
         default: false,
+        required: true,
       },
     },
     computed: {
