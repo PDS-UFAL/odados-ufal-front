@@ -14,7 +14,7 @@
 
       <v-switch
         label="Obrigatório"
-        v-model="required"
+        v-model="questionData.required"
         color="primary"
         hide-details
         class="pa-0 ma-0"
@@ -66,12 +66,7 @@
         </v-col>
       </v-row>
 
-      <template
-        v-if="
-          questionData.type === 'short-text' ||
-          questionData.type === 'large-text'
-        "
-      >
+      <template v-if="isShortText || isLargeText">
         <span class="text-subtitle-1 font-weight-bold">Parâmetros:</span>
         <v-row class="pt-4">
           <v-col cols="12" md="6">
@@ -86,15 +81,14 @@
         </v-row>
       </template>
 
-      <template
-        v-if="questionData.type === 'number' || questionData.type === 'money'"
-      >
+      <template v-if="isNumber || isMoney">
         <span class="text-subtitle-1 font-weight-bold">Parâmetros:</span>
         <v-row class="pt-4">
           <v-col cols="12" md="6">
             <v-text-field
               v-model="questionData.minValue"
               label="Valor mínimo (opcional)"
+              :prefix="isMoney && 'R$'"
               type="number"
               dense
               outlined
@@ -106,6 +100,7 @@
             <v-text-field
               v-model="questionData.maxValue"
               label="Valor máximo (opcional)"
+              :prefix="isMoney && 'R$'"
               type="number"
               dense
               outlined
@@ -115,9 +110,7 @@
         </v-row>
       </template>
 
-      <template
-        v-if="['select', 'checkbox', 'radio'].includes(questionData.type)"
-      >
+      <template v-if="isSelect || isCheckbox || isRadio">
         <span class="text-subtitle-1 font-weight-bold">Opções:</span>
         <v-row class="pt-4">
           <v-col cols="12" md="6">
@@ -208,11 +201,11 @@
       <span class="text-subtitle-1 font-weight-bold">Como vai ficar:</span>
       <v-row class="pt-4">
         <!-- Texto pequeno -->
-        <v-col v-if="questionData.type === 'short-text'">
+        <v-col v-if="isShortText">
           <v-text-field
             v-model="questionData.example"
             :label="questionData.title || 'Título da pergunta'"
-            :counter="questionData.maxCaracters"
+            :counter="questionData.maxCharacters"
             :maxlength="questionData.maxCharacters"
             :rules="[rules.required]"
             dense
@@ -222,7 +215,7 @@
         </v-col>
 
         <!-- Texto grande -->
-        <v-col v-if="questionData.type === 'large-text'">
+        <v-col v-if="isLargeText">
           <v-textarea
             v-model="questionData.example"
             :label="questionData.title || 'Título da pergunta'"
@@ -237,7 +230,7 @@
         </v-col>
 
         <!-- Numérico -->
-        <v-col v-if="questionData.type === 'number'">
+        <v-col v-if="isNumber">
           <v-text-field
             v-model="questionData.example"
             type="number"
@@ -251,7 +244,7 @@
         </v-col>
 
         <!-- Dinheiro -->
-        <v-col v-if="questionData.type === 'money'">
+        <v-col v-if="isMoney">
           <v-text-field
             v-model="questionData.example"
             :label="questionData.title || 'Título da pergunta'"
@@ -264,7 +257,7 @@
         </v-col>
 
         <!-- Porcentagem -->
-        <v-col cols="12" md="6" v-if="questionData.type === 'percent'">
+        <v-col cols="12" md="6" v-if="isPercent">
           <v-text-field
             v-model="questionData.example"
             type="number"
@@ -277,7 +270,7 @@
         </v-col>
 
         <!-- Lista de opções -->
-        <v-col cols="12" md="6" v-if="questionData.type === 'select'">
+        <v-col cols="12" md="6" v-if="isSelect">
           <v-select
             :items="questionData.options"
             v-model="questionData.example"
@@ -291,7 +284,7 @@
         </v-col>
 
         <!-- Caixa de seleção -->
-        <v-col v-if="questionData.type === 'checkbox'">
+        <v-col v-if="isCheckbox">
           <span class="text-subtitle-1 font-weight-bold">
             {{ questionData.title || 'Título da pergunta' }}
           </span>
@@ -299,16 +292,17 @@
           <v-checkbox
             v-for="(option, index) in questionData.options"
             :key="index"
-            v-model="questionData.example"
+            v-model="questionData.checkboxExample"
             :label="option"
             :value="option"
             :rules="[rules.required]"
             dense
+            hide-details
           />
         </v-col>
 
         <!-- Múltipla escolha -->
-        <v-col v-if="questionData.type === 'radio'">
+        <v-col v-if="isRadio">
           <span class="text-subtitle-1 font-weight-bold">
             {{ questionData.title || 'Título da pergunta' }}
           </span>
@@ -328,7 +322,7 @@
         </v-col>
 
         <!-- Arquivo -->
-        <v-col v-if="questionData.type === 'file'">
+        <v-col v-if="isFile">
           <span class="text-subtitle-1 font-weight-bold">
             {{ questionData.title || 'Título da pergunta' }}
           </span>
@@ -336,14 +330,14 @@
           <div
             class="file-box rounded-sm pa-12"
             :style="fileUploaderStyle"
-            @drop="drop"
+            @drop="dropFile"
             @dragenter.prevent
             @dragover.prevent
           >
             <input
               type="file"
-              :required="required"
-              accept=".pdf,.jpg,.jpeg,.png"
+              :required="questionData.required"
+              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
               ref="fileInput"
               id="assetsFieldHandle"
               style="display: none"
@@ -355,10 +349,9 @@
                 <v-icon :color="color.base">mdi-file</v-icon>
 
                 <span class="ml-2 text-subtitle-1 black--text">
-                  <template v-if="!!questionData.file.name">
-                    {{ questionData.file.name }}
-                  </template>
-                  <template v-else>
+                  {{ questionData.file.name }}
+
+                  <template v-if="!questionData.file.name">
                     Solte o arquivo aqui ou clique para fazer upload
                   </template>
                 </span>
@@ -366,7 +359,10 @@
 
               <v-row class="d-flex justify-center">
                 <span class="text-body-2">
-                  <template v-if="!!questionData.file.name">
+                  <template v-if="questionData.fileError">
+                    O arquivo selecionado excede o tamanho máximo de 10mb
+                  </template>
+                  <template v-else-if="!!questionData.file.name">
                     Solte outro arquivo ou clique para substituir
                   </template>
                   <template v-else>Tamanho máximo de 10mb</template>
@@ -392,23 +388,26 @@
       },
     },
     mounted() {
-      this.questionData = {
-        ...this.question,
-        title: null,
-        type: 'short-text',
-        maxCharacters: 250,
-        minValue: null,
-        maxValue: null,
-        options: [''],
-        file: { name: '', size: '' },
-        fileError: false,
+      this.questionData = Object.assign(
+        {
+          title: null,
+          required: true,
+          type: 'short-text',
+          maxCharacters: 250,
+          minValue: null,
+          maxValue: null,
+          options: [''],
+          file: { name: '', size: '' },
+          fileError: false,
 
-        example: null,
-      };
+          example: null,
+          checkboxExample: [],
+        },
+        this.deepClone(this.question),
+      );
     },
     data: () => {
       return {
-        required: true,
         questionTypes: [
           { text: 'Texto pequeno', value: 'short-text' },
           { text: 'Texto grande', value: 'large-text' },
@@ -430,6 +429,9 @@
       removeQuestion() {
         this.$emit('removeQuestion', this.question.id);
       },
+      deepClone(obj) {
+        return JSON.parse(JSON.stringify(obj));
+      },
       stringToFloat(value) {
         return parseFloat(value.replace('.', '').replace(',', '.'));
       },
@@ -439,13 +441,19 @@
 
         this.questionData.file.name = fileToUpload.name;
         this.questionData.file.size = fileToUpload.size;
+
+        const fileSizeToMb = fileToUpload.size / 1024 / 1024;
+        if (fileSizeToMb > 10) {
+          this.questionData.fileError = true;
+        }
       },
-      drop(event) {
+      dropFile(event) {
         event.preventDefault();
         this.$refs.fileInput.files = event.dataTransfer.files;
         this.handleFileUpload();
       },
       addOption() {
+        this.questionData.checkboxExample = [];
         this.questionData.options.push('');
       },
       removeOption(index) {
@@ -453,6 +461,33 @@
       },
     },
     computed: {
+      isShortText() {
+        return this.questionData.type === 'short-text';
+      },
+      isLargeText() {
+        return this.questionData.type === 'large-text';
+      },
+      isNumber() {
+        return this.questionData.type === 'number';
+      },
+      isMoney() {
+        return this.questionData.type === 'money';
+      },
+      isPercent() {
+        return this.questionData.type === 'percent';
+      },
+      isFile() {
+        return this.questionData.type === 'file';
+      },
+      isSelect() {
+        return this.questionData.type === 'select';
+      },
+      isCheckbox() {
+        return this.questionData.type === 'checkbox';
+      },
+      isRadio() {
+        return this.questionData.type === 'radio';
+      },
       color() {
         if (this.questionData.fileError) {
           return colors['red'];
@@ -489,6 +524,7 @@
     watch: {
       type() {
         this.questionData.example = null;
+        this.questionData.checkboxExample = [];
         this.questionData.minValue = null;
         this.questionData.maxValue = null;
         this.questionData.options = [''];
