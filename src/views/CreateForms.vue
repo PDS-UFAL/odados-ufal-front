@@ -16,6 +16,7 @@
           dense
           outlined
           clearable
+          hide-details
         />
       </v-col>
 
@@ -42,6 +43,7 @@
               readonly
               outlined
               clearable
+              hide-details
               @click:clear="dates = []"
               @click:prepend-inner="showDatepicker = true"
             />
@@ -59,7 +61,7 @@
       </v-col>
     </v-row>
 
-    <v-row class="my-8">
+    <v-row class="pt-8 mb-4">
       <h3>Quem vai responder?</h3>
     </v-row>
 
@@ -93,7 +95,7 @@
       </v-card>
     </v-row>
 
-    <v-row class="mt-8">
+    <v-row class="pt-8">
       <h3>Perguntas</h3>
       <v-spacer />
       <v-btn text color="primary">
@@ -102,7 +104,7 @@
       </v-btn>
     </v-row>
 
-    <v-layout row class="py-4" justify-center>
+    <v-layout row justify-center>
       <question-card
         v-for="(question, index) in questions"
         :key="index"
@@ -203,11 +205,10 @@
           : formatDate(this.dates[0]) || '-';
       },
       addQuestion() {
-        this.questions.push({ id: this.questions.length });
+        this.questions.push({ id: this.questions.at(-1).id + 1 });
       },
       duplicateQuestion(question) {
-        console.log(question);
-        this.questions.push({ ...question, id: this.questions.length });
+        this.questions.push({ ...question, id: this.questions.at(-1).id + 1 });
       },
       removeQuestion(id) {
         if (this.questions.length === 1) return;
