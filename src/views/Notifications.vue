@@ -31,7 +31,7 @@
             <v-text-field
               v-on="on"
               v-bind="attrs"
-              label="Criado em"
+              label="Recebido em"
               :value="dateRangeText"
               prepend-inner-icon="mdi-calendar"
               dense
@@ -115,11 +115,7 @@
       },
       dateTitle() {
         return this.selectedDates.length === 2
-          ? `
-            ${formatDate(this.selectedDates[0])}
-            -
-            ${formatDate(this.selectedDates[1])}
-            `
+          ? this.dateRangeText
           : formatDate(this.selectedDates[0]) || '-';
       },
     },
