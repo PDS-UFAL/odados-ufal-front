@@ -61,7 +61,7 @@
       };
     },
     methods: {
-      ...mapActions(['executeLogin', 'setAlert', 'setAuthToken']),
+      ...mapActions(['executeLogin', 'setAlert', 'setAuthToken', 'setUser']),
       async login() {
         const payload = {
           user: {
@@ -75,11 +75,13 @@
 
           await this.setAuthToken({ token: res.data.token });
 
+          await this.setUser({ user: res.data.user });
+
           this.$router.push('/');
         } catch (err) {
           this.error = true;
           this.setAlert({
-            alertMessage: err.response.data.error,
+            alertMessage: err.response?.data.error || 'Um erro aconteceu',
             alertColor: 'red',
           });
         }
