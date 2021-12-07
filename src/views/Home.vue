@@ -195,11 +195,7 @@
       },
       dateTitle() {
         return this.selectedDates.length === 2
-          ? `
-            ${formatDate(this.selectedDates[0])}
-            -
-            ${formatDate(this.selectedDates[1])}
-            `
+          ? this.dateRangeText
           : formatDate(this.selectedDates[0]) || '-';
       },
       chipStatusColor(status) {
