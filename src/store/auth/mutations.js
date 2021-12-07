@@ -9,5 +9,6 @@ export default {
   },
   [TYPES.SET_USER](state, user) {
     state.user = user;
+    setLocal('user', JSON.stringify(user));
   },
 };

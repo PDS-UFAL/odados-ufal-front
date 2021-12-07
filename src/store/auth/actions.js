@@ -14,9 +14,14 @@ export default {
     if (!user) return;
     commit(TYPES.SET_USER, user);
   },
-  retriveAuthToken({ commit }) {
+  retrieveAuthToken({ commit }) {
     if (window.localStorage) {
       commit(TYPES.SET_TOKEN, window.localStorage.getItem('authToken'));
+    }
+  },
+  retrieveUser({ commit }) {
+    if (window.localStorage) {
+      commit(TYPES.SET_USER, JSON.parse(window.localStorage.getItem('user')));
     }
   },
 };

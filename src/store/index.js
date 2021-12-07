@@ -13,6 +13,7 @@ const store = new Vuex.Store({
   },
 });
 
-store.dispatch('retriveAuthToken');
+store.dispatch('retrieveAuthToken');
+store.dispatch('retrieveUser');
 
 export default store;
