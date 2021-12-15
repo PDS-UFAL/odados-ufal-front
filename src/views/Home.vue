@@ -195,7 +195,7 @@
       },
       dateTitle() {
         return this.selectedDates.length === 2
-          ? 'Intervalo selecionado'
+          ? this.dateRangeText
           : formatDate(this.selectedDates[0]) || '-';
       },
       chipStatusColor(status) {
@@ -225,3 +225,9 @@
     },
   };
 </script>
+
+<style lang="scss" scoped>
+  ::v-deep .v-date-picker-title__date {
+    font-size: 20px;
+  }
+</style>
