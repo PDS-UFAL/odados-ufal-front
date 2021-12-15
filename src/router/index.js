@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import { isJwtExpired } from 'jwt-check-expiration';
 
 import store from '@/store';
 
@@ -47,7 +48,10 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.name !== 'Login' && !store.getters.authenticated) {
+  if (
+    to.name !== 'Login' &&
+    (!store.getters.authenticated || isJwtExpired(store.getters.authToken))
+  ) {
     next({ name: 'Login' });
   } else {
     next();
