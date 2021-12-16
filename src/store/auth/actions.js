@@ -10,9 +10,18 @@ export default {
     if (!token) return;
     commit(TYPES.SET_TOKEN, token);
   },
-  retriveAuthToken({ commit }) {
+  async setUser({ commit }, { user }) {
+    if (!user) return;
+    commit(TYPES.SET_USER, user);
+  },
+  retrieveAuthToken({ commit }) {
     if (window.localStorage) {
       commit(TYPES.SET_TOKEN, window.localStorage.getItem('authToken'));
+    }
+  },
+  retrieveUser({ commit }) {
+    if (window.localStorage) {
+      commit(TYPES.SET_USER, JSON.parse(window.localStorage.getItem('user')));
     }
   },
 };

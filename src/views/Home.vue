@@ -82,7 +82,21 @@
           disable-pagination
           hide-default-footer
           :disable-sort="$vuetify.breakpoint.smAndDown"
+          :loading="loading"
+          loading-text="Carregando... Por favor aguarde"
         >
+          <template slot="no-data">
+            <div class="">Nenhum formulário encontrado</div>
+          </template>
+
+          <template v-slot:item.initial_date="{ item }">
+            {{ formatDate(item.initial_date) }}
+          </template>
+
+          <template v-slot:item.end_date="{ item }">
+            {{ formatDate(item.end_date) }}
+          </template>
+
           <template v-slot:item.status="{ item }">
             <v-icon size="17" :color="chipStatusColor(item.status)">
               mdi-checkbox-blank-circle
@@ -90,12 +104,12 @@
             {{ translatedStatus(item.status) }}
           </template>
 
-          <template v-slot:item.actions="{}">
+          <template v-slot:item.actions="{ item }">
             <v-btn small icon>
               <v-icon> mdi-eye </v-icon>
             </v-btn>
 
-            <v-btn small icon>
+            <v-btn small icon @click="deleteFormHandler(item)">
               <v-icon> mdi-delete </v-icon>
             </v-btn>
           </template>
@@ -108,6 +122,7 @@
 <script>
   import { formatDate } from '@/utils/formatDate';
   import FilterCards from '@/components/FilterCards.vue';
+  import { mapActions } from 'vuex';
 
   export default {
     name: 'Home',
@@ -116,6 +131,7 @@
     },
     data: () => {
       return {
+        loading: true,
         filters: [
           {
             title: 'Abertos',
@@ -148,45 +164,44 @@
 
         headers: [
           {
-            text: 'Nome',
-            value: 'name',
+            text: 'Título',
+            value: 'title',
             sortable: false,
             align: 'start',
             width: '40%',
           },
           { text: 'Status', value: 'status', sortable: false, width: '20%' },
-          { text: 'Data inicial', value: 'startDate', sortable: false },
-          { text: 'Data final', value: 'endDate', sortable: false },
+          { text: 'Data inicial', value: 'initial_date', sortable: false },
+          { text: 'Data final', value: 'end_date', sortable: false },
           { text: 'Ações', value: 'actions', sortable: false, align: 'end' },
         ],
 
-        forms: [
-          {
-            name: 'Formulário 1',
-            status: 'open',
-            startDate: '10/10/2021',
-            endDate: '10/11/2021',
-          },
-          {
-            name: 'Formulário 2',
-            status: 'finished',
-            startDate: '10/10/2021',
-            endDate: '10/11/2021',
-          },
-          {
-            name: 'Formulário 3',
-            status: 'not_started',
-            startDate: '01/12/2021',
-            endDate: '30/01/2022',
-          },
-        ],
+        forms: [],
 
         sortBy: 'name',
         showDatepicker: false,
         selectedDates: [],
       };
     },
+    async mounted() {
+      this.loading = true;
+      try {
+        const res = await this.fetchForms();
+        this.forms = res.data;
+      } catch (err) {
+        this.setAlert({
+          alertMessage:
+            err.response?.data.error ||
+            'Um erro aconteceu ao carregar formulários.',
+          alertColor: 'red',
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
     methods: {
+      ...mapActions(['fetchForms', 'deleteForm', 'setAlert']),
+      formatDate,
       changeFilter(filterIndex, value) {
         this.filters[filterIndex].active = value;
       },
@@ -195,7 +210,7 @@
       },
       dateTitle() {
         return this.selectedDates.length === 2
-          ? 'Intervalo selecionado'
+          ? this.dateRangeText
           : formatDate(this.selectedDates[0]) || '-';
       },
       chipStatusColor(status) {
@@ -214,6 +229,20 @@
           not_started: 'Não iniciado',
         }[status];
       },
+      async deleteFormHandler(form) {
+        try {
+          await this.deleteForm({ id: form.id });
+          const index = this.forms.indexOf(form);
+          this.forms.splice(index, 1);
+        } catch (err) {
+          this.setAlert({
+            alertMessage:
+              err.response?.data.error ||
+              'Um erro aconteceu ao deletar o formulário.',
+            alertColor: 'red',
+          });
+        }
+      },
     },
     computed: {
       dateRangeText() {
@@ -225,3 +254,9 @@
     },
   };
 </script>
+
+<style lang="scss" scoped>
+  ::v-deep .v-date-picker-title__date {
+    font-size: 20px;
+  }
+</style>
