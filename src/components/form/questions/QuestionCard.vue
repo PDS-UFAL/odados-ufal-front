@@ -1,0 +1,206 @@
+<template>
+  <v-card width="100%" elevation="3">
+    <v-card-title>
+      <v-tooltip right>
+        <template v-slot:activator="{ on }">
+          <v-btn icon class="grab" v-on="on">
+            <v-icon>mdi-drag</v-icon>
+          </v-btn>
+        </template>
+        <span>Mover</span>
+      </v-tooltip>
+
+      <v-spacer />
+
+      <v-switch
+        label="Obrigatório"
+        v-model="question.required"
+        color="primary"
+        hide-details
+        class="pa-0 ma-0"
+      />
+
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            icon
+            class="ml-sm-8"
+            v-on="on"
+            @click="duplicateQuestion(question)"
+          >
+            <v-icon>mdi-content-copy</v-icon>
+          </v-btn>
+        </template>
+        <span>Duplicar</span>
+      </v-tooltip>
+
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            icon
+            class="ml-sm-4"
+            v-on="on"
+            @click="removeQuestion(question)"
+          >
+            <v-icon>mdi-delete</v-icon>
+          </v-btn>
+        </template>
+        <span>Remover</span>
+      </v-tooltip>
+    </v-card-title>
+    <v-card-text>
+      <v-divider />
+
+      <v-row class="my-8">
+        <v-col cols="12" md="6">
+          <v-text-field
+            v-model="question.title"
+            label="Título da pergunta"
+            dense
+            outlined
+            clearable
+            hide-details
+          />
+        </v-col>
+        <v-spacer />
+        <v-col cols="12" md="5">
+          <v-select
+            :items="questionTypes"
+            v-model="question.type"
+            label="Tipo do campo de resposta"
+            :menu-props="{ 'offset-y': true }"
+            dense
+            outlined
+            hide-details
+          />
+        </v-col>
+      </v-row>
+
+      <parameters
+        :question="question"
+        :show="showParameters"
+        :maxChar="hasMaxChar"
+        :range="hasRange"
+      />
+      <options-list :question="question" v-if="hasOptions" />
+
+      <v-divider class="my-8" />
+
+      <span class="text-subtitle-1 font-weight-bold">Como ficará:</span>
+      <component :is="questionType" :question="question" class="mt-2" />
+    </v-card-text>
+  </v-card>
+</template>
+
+<script>
+  import { mapActions } from 'vuex';
+
+  import Parameters from './Parameters';
+  import OptionsList from './OptionsList';
+
+  import ShortText from '@/components/form/answers/ShortText';
+  import LargeText from '@/components/form/answers/LargeText';
+  import Number from '@/components/form/answers/Number';
+  import Money from '@/components/form/answers/Money';
+  import Percent from '@/components/form/answers/Percent';
+  import File from '@/components/form/answers/File';
+  import Select from '@/components/form/answers/Select';
+  import Checkbox from '@/components/form/answers/Checkbox';
+  import Radio from '@/components/form/answers/Radio';
+
+  export default {
+    name: 'QuestionCard',
+    props: {
+      question: {
+        type: Object,
+        required: true,
+      },
+    },
+    components: {
+      Parameters,
+      OptionsList,
+    },
+    data: () => {
+      return {
+        questionTypes: [
+          { text: 'Texto pequeno', value: 'short-text' },
+          { text: 'Texto grande', value: 'large-text' },
+          { text: 'Numérico', value: 'number' },
+          { text: 'Dinheiro', value: 'money' },
+          { text: 'Porcentagem', value: 'percent' },
+          { text: 'Arquivo', value: 'file' },
+          { text: 'Lista de opções', value: 'select' },
+          { text: 'Caixa de seleção', value: 'checkbox' },
+          { text: 'Múltipla escolha', value: 'radio' },
+        ],
+      };
+    },
+    methods: {
+      ...mapActions(['removeQuestion', 'duplicateQuestion']),
+    },
+    computed: {
+      questionType() {
+        return {
+          'short-text': ShortText,
+          'large-text': LargeText,
+          number: Number,
+          money: Money,
+          percent: Percent,
+          file: File,
+          select: Select,
+          checkbox: Checkbox,
+          radio: Radio,
+        }[this.question.type];
+      },
+      isShortText() {
+        return this.question.type === 'short-text';
+      },
+      isLargeText() {
+        return this.question.type === 'large-text';
+      },
+      isNumber() {
+        return this.question.type === 'number';
+      },
+      isMoney() {
+        return this.question.type === 'money';
+      },
+      isPercent() {
+        return this.question.type === 'percent';
+      },
+      isFile() {
+        return this.question.type === 'file';
+      },
+      isSelect() {
+        return this.question.type === 'select';
+      },
+      isCheckbox() {
+        return this.question.type === 'checkbox';
+      },
+      isRadio() {
+        return this.question.type === 'radio';
+      },
+      hasMaxChar() {
+        return this.isShortText || this.isLargeText;
+      },
+      hasRange() {
+        return this.isNumber || this.isMoney;
+      },
+      hasOptions() {
+        return this.isSelect || this.isCheckbox || this.isRadio;
+      },
+      showParameters() {
+        return this.hasMaxChar || this.hasRange;
+      },
+    },
+  };
+</script>
+
+<style lang="scss" scoped>
+  .grab {
+    cursor: grab;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+</style>
