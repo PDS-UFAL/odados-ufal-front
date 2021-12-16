@@ -6,7 +6,7 @@
       </span>
 
       <v-text-field
-        v-model="question.example"
+        v-model="question.response"
         :rules="[rules.required, ...rules.number]"
         type="number"
         prefix="R$"

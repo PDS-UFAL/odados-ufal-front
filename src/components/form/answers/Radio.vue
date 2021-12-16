@@ -5,7 +5,11 @@
         {{ question.title }}
       </span>
 
-      <v-radio-group v-model="question.example" :rules="[rules.required]" dense>
+      <v-radio-group
+        v-model="question.response"
+        :rules="[rules.required]"
+        dense
+      >
         <v-radio
           v-for="(option, index) in question.options"
           :key="index"

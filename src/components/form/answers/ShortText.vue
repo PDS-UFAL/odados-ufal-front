@@ -6,7 +6,7 @@
       </span>
 
       <v-text-field
-        v-model="question.example"
+        v-model="question.response"
         :counter="question.max_char"
         :maxlength="question.max_char"
         :rules="[rules.required]"

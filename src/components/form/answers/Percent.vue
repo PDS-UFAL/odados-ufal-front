@@ -6,7 +6,7 @@
       </span>
 
       <v-text-field
-        v-model="question.example"
+        v-model="question.response"
         type="number"
         :rules="[rules.required]"
         suffix="%"

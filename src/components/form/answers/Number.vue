@@ -6,7 +6,7 @@
       </span>
 
       <v-text-field
-        v-model="question.example"
+        v-model="question.response"
         type="number"
         :min="question.min_value"
         :max="question.max_value"

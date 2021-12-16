@@ -7,7 +7,7 @@
 
       <v-select
         :items="question.options"
-        v-model="question.example"
+        v-model="question.response"
         :rules="[rules.required]"
         :menu-props="{ 'offset-y': true }"
         no-data-text="Nenhuma opção disponível"
