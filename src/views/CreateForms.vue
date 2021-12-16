@@ -135,7 +135,7 @@
     <div class="save-btn mb-8 mb-md-0">
       <v-tooltip left>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn fab color="primary" v-bind="attrs" v-on="on">
+          <v-btn fab color="primary" v-bind="attrs" v-on="on" @click="saveForm">
             <v-icon>mdi-check</v-icon>
           </v-btn>
         </template>
@@ -157,6 +157,7 @@
     },
     data: () => {
       return {
+        loading: false,
         sectors: [],
         selected: [],
         dates: [],
@@ -172,13 +173,44 @@
         this.setAlert({
           alertMessage:
             err.response?.data.error ||
-            'Um erro aconteceu ao carregar os setores.',
+            'Ocorreu um erro ao carregar os setores.',
           alertColor: 'red',
         });
       }
     },
     methods: {
-      ...mapActions(['fetchSectors', 'addQuestion', 'setAlert']),
+      ...mapActions(['fetchSectors', 'addQuestion', 'createForm', 'setAlert']),
+      async saveForm() {
+        try {
+          this.loading = true;
+
+          const payload = {
+            form: {
+              title: this.title,
+              start_date: this.dates[0],
+              end_date: this.dates[1],
+              sector_ids: this.sectors.map((sector) => sector.id),
+              sections_attributes: [
+                {
+                  name: '',
+                  questions_attributes: [...this.getQuestions],
+                },
+              ],
+            },
+          };
+
+          await this.createForm(payload);
+        } catch (err) {
+          this.setAlert({
+            alertMessage:
+              err.response?.data.error ||
+              'Occorreu um erro ao tentar salvar o formulário.',
+            alertColor: 'red',
+          });
+        } finally {
+          this.loading = false;
+        }
+      },
       back() {
         this.$router.back();
       },
