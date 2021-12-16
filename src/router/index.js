@@ -17,7 +17,7 @@ const routes = [
         component: () => import('@/views/Home.vue'),
       },
       {
-        path: '/createForms',
+        path: '/forms',
         name: 'CreateForms',
         component: () => import('@/views/CreateForms.vue'),
       },
