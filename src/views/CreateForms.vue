@@ -1,6 +1,6 @@
 <template>
-  <v-container>
-    <v-row class="d-flex align-center justify-start pa-0 my-8">
+  <v-container class="px-sm-12">
+    <v-row class="d-flex align-center justify-start pa-0 mt-md-4 mb-8">
       <v-btn @click="back" text fab class="flex-grow-0">
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
@@ -16,7 +16,6 @@
           dense
           outlined
           clearable
-          hide-details
         />
       </v-col>
 
@@ -43,7 +42,6 @@
               readonly
               outlined
               clearable
-              hide-details
               @click:clear="dates = []"
               @click:prepend-inner="showDatepicker = true"
             />
@@ -67,7 +65,7 @@
 
     <v-row>
       <v-card elevation="3" class="px-2" width="100%">
-        <v-col class="d-flex align-center justify-end">
+        <v-card-title class="d-flex justify-end">
           <v-btn
             @click="checkAll"
             :disabled="selected.length == sectors.length"
@@ -76,42 +74,45 @@
           >
             Marcar todos
           </v-btn>
-          <v-btn :disabled="selected.length == 0" text small @click="undo">
+          <v-btn
+            :disabled="selected.length == 0"
+            text
+            small
+            @click="uncheckAll"
+          >
             Desmarcar todos
           </v-btn>
-        </v-col>
+        </v-card-title>
 
-        <v-row class="mx-4">
-          <div v-for="sector in sectors" :key="sector.name">
-            <v-col class="px-4">
+        <v-card-text>
+          <v-row class="mx-4">
+            <div
+              class="px-2 px-md-4"
+              v-for="sector in sectors"
+              :key="sector.name"
+            >
               <v-checkbox
                 v-model="selected"
                 :value="sector.name"
                 :label="sector.name"
               />
-            </v-col>
-          </div>
-        </v-row>
+            </div>
+          </v-row>
+        </v-card-text>
       </v-card>
     </v-row>
 
     <v-row class="pt-8">
       <h3>Perguntas</h3>
       <v-spacer />
-      <v-btn text color="primary">
-        <v-icon>mdi-plus</v-icon>
-        Importar perguntas
-      </v-btn>
     </v-row>
 
     <v-layout row justify-center>
       <question-card
-        v-for="(question, index) in questions"
+        v-for="(question, index) in getQuestions"
         :key="index"
         class="my-4"
         :question="question"
-        @duplicateQuestion="duplicateQuestion"
-        @removeQuestion="removeQuestion"
       />
 
       <v-tooltip top>
@@ -131,7 +132,7 @@
       </v-tooltip>
     </v-layout>
 
-    <div class="add-btn">
+    <div class="save-btn mb-8 mb-md-0">
       <v-tooltip left>
         <template v-slot:activator="{ on, attrs }">
           <v-btn fab color="primary" v-bind="attrs" v-on="on">
@@ -145,8 +146,9 @@
 </template>
 
 <script>
+  import { mapActions, mapGetters } from 'vuex';
   import { formatDate } from '@/utils/formatDate';
-  import QuestionCard from '@/components/QuestionCard';
+  import QuestionCard from '@/components/form/questions/QuestionCard';
 
   export default {
     name: 'CreateForms',
@@ -155,38 +157,28 @@
     },
     data: () => {
       return {
-        sectors: [
-          {
-            name: 'Setor 1',
-          },
-          {
-            name: 'Setor 2',
-          },
-          {
-            name: 'Setor 3',
-          },
-          {
-            name: 'Setor 4',
-          },
-          {
-            name: 'Setor 5',
-          },
-          {
-            name: 'Setor 6',
-          },
-          {
-            name: 'Setor 7',
-          },
-        ],
+        sectors: [],
         selected: [],
         dates: [],
-        showDatepicker: false,
-
         title: null,
-        questions: [{ id: 0 }],
+        showDatepicker: false,
       };
     },
+    async mounted() {
+      try {
+        const { data } = await this.fetchSectors();
+        this.sectors = [...data];
+      } catch (err) {
+        this.setAlert({
+          alertMessage:
+            err.response?.data.error ||
+            'Um erro aconteceu ao carregar os setores.',
+          alertColor: 'red',
+        });
+      }
+    },
     methods: {
+      ...mapActions(['fetchSectors', 'addQuestion', 'setAlert']),
       back() {
         this.$router.back();
       },
@@ -196,7 +188,7 @@
       checkAll() {
         this.selected = [...this.sectors.map((sector) => sector.name)];
       },
-      undo() {
+      uncheckAll() {
         this.selected = [];
       },
       dateTitle() {
@@ -204,21 +196,9 @@
           ? 'Intervalo selecionado'
           : formatDate(this.dates[0]) || '-';
       },
-      addQuestion() {
-        this.questions.push({ id: this.questions.at(-1).id + 1 });
-      },
-      duplicateQuestion(question) {
-        this.questions.push({ ...question, id: this.questions.at(-1).id + 1 });
-      },
-      removeQuestion(id) {
-        if (this.questions.length === 1) return;
-
-        this.questions = [
-          ...this.questions.filter((question) => question.id !== id),
-        ];
-      },
     },
     computed: {
+      ...mapGetters(['getQuestions']),
       dateRangeText() {
         const formattedDates = this.dates.map((date) => formatDate(date));
         return formattedDates.join(' à ');
@@ -228,7 +208,7 @@
 </script>
 
 <style scoped lang="scss">
-  .add-btn {
+  .save-btn {
     position: fixed;
     bottom: 32px;
     right: 32px;
