@@ -9,7 +9,6 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: '/',
-    name: 'BaseLoggedIn',
     component: () => import('@/components/BaseLoggedIn.vue'),
     children: [
       {
@@ -19,11 +18,6 @@ const routes = [
       },
       {
         path: '/forms',
-        name: 'Forms',
-        component: () => import('@/views/Forms.vue'),
-      },
-      {
-        path: '/createForms',
         name: 'CreateForms',
         component: () => import('@/views/CreateForms.vue'),
       },

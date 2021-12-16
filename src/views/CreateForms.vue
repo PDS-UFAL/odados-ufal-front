@@ -1,26 +1,27 @@
 <template>
-  <v-container>
-    <v-row class="d-flex align-center justify-start pa-0 my-8">
+  <v-container class="px-sm-12">
+    <v-row class="d-flex align-center justify-start pa-0 mt-md-4 mb-8">
       <v-btn @click="back" text fab class="flex-grow-0">
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
       <h3>Novo formulário</h3>
     </v-row>
 
-    <v-row class="my-8 mx-2">
-      <v-col cols="12" xs="12" md="4" class="pa-0">
+    <v-row>
+      <v-col cols="12" md="6" class="pa-0">
         <v-text-field
-          name="search"
-          label="Pesquisar"
-          prepend-inner-icon="mdi-magnify"
-          outlined
+          v-model="title"
+          name="title"
+          label="Título do formulário"
           dense
+          outlined
           clearable
         />
       </v-col>
+
       <v-spacer />
 
-      <v-col cols="12" xs="12" md="3" class="pa-0 mr-4">
+      <v-col cols="12" md="4" class="pa-0 mr-4">
         <v-menu
           v-model="showDatepicker"
           :close-on-content-click="false"
@@ -37,9 +38,9 @@
               label="Data"
               :value="dateRangeText"
               prepend-inner-icon="mdi-calendar"
+              dense
               readonly
               outlined
-              dense
               clearable
               @click:clear="dates = []"
               @click:prepend-inner="showDatepicker = true"
@@ -58,51 +59,83 @@
       </v-col>
     </v-row>
 
-    <v-row class="my-4 mx-2">
+    <v-row class="pt-8 mb-4">
       <h3>Quem vai responder?</h3>
     </v-row>
 
     <v-row>
-      <v-card elevation="3" class="px-2 mt-4 ma-3" width="100%">
-        <v-col class="d-flex align-center justify-end">
+      <v-card elevation="3" class="px-2" width="100%">
+        <v-card-title class="d-flex justify-end">
           <v-btn
             @click="checkAll"
             :disabled="selected.length == sectors.length"
             text
-            >Marcar todos</v-btn
+            small
           >
-          <v-btn :disabled="selected.length == 0" text bottom @click="undo"
-            >Desmarcar todos</v-btn
+            Marcar todos
+          </v-btn>
+          <v-btn
+            :disabled="selected.length == 0"
+            text
+            small
+            @click="uncheckAll"
           >
-        </v-col>
+            Desmarcar todos
+          </v-btn>
+        </v-card-title>
 
-        <v-row class="mx-4">
-          <div v-for="sector in sectors" :key="sector.name">
-            <v-col class="px-4">
+        <v-card-text>
+          <v-row class="mx-4">
+            <div
+              class="px-2 px-md-4"
+              v-for="sector in sectors"
+              :key="sector.name"
+            >
               <v-checkbox
                 v-model="selected"
                 :value="sector.name"
                 :label="sector.name"
-              ></v-checkbox>
-            </v-col>
-          </div>
-        </v-row>
+              />
+            </div>
+          </v-row>
+        </v-card-text>
       </v-card>
     </v-row>
 
-    <v-row class="pt-6 mx-2">
+    <v-row class="pt-8">
       <h3>Perguntas</h3>
-      <v-spacer></v-spacer>
-      <v-btn text color="primary">
-        <v-icon>mdi-plus</v-icon>
-        Importar perguntas
-      </v-btn>
+      <v-spacer />
     </v-row>
 
-    <div class="add-btn">
+    <v-layout row justify-center>
+      <question-card
+        v-for="(question, index) in getQuestions"
+        :key="index"
+        class="my-4"
+        :question="question"
+      />
+
+      <v-tooltip top>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            v-bind="attrs"
+            v-on="on"
+            fab
+            small
+            color="primary"
+            @click="addQuestion"
+          >
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+        </template>
+        <span>Adicionar pergunta</span>
+      </v-tooltip>
+    </v-layout>
+
+    <div class="save-btn mb-8 mb-md-0">
       <v-tooltip left>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn fab color="primary" v-bind="attrs" v-on="on">
+          <v-btn fab color="primary" v-bind="attrs" v-on="on" @click="saveForm">
             <v-icon>mdi-check</v-icon>
           </v-btn>
         </template>
@@ -113,41 +146,71 @@
 </template>
 
 <script>
+  import { mapActions, mapGetters } from 'vuex';
   import { formatDate } from '@/utils/formatDate';
+  import QuestionCard from '@/components/form/questions/QuestionCard';
 
   export default {
     name: 'CreateForms',
+    components: {
+      QuestionCard,
+    },
     data: () => {
       return {
-        sectors: [
-          {
-            name: 'Setor 1',
-          },
-          {
-            name: 'Setor 2',
-          },
-          {
-            name: 'Setor 3',
-          },
-          {
-            name: 'Setor 4',
-          },
-          {
-            name: 'Setor 5',
-          },
-          {
-            name: 'Setor 6',
-          },
-          {
-            name: 'Setor 7',
-          },
-        ],
+        loading: false,
+        sectors: [],
         selected: [],
         dates: [],
+        title: null,
         showDatepicker: false,
       };
     },
+    async mounted() {
+      try {
+        const { data } = await this.fetchSectors();
+        this.sectors = [...data];
+      } catch (err) {
+        this.setAlert({
+          alertMessage:
+            err.response?.data.error ||
+            'Ocorreu um erro ao carregar os setores.',
+          alertColor: 'red',
+        });
+      }
+    },
     methods: {
+      ...mapActions(['fetchSectors', 'addQuestion', 'createForm', 'setAlert']),
+      async saveForm() {
+        try {
+          this.loading = true;
+
+          const payload = {
+            form: {
+              title: this.title,
+              start_date: this.dates[0],
+              end_date: this.dates[1],
+              sector_ids: this.sectors.map((sector) => sector.id),
+              sections_attributes: [
+                {
+                  name: '',
+                  questions_attributes: [...this.getQuestions],
+                },
+              ],
+            },
+          };
+
+          await this.createForm(payload);
+        } catch (err) {
+          this.setAlert({
+            alertMessage:
+              err.response?.data.error ||
+              'Occorreu um erro ao tentar salvar o formulário.',
+            alertColor: 'red',
+          });
+        } finally {
+          this.loading = false;
+        }
+      },
       back() {
         this.$router.back();
       },
@@ -157,7 +220,7 @@
       checkAll() {
         this.selected = [...this.sectors.map((sector) => sector.name)];
       },
-      undo() {
+      uncheckAll() {
         this.selected = [];
       },
       dateTitle() {
@@ -167,6 +230,7 @@
       },
     },
     computed: {
+      ...mapGetters(['getQuestions']),
       dateRangeText() {
         const formattedDates = this.dates.map((date) => formatDate(date));
         return formattedDates.join(' à ');
@@ -176,7 +240,7 @@
 </script>
 
 <style scoped lang="scss">
-  .add-btn {
+  .save-btn {
     position: fixed;
     bottom: 32px;
     right: 32px;
