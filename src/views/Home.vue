@@ -105,7 +105,7 @@
           </template>
 
           <template v-slot:item.actions="{ item }">
-            <v-btn small icon>
+            <v-btn small icon @click="viewForm(item.id)">
               <v-icon> mdi-eye </v-icon>
             </v-btn>
 
@@ -242,6 +242,9 @@
             alertColor: 'red',
           });
         }
+      },
+      viewForm(id) {
+        this.$router.push({ name: 'ViewForms', params: { id } });
       },
     },
     computed: {
