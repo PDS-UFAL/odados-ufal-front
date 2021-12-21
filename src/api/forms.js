@@ -1,6 +1,6 @@
 import request from './request';
 
-const resource = '/forms';
+const resource = '/api/forms';
 export default {
   fetchForms() {
     return request.$http.get(`${resource}`);
