@@ -19,7 +19,7 @@
 
     <v-divider></v-divider>
 
-    <v-list dense nav class="d-flex flex-column pa-0">
+    <v-list dense nav class="pa-0">
       <v-list-item
         v-for="item in items"
         :key="item.title"

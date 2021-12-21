@@ -15,17 +15,33 @@
 
         <v-icon>{{ item.icon }}</v-icon>
       </v-btn>
+
+      <v-btn value="Logout" @click="logout">
+        <span>Sair</span>
+
+        <v-icon>mdi-logout</v-icon>
+      </v-btn>
     </v-bottom-navigation>
   </div>
 </template>
 
 <script>
+  import { mapActions } from 'vuex';
+
   export default {
     name: 'MobileNavigation',
     props: {
       items: {
         type: Array,
         default: () => [],
+      },
+    },
+    methods: {
+      ...mapActions(['setAuthToken', 'setUser']),
+      logout() {
+        this.setAuthToken({ token: null });
+        this.setUser({ user: null });
+        this.$router.push({ name: 'Login' });
       },
     },
   };
