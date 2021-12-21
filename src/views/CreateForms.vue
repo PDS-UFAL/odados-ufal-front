@@ -192,14 +192,14 @@
               sector_ids: this.sectors.map((sector) => sector.id),
               sections_attributes: [
                 {
-                  name: '',
+                  name: 'Perguntas',
                   questions_attributes: [...this.getQuestions],
                 },
               ],
             },
           };
 
-          await this.createForm(payload);
+          await this.createForm({ payload });
         } catch (err) {
           this.setAlert({
             alertMessage:

@@ -89,8 +89,8 @@
             <div class="">Nenhum formulário encontrado</div>
           </template>
 
-          <template v-slot:item.initial_date="{ item }">
-            {{ formatDate(item.initial_date) }}
+          <template v-slot:item.start_date="{ item }">
+            {{ formatDate(item.start_date) }}
           </template>
 
           <template v-slot:item.end_date="{ item }">
@@ -158,7 +158,7 @@
 
         sortableItems: [
           { text: 'Nome', value: 'name' },
-          { text: 'Data de início', value: 'initial_date' },
+          { text: 'Data de início', value: 'start_date' },
           { text: 'Data de fim', value: 'end_date' },
         ],
 
@@ -171,7 +171,7 @@
             width: '40%',
           },
           { text: 'Status', value: 'status', sortable: false, width: '20%' },
-          { text: 'Data inicial', value: 'initial_date', sortable: false },
+          { text: 'Data inicial', value: 'start_date', sortable: false },
           { text: 'Data final', value: 'end_date', sortable: false },
           { text: 'Ações', value: 'actions', sortable: false, align: 'end' },
         ],
