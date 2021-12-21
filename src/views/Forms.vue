@@ -16,6 +16,7 @@
           dense
           outlined
           clearable
+          :disabled="viewMode"
         />
       </v-col>
 
@@ -44,6 +45,7 @@
               clearable
               @click:clear="dates = []"
               @click:prepend-inner="showDatepicker = true"
+              :disabled="viewMode"
             />
           </template>
           <v-date-picker
@@ -65,17 +67,17 @@
 
     <v-row>
       <v-card elevation="3" class="px-2" width="100%">
-        <v-card-title class="d-flex justify-end">
+        <v-card-title v-if="!viewMode" class="d-flex justify-end">
           <v-btn
             @click="checkAll"
-            :disabled="selected.length == sectors.length"
+            :disabled="selectedSectors.length == sectors.length"
             text
             small
           >
             Marcar todos
           </v-btn>
           <v-btn
-            :disabled="selected.length == 0"
+            :disabled="selectedSectors.length == 0"
             text
             small
             @click="uncheckAll"
@@ -92,15 +94,38 @@
               :key="sector.name"
             >
               <v-checkbox
-                v-model="selected"
-                :value="sector.name"
+                v-model="selectedSectors"
+                :value="sector.id"
                 :label="sector.name"
+                :disabled="viewMode"
               />
             </div>
           </v-row>
         </v-card-text>
       </v-card>
     </v-row>
+
+    <template v-if="viewMode">
+      <v-row class="pt-8 mb-4">
+        <h3>Respostas</h3>
+      </v-row>
+
+      <v-row>
+        <v-card elevation="3" class="px-2" width="100%">
+          <v-card-text>
+            <v-layout column class="mx-4">
+              <div
+                class="px-2 px-md-4"
+                v-for="sector in formSectors"
+                :key="sector.name"
+              >
+                {{ sector.name }}
+              </div>
+            </v-layout>
+          </v-card-text>
+        </v-card>
+      </v-row>
+    </template>
 
     <v-row class="pt-8">
       <h3>Perguntas</h3>
@@ -113,9 +138,10 @@
         :key="index"
         class="my-4"
         :question="question"
+        :disabled="viewMode"
       />
 
-      <v-tooltip top>
+      <v-tooltip v-if="!viewMode" top>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
             v-bind="attrs"
@@ -132,7 +158,7 @@
       </v-tooltip>
     </v-layout>
 
-    <div class="save-btn mb-8 mb-md-0">
+    <div v-if="!viewMode" class="save-btn mb-8 mb-md-0">
       <v-tooltip left>
         <template v-slot:activator="{ on, attrs }">
           <v-btn fab color="primary" v-bind="attrs" v-on="on" @click="saveForm">
@@ -159,27 +185,29 @@
       return {
         loading: false,
         sectors: [],
-        selected: [],
+        selectedSectors: [],
         dates: [],
         title: null,
         showDatepicker: false,
+        form: null,
       };
     },
     async mounted() {
-      try {
-        const { data } = await this.fetchSectors();
-        this.sectors = [...data];
-      } catch (err) {
-        this.setAlert({
-          alertMessage:
-            err.response?.data.error ||
-            'Ocorreu um erro ao carregar os setores.',
-          alertColor: 'red',
-        });
+      await this.loadSectors();
+
+      if (this.$route.params.id) {
+        await this.loadForm();
       }
     },
     methods: {
-      ...mapActions(['fetchSectors', 'addQuestion', 'createForm', 'setAlert']),
+      ...mapActions([
+        'fetchSectors',
+        'fetchForm',
+        'addQuestion',
+        'createForm',
+        'setAlert',
+        'setQuestions',
+      ]),
       async saveForm() {
         try {
           this.loading = true;
@@ -218,15 +246,48 @@
         this.dates = dates.sort();
       },
       checkAll() {
-        this.selected = [...this.sectors.map((sector) => sector.name)];
+        this.selectedSectors = [...this.sectors.map((sector) => sector.id)];
       },
       uncheckAll() {
-        this.selected = [];
+        this.selectedSectors = [];
       },
       dateTitle() {
         return this.dates.length === 2
           ? 'Intervalo selecionado'
           : formatDate(this.dates[0]) || '-';
+      },
+      async loadSectors() {
+        try {
+          const { data } = await this.fetchSectors();
+          this.sectors = [...data];
+        } catch (err) {
+          this.setAlert({
+            alertMessage:
+              err.response?.data.error ||
+              'Ocorreu um erro ao carregar os setores.',
+            alertColor: 'red',
+          });
+        }
+      },
+      async loadForm() {
+        try {
+          const { data } = await this.fetchForm({ id: this.$route.params.id });
+          this.form = { ...data };
+
+          this.selectedSectors = [
+            ...this.form.sectors.map((sector) => sector.id),
+          ];
+
+          this.title = this.form.title;
+          this.dates = [this.form.start_date, this.form.end_date];
+
+          // TODO: Refactor when sections are working
+          this.setQuestions(this.form.sections[0].questions);
+        } catch (err) {
+          if (err.response?.status === 404) {
+            this.$router.push({ name: 'CreateForms' });
+          }
+        }
       },
     },
     computed: {
@@ -234,6 +295,17 @@
       dateRangeText() {
         const formattedDates = this.dates.map((date) => formatDate(date));
         return formattedDates.join(' à ');
+      },
+      formSectors() {
+        return this.form?.sectors || [];
+      },
+      viewMode() {
+        return !!this.$route.params.id;
+      },
+    },
+    watch: {
+      async $route() {
+        await this.loadSectors();
       },
     },
   };
