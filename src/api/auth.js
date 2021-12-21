@@ -1,6 +1,6 @@
 import request from './request';
 
-const resource = '/login';
+const resource = '/api/login';
 export default {
   executeLogin(payload) {
     return request.$http.post(`${resource}`, payload);
