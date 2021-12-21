@@ -2,7 +2,6 @@ import TYPES from '../types';
 
 export default {
   [TYPES.SET_QUESTIONS](state, questions) {
-    console.log(state, questions);
     state.questions = [...questions];
   },
   [TYPES.ADD_QUESTION](state) {
