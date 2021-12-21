@@ -12,6 +12,7 @@
               dense
               outlined
               hide-details
+              :disabled="disabled"
             />
           </v-col>
 
@@ -24,12 +25,13 @@
               icon
               outlined
               small
+              :disabled="disabled"
             >
               <v-icon>mdi-plus</v-icon>
             </v-btn>
             <v-btn
               color="red"
-              :disabled="question.options.length < 2"
+              :disabled="disabled || question.options.length < 2"
               @click="removeOption(0)"
               icon
               outlined
@@ -53,6 +55,7 @@
                 dense
                 outlined
                 hide-details
+                :disabled="disabled"
               />
             </v-col>
 
@@ -65,12 +68,13 @@
                 icon
                 outlined
                 small
+                :disabled="disabled"
               >
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
               <v-btn
                 color="red"
-                :disabled="question.options.length < 2"
+                :disabled="disabled || question.options.length < 2"
                 @click="removeOption(index)"
                 icon
                 outlined
@@ -93,6 +97,10 @@
       question: {
         type: Object,
         required: true,
+      },
+      disabled: {
+        type: Boolean,
+        default: false,
       },
     },
     methods: {

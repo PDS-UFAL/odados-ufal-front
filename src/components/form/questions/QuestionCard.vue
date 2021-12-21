@@ -1,7 +1,7 @@
 <template>
   <v-card width="100%" elevation="3">
     <v-card-title>
-      <v-tooltip right>
+      <v-tooltip v-if="!disabled" right>
         <template v-slot:activator="{ on }">
           <v-btn icon class="grab" v-on="on">
             <v-icon>mdi-drag</v-icon>
@@ -18,35 +18,38 @@
         color="primary"
         hide-details
         class="pa-0 ma-0"
+        :disabled="disabled"
       />
 
-      <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
-          <v-btn
-            icon
-            class="ml-sm-8"
-            v-on="on"
-            @click="duplicateQuestion(question)"
-          >
-            <v-icon>mdi-content-copy</v-icon>
-          </v-btn>
-        </template>
-        <span>Duplicar</span>
-      </v-tooltip>
+      <template v-if="!disabled">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              icon
+              class="ml-sm-8"
+              v-on="on"
+              @click="duplicateQuestion(question)"
+            >
+              <v-icon>mdi-content-copy</v-icon>
+            </v-btn>
+          </template>
+          <span>Duplicar</span>
+        </v-tooltip>
 
-      <v-tooltip bottom>
-        <template v-slot:activator="{ on }">
-          <v-btn
-            icon
-            class="ml-sm-4"
-            v-on="on"
-            @click="removeQuestion(question)"
-          >
-            <v-icon>mdi-delete</v-icon>
-          </v-btn>
-        </template>
-        <span>Remover</span>
-      </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              icon
+              class="ml-sm-4"
+              v-on="on"
+              @click="removeQuestion(question)"
+            >
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
+          </template>
+          <span>Remover</span>
+        </v-tooltip>
+      </template>
     </v-card-title>
     <v-card-text>
       <v-divider />
@@ -60,6 +63,7 @@
             outlined
             clearable
             hide-details
+            :disabled="disabled"
           />
         </v-col>
         <v-spacer />
@@ -72,6 +76,7 @@
             dense
             outlined
             hide-details
+            :disabled="disabled"
           />
         </v-col>
       </v-row>
@@ -81,13 +86,20 @@
         :show="showParameters"
         :maxChar="hasMaxChar"
         :range="hasRange"
+        :disabled="disabled"
       />
-      <options-list :question="question" v-if="hasOptions" />
+      <options-list
+        :question="question"
+        v-if="hasOptions"
+        :disabled="disabled"
+      />
 
-      <v-divider class="my-8" />
+      <template v-if="!disabled">
+        <v-divider class="my-8" />
 
-      <span class="text-subtitle-1 font-weight-bold">Como ficará:</span>
-      <component :is="questionType" :question="question" class="mt-2" />
+        <span class="text-subtitle-1 font-weight-bold">Como ficará:</span>
+        <component :is="questionType" :question="question" class="mt-2" />
+      </template>
     </v-card-text>
   </v-card>
 </template>
@@ -114,6 +126,10 @@
       question: {
         type: Object,
         required: true,
+      },
+      disabled: {
+        type: Boolean,
+        default: false,
       },
     },
     components: {

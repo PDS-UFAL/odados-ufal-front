@@ -10,6 +10,7 @@
           dense
           outlined
           hide-details
+          :disabled="disabled"
         />
       </v-col>
     </v-row>
@@ -23,6 +24,7 @@
           dense
           outlined
           hide-details
+          :disabled="disabled"
         />
       </v-col>
 
@@ -34,6 +36,7 @@
           dense
           outlined
           hide-details
+          :disabled="disabled"
         />
       </v-col>
     </v-row>
@@ -57,6 +60,10 @@
         default: false,
       },
       range: {
+        type: Boolean,
+        default: false,
+      },
+      disabled: {
         type: Boolean,
         default: false,
       },
