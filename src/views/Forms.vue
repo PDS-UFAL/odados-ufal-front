@@ -68,14 +68,14 @@
         <v-card-title class="d-flex justify-end">
           <v-btn
             @click="checkAll"
-            :disabled="selected.length == sectors.length"
+            :disabled="selectedSectors.length == sectors.length"
             text
             small
           >
             Marcar todos
           </v-btn>
           <v-btn
-            :disabled="selected.length == 0"
+            :disabled="selectedSectors.length == 0"
             text
             small
             @click="uncheckAll"
@@ -92,7 +92,7 @@
               :key="sector.name"
             >
               <v-checkbox
-                v-model="selected"
+                v-model="selectedSectors"
                 :value="sector.name"
                 :label="sector.name"
               />
@@ -159,7 +159,7 @@
       return {
         loading: false,
         sectors: [],
-        selected: [],
+        selectedSectors: [],
         dates: [],
         title: null,
         showDatepicker: false,
@@ -167,7 +167,7 @@
     },
     async mounted() {
       try {
-        const { data } = await this.fetchSectors();
+        let { data } = await this.fetchSectors();
         this.sectors = [...data];
       } catch (err) {
         this.setAlert({
@@ -218,10 +218,10 @@
         this.dates = dates.sort();
       },
       checkAll() {
-        this.selected = [...this.sectors.map((sector) => sector.name)];
+        this.selectedSectors = [...this.sectors.map((sector) => sector.name)];
       },
       uncheckAll() {
-        this.selected = [];
+        this.selectedSectors = [];
       },
       dateTitle() {
         return this.dates.length === 2

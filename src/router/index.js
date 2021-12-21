@@ -19,7 +19,12 @@ const routes = [
       {
         path: '/forms',
         name: 'CreateForms',
-        component: () => import('@/views/CreateForms.vue'),
+        component: () => import('@/views/Forms.vue'),
+      },
+      {
+        path: '/forms/:id',
+        name: 'ViewForms',
+        component: () => import('@/views/Forms.vue'),
       },
       {
         path: '/notifications',
