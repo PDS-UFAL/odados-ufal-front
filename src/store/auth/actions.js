@@ -7,11 +7,9 @@ export default {
     return await authApi.executeLogin(payload);
   },
   async setAuthToken({ commit }, { token }) {
-    if (!token) return;
     commit(TYPES.SET_TOKEN, token);
   },
   async setUser({ commit }, { user }) {
-    if (!user) return;
     commit(TYPES.SET_USER, user);
   },
   retrieveAuthToken({ commit }) {
