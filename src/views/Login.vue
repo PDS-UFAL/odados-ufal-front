@@ -5,7 +5,14 @@
         <v-img :src="backgroundImage" height="100%" class="image" />
       </v-col>
 
-      <v-col sm="12" md="6" class="d-flex justify-center align-center">
+      <v-layout sm="12" md="6" column align-center justify-center>
+        <v-img
+          src="/logo.svg"
+          max-width="400px"
+          contain
+          class="d-block flex-grow-0 mb-12"
+        />
+
         <v-card
           max-width="400px"
           width="80%"
@@ -40,7 +47,7 @@
             </v-btn>
           </v-card-actions>
         </v-card>
-      </v-col>
+      </v-layout>
     </v-row>
   </v-layout>
 </template>

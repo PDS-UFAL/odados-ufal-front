@@ -6,16 +6,9 @@
     class="white--text"
     width="256px"
   >
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title class="text-h5 snow-white--text">
-          PGDC
-        </v-list-item-title>
-        <v-list-item-subtitle class="snow-white--text text-caption">
-          Admin
-        </v-list-item-subtitle>
-      </v-list-item-content>
-    </v-list-item>
+    <v-layout align-center justify-center class="mt-4 mb-8">
+      <v-img src="/logo_nameless.svg" max-width="50%" contain />
+    </v-layout>
 
     <v-divider></v-divider>
 
