@@ -1,10 +1,17 @@
 <template>
   <div>
     <v-app-bar color="cloudy-grey" elevation="0" dark>
-      <v-toolbar-title class="d-flex mx-auto"> PGDC </v-toolbar-title>
+      <v-toolbar-title class="d-flex mx-auto">
+        Observatório de Dados Institucionais
+      </v-toolbar-title>
     </v-app-bar>
 
-    <v-bottom-navigation v-model="value" fixed>
+    <v-bottom-navigation
+      fixed
+      dark
+      background-color="cloudy-grey"
+      active-class="primary"
+    >
       <v-btn
         v-for="item in items"
         :key="item.title"
