@@ -127,7 +127,6 @@
             form_id: this.$route.params.id,
           };
 
-          console.log(payload);
           await this.createAnswers({ payload });
         } catch (err) {
           this.setAlert({
