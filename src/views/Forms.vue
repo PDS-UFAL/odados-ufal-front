@@ -1,10 +1,10 @@
 <template>
   <v-container class="px-sm-12">
-    <v-row class="d-flex align-center justify-start pa-0 mt-md-4 mb-8">
-      <v-btn @click="back" text fab class="flex-grow-0">
+    <v-row class="pa-0 align-center mt-md-4 mb-8">
+      <v-btn @click="back" text fab small class="mr-2">
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
-      <h3>Novo formulário</h3>
+      <h3><template v-if="!viewMode">Novo</template> Formulário</h3>
     </v-row>
 
     <v-row>
@@ -259,7 +259,7 @@
       async loadSectors() {
         try {
           const { data } = await this.fetchSectors();
-          this.sectors = [...data];
+          this.sectors = [...data.sectors];
         } catch (err) {
           this.setAlert({
             alertMessage:
@@ -272,7 +272,7 @@
       async loadForm() {
         try {
           const { data } = await this.fetchForm({ id: this.$route.params.id });
-          this.form = { ...data };
+          this.form = { ...data.form };
 
           this.selectedSectors = [
             ...this.form.sectors.map((sector) => sector.id),
@@ -297,7 +297,10 @@
         return formattedDates.join(' à ');
       },
       formSectors() {
-        return this.form?.sectors || [];
+        return (
+          this.form?.sectors.filter((sector) => sector.status === 'answered') ||
+          []
+        );
       },
       viewMode() {
         return !!this.$route.params.id;

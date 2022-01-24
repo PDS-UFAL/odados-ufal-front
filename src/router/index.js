@@ -27,6 +27,11 @@ const routes = [
         component: () => import('@/views/Forms.vue'),
       },
       {
+        path: '/answer/:id',
+        name: 'AnswerForm',
+        component: () => import('@/views/AnswerForm.vue'),
+      },
+      {
         path: '/notifications',
         name: 'Notifications',
         component: () => import('@/views/Notifications.vue'),
