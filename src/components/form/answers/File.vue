@@ -54,7 +54,7 @@
 
 <script>
   import colors from 'vuetify/es5/util/colors';
-  import rules from '@/mixins/rules';
+  import rules from '@/mixins/questionRules';
 
   export default {
     name: 'File',

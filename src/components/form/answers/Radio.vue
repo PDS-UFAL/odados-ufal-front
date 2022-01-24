@@ -22,7 +22,7 @@
 </template>
 
 <script>
-  import rules from '@/mixins/rules';
+  import rules from '@/mixins/questionRules';
 
   export default {
     name: 'Radio',

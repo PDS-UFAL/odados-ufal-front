@@ -10,6 +10,8 @@
         :counter="question.max_char"
         :maxlength="question.max_char"
         :rules="[rules.required]"
+        label="Sua Resposta"
+        class="mt-2"
         dense
         outlined
         clearable
@@ -19,7 +21,7 @@
 </template>
 
 <script>
-  import rules from '@/mixins/rules';
+  import rules from '@/mixins/questionRules';
 
   export default {
     name: 'ShortText',
