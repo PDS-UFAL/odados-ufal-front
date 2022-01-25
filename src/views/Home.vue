@@ -120,9 +120,9 @@
 </template>
 
 <script>
+  import { mapActions, mapGetters } from 'vuex';
   import { formatDate } from '@/utils/formatDate';
   import FilterCards from '@/components/FilterCards.vue';
-  import { mapActions } from 'vuex';
 
   export default {
     name: 'Home',
@@ -158,8 +158,8 @@
 
         sortableItems: [
           { text: 'Nome', value: 'name' },
-          { text: 'Data de início', value: 'start_date' },
-          { text: 'Data de fim', value: 'end_date' },
+          { text: 'Data inicial', value: 'start_date' },
+          { text: 'Data final', value: 'end_date' },
         ],
 
         headers: [
@@ -186,8 +186,8 @@
     async mounted() {
       this.loading = true;
       try {
-        const res = await this.fetchForms();
-        this.forms = res.data;
+        const { data } = await this.fetchForms();
+        this.forms = data.forms;
       } catch (err) {
         this.setAlert({
           alertMessage:
@@ -244,10 +244,13 @@
         }
       },
       viewForm(id) {
-        this.$router.push({ name: 'ViewForms', params: { id } });
+        const routeName =
+          this.getUser?.role === 'admin' ? 'ViewForms' : 'AnswerForm';
+        this.$router.push({ name: routeName, params: { id } });
       },
     },
     computed: {
+      ...mapGetters(['getUser']),
       dateRangeText() {
         const formattedDates = this.selectedDates.map((date) =>
           formatDate(date),

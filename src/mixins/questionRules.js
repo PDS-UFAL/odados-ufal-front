@@ -5,6 +5,11 @@ const rules = {
         required: (v) =>
           !this.question.required || !!v || 'Esse campo é obrigatório',
 
+        checkboxRequired: () =>
+          !this.question.required ||
+          this.response.length > 0 ||
+          'Esse campo é obrigatório',
+
         number: [
           (v) =>
             !this.question.min_value ||

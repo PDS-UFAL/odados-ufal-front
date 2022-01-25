@@ -7,10 +7,12 @@
 
       <v-text-field
         v-model="question.response"
-        type="number"
         :min="question.min_value"
         :max="question.max_value"
         :rules="[rules.required, ...rules.number]"
+        label="Sua Resposta"
+        class="mt-2"
+        type="number"
         dense
         outlined
       />
@@ -19,7 +21,7 @@
 </template>
 
 <script>
-  import rules from '@/mixins/rules';
+  import rules from '@/mixins/questionRules';
 
   export default {
     name: 'Number',

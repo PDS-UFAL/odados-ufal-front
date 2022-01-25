@@ -26,7 +26,7 @@
             roles: ['admin', 'employee'],
           },
           {
-            title: 'Novo Formulário',
+            title: 'Formulário',
             icon: 'mdi-text-box-plus',
             path: '/forms',
             roles: ['admin'],
@@ -43,9 +43,9 @@
     computed: {
       ...mapGetters(['getUser']),
       navigationItems() {
-        return this.items.filter((item) => {
-          return item.roles.find((role) => role === this.getUser.role);
-        });
+        return this.items.filter((item) =>
+          item.roles.includes(this.getUser?.role),
+        );
       },
     },
   };

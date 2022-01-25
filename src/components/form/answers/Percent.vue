@@ -7,8 +7,10 @@
 
       <v-text-field
         v-model="question.response"
-        type="number"
         :rules="[rules.required]"
+        label="Sua Resposta"
+        class="mt-2"
+        type="number"
         suffix="%"
         dense
         outlined
@@ -18,7 +20,7 @@
 </template>
 
 <script>
-  import rules from '@/mixins/rules';
+  import rules from '@/mixins/questionRules';
 
   export default {
     name: 'Percent',

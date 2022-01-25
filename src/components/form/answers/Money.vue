@@ -8,6 +8,8 @@
       <v-text-field
         v-model="question.response"
         :rules="[rules.required, ...rules.number]"
+        label="Sua Resposta"
+        class="mt-2"
         type="number"
         prefix="R$"
         dense
@@ -18,7 +20,7 @@
 </template>
 
 <script>
-  import rules from '@/mixins/rules';
+  import rules from '@/mixins/questionRules';
 
   export default {
     name: 'Money',

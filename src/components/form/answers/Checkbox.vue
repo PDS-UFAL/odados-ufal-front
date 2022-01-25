@@ -5,22 +5,22 @@
         {{ question.title }}
       </span>
 
-      <v-checkbox
-        v-for="(option, index) in question.options"
-        :key="index"
-        v-model="question.checkboxExample"
-        :label="option"
-        :value="option"
-        :rules="[rules.required]"
-        dense
-        hide-details
-      />
+      <div v-for="(option, index) in question.options" :key="index">
+        <v-checkbox
+          v-model="response"
+          :label="option"
+          :value="option"
+          :rules="[rules.checkboxRequired]"
+          :hide-details="!last(index)"
+          dense
+        />
+      </div>
     </v-col>
   </v-row>
 </template>
 
 <script>
-  import rules from '@/mixins/rules';
+  import rules from '@/mixins/questionRules';
 
   export default {
     name: 'Checkbox',
@@ -31,6 +31,29 @@
       },
     },
     mixins: [rules],
+    mounted() {
+      if (this.question.response) {
+        this.response = this.question.response.split(';@;');
+      }
+    },
+    data: () => {
+      return {
+        response: [],
+      };
+    },
+    methods: {
+      last(index) {
+        return index === this.question.options.length - 1;
+      },
+    },
+    watch: {
+      response: {
+        handler: function (val) {
+          this.question.response = val.join(';@;');
+        },
+        deep: true,
+      },
+    },
   };
 </script>
 
