@@ -27,6 +27,8 @@ jobs:
           tags: |
             registry.digitalocean.com/${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/web:latest
             registry.digitalocean.com/${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/web:sha-${{ github.sha }}
+          build-args: |
+            VUE_APP_API_BASE_URL=https://odadosufal.com.br
 
   deploy-web:
     needs: build
@@ -34,13 +36,13 @@ jobs:
     steps:
       # Droplets already have docker, doctl + auth, and curl installed
       - name: Deploy web to DigitalOcean Droplet
-        uses: appleboy/ssh-action@v0.1.4
+        uses: garygrossgarten/github-action-ssh@release
         with:
           host: ${{ secrets.SSH_HOST }}
           username: root
           key: ${{ secrets.SSH_KEY }}
           port: 80
-          script: |
+          command: |
             doctl registry login --expiry-seconds 180
             docker pull registry.digitalocean.com/${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/web:latest
 
