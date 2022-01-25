@@ -1,18 +1,268 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
-  </div>
+  <v-container>
+    <v-row>
+      <filter-cards :options="filters" @clickOption="changeFilter" />
+    </v-row>
+
+    <v-row class="my-8">
+      <v-col cols="12" xs="12" md="4">
+        <v-text-field
+          name="search"
+          label="Pesquisar"
+          prepend-inner-icon="mdi-magnify"
+          outlined
+          dense
+          clearable
+          hide-details
+        />
+      </v-col>
+
+      <v-col cols="12" xs="12" md="2" class="py-0 mt-md-3 pr-md-0">
+        <span class="d-flex justify-md-end align-center mt-md-2">
+          Ordenar por:
+        </span>
+      </v-col>
+
+      <v-col cols="12" xs="12" md="3" class="pt-0 pt-md-3">
+        <v-select
+          v-model="sortBy"
+          :items="sortableItems"
+          :menu-props="{ 'offset-y': true }"
+          dense
+          outlined
+          hide-details
+        />
+      </v-col>
+
+      <v-col cols="12" xs="12" md="3">
+        <v-menu
+          v-model="showDatepicker"
+          :close-on-content-click="false"
+          :nudge-right="0"
+          transition="scale-transition"
+          max-width="290px"
+          min-width="290px"
+          offset-y
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+              v-on="on"
+              v-bind="attrs"
+              label="Criado em"
+              :value="dateRangeText"
+              prepend-inner-icon="mdi-calendar"
+              dense
+              readonly
+              outlined
+              clearable
+              hide-details
+              @click:clear="selectedDates = []"
+              @click:prepend-inner="showDatepicker = true"
+            />
+          </template>
+          <v-date-picker
+            color="primary"
+            v-model="selectedDates"
+            locale="pt-br"
+            range
+            scrollable
+            @change="setDates"
+            :title-date-format="dateTitle"
+          />
+        </v-menu>
+      </v-col>
+    </v-row>
+
+    <v-row class="mx-0">
+      <v-col class="pa-0">
+        <v-data-table
+          :headers="headers"
+          :items="forms"
+          class="elevation-2"
+          disable-pagination
+          hide-default-footer
+          :disable-sort="$vuetify.breakpoint.smAndDown"
+          :loading="loading"
+          loading-text="Carregando... Por favor aguarde"
+        >
+          <template slot="no-data">
+            <div class="">Nenhum formulário encontrado</div>
+          </template>
+
+          <template v-slot:item.start_date="{ item }">
+            {{ formatDate(item.start_date) }}
+          </template>
+
+          <template v-slot:item.end_date="{ item }">
+            {{ formatDate(item.end_date) }}
+          </template>
+
+          <template v-slot:item.status="{ item }">
+            <v-icon size="17" :color="chipStatusColor(item.status)">
+              mdi-checkbox-blank-circle
+            </v-icon>
+            {{ translatedStatus(item.status) }}
+          </template>
+
+          <template v-slot:item.actions="{ item }">
+            <v-btn small icon @click="viewForm(item.id)">
+              <v-icon> mdi-eye </v-icon>
+            </v-btn>
+
+            <v-btn small icon @click="deleteFormHandler(item)">
+              <v-icon> mdi-delete </v-icon>
+            </v-btn>
+          </template>
+        </v-data-table>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
-  // @ is an alias to /src
-  import HelloWorld from '@/components/HelloWorld.vue';
+  import { mapActions, mapGetters } from 'vuex';
+  import { formatDate } from '@/utils/formatDate';
+  import FilterCards from '@/components/FilterCards.vue';
 
   export default {
     name: 'Home',
     components: {
-      HelloWorld,
+      FilterCards,
+    },
+    data: () => {
+      return {
+        loading: true,
+        filters: [
+          {
+            title: 'Abertos',
+            status: 'opened',
+            amount: 10,
+            color: 'yellow',
+            active: false,
+          },
+          {
+            title: 'Não iniciados',
+            status: 'not_started',
+            amount: 3,
+            color: 'red',
+            active: false,
+          },
+          {
+            title: 'Finalizados',
+            status: 'finished',
+            amount: 7,
+            color: 'green',
+            active: false,
+          },
+        ],
+
+        sortableItems: [
+          { text: 'Nome', value: 'name' },
+          { text: 'Data inicial', value: 'start_date' },
+          { text: 'Data final', value: 'end_date' },
+        ],
+
+        headers: [
+          {
+            text: 'Título',
+            value: 'title',
+            sortable: false,
+            align: 'start',
+            width: '40%',
+          },
+          { text: 'Status', value: 'status', sortable: false, width: '20%' },
+          { text: 'Data inicial', value: 'start_date', sortable: false },
+          { text: 'Data final', value: 'end_date', sortable: false },
+          { text: 'Ações', value: 'actions', sortable: false, align: 'end' },
+        ],
+
+        forms: [],
+
+        sortBy: 'name',
+        showDatepicker: false,
+        selectedDates: [],
+      };
+    },
+    async mounted() {
+      this.loading = true;
+      try {
+        const { data } = await this.fetchForms();
+        this.forms = data.forms;
+      } catch (err) {
+        this.setAlert({
+          alertMessage:
+            err.response?.data.error ||
+            'Um erro aconteceu ao carregar formulários.',
+          alertColor: 'red',
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
+    methods: {
+      ...mapActions(['fetchForms', 'deleteForm', 'setAlert']),
+      formatDate,
+      changeFilter(filterIndex, value) {
+        this.filters[filterIndex].active = value;
+      },
+      setDates(dates) {
+        this.selectedDates = dates.sort();
+      },
+      dateTitle() {
+        return this.selectedDates.length === 2
+          ? this.dateRangeText
+          : formatDate(this.selectedDates[0]) || '-';
+      },
+      chipStatusColor(status) {
+        return (
+          {
+            open: 'yellow',
+            finished: 'green',
+            not_started: 'red',
+          }[status] || 'primary'
+        );
+      },
+      translatedStatus(status) {
+        return {
+          open: 'Aberto',
+          finished: 'Fechado',
+          not_started: 'Não iniciado',
+        }[status];
+      },
+      async deleteFormHandler(form) {
+        try {
+          await this.deleteForm({ id: form.id });
+          const index = this.forms.indexOf(form);
+          this.forms.splice(index, 1);
+        } catch (err) {
+          this.setAlert({
+            alertMessage:
+              err.response?.data.error ||
+              'Um erro aconteceu ao deletar o formulário.',
+            alertColor: 'red',
+          });
+        }
+      },
+      viewForm(id) {
+        const routeName =
+          this.getUser?.role === 'admin' ? 'ViewForms' : 'AnswerForm';
+        this.$router.push({ name: routeName, params: { id } });
+      },
+    },
+    computed: {
+      ...mapGetters(['getUser']),
+      dateRangeText() {
+        const formattedDates = this.selectedDates.map((date) =>
+          formatDate(date),
+        );
+        return formattedDates.join(' à ');
+      },
     },
   };
 </script>
+
+<style lang="scss" scoped>
+  ::v-deep .v-date-picker-title__date {
+    font-size: 20px;
+  }
+</style>
