@@ -40,7 +40,7 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: root
-          key: ${{ secrets.SSH_KEY }}
+          privateKey: ${{ secrets.SSH_KEY }}
           port: 80
           command: |
             doctl registry login --expiry-seconds 180
