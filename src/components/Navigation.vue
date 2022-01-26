@@ -31,12 +31,12 @@
             path: '/formulario',
             roles: ['admin'],
           },
-          {
-            title: 'Notificações',
-            icon: 'mdi-bell',
-            path: '/notificacoes',
-            roles: ['admin', 'employee'],
-          },
+          // {
+          //   title: 'Notificações',
+          //   icon: 'mdi-bell',
+          //   path: '/notificacoes',
+          //   roles: ['admin', 'employee'],
+          // },
         ],
       };
     },
