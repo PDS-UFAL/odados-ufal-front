@@ -161,7 +161,15 @@
     <div v-if="!viewMode" class="save-btn mb-8 mb-md-0">
       <v-tooltip left>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn fab color="primary" v-bind="attrs" v-on="on" @click="saveForm">
+          <v-btn
+            fab
+            color="primary"
+            v-bind="attrs"
+            v-on="on"
+            @click="saveForm"
+            :loading="loading"
+            :disabled="loading"
+          >
             <v-icon>mdi-check</v-icon>
           </v-btn>
         </template>
@@ -226,15 +234,10 @@
               ],
             },
           };
-
           await this.createForm({ payload });
+          this.saveFunction();
         } catch (err) {
-          this.setAlert({
-            alertMessage:
-              err.response?.data.error ||
-              'Occorreu um erro ao tentar salvar o formulário.',
-            alertColor: 'red',
-          });
+          this.errorFunction(err);
         } finally {
           this.loading = false;
         }
@@ -256,17 +259,31 @@
           ? 'Intervalo selecionado'
           : formatDate(this.dates[0]) || '-';
       },
+      errorFunction(err) {
+        if (err.response?.data.start_date || err.response?.data.end_date) {
+          this.setAlert({
+            alertMessage: 'A data está incorreta.',
+            alertColor: 'red',
+          });
+        } else {
+          this.setAlert({
+            alertMessage: 'Ocorreu um erro ao carregar os setores.',
+            alertColor: 'red',
+          });
+        }
+      },
+      saveFunction() {
+        this.setAlert({
+          alertMessage: 'Formulário salvo.',
+          alertColor: 'green',
+        });
+      },
       async loadSectors() {
         try {
           const { data } = await this.fetchSectors();
           this.sectors = [...data.sectors];
         } catch (err) {
-          this.setAlert({
-            alertMessage:
-              err.response?.data.error ||
-              'Ocorreu um erro ao carregar os setores.',
-            alertColor: 'red',
-          });
+          this.errorFunction(err);
         }
       },
       async loadForm() {

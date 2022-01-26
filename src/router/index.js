@@ -17,12 +17,12 @@ const routes = [
         component: () => import('@/views/Home.vue'),
       },
       {
-        path: '/forms',
+        path: '/formulario',
         name: 'CreateForms',
         component: () => import('@/views/Forms.vue'),
       },
       {
-        path: '/forms/:id',
+        path: '/formulario/:id',
         name: 'ViewForms',
         component: () => import('@/views/Forms.vue'),
       },
@@ -32,7 +32,7 @@ const routes = [
         component: () => import('@/views/AnswerForm.vue'),
       },
       {
-        path: '/notifications',
+        path: '/notificacoes',
         name: 'Notifications',
         component: () => import('@/views/Notifications.vue'),
       },
