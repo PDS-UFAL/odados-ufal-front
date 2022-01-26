@@ -20,7 +20,7 @@
       return {
         items: [
           {
-            title: 'Home',
+            title: 'Tela inicial',
             icon: 'mdi-home',
             path: '/',
             roles: ['admin', 'employee'],
@@ -28,13 +28,13 @@
           {
             title: 'Formulário',
             icon: 'mdi-text-box-plus',
-            path: '/forms',
+            path: '/formulario',
             roles: ['admin'],
           },
           {
             title: 'Notificações',
             icon: 'mdi-bell',
-            path: '/notifications',
+            path: '/notificacoes',
             roles: ['admin', 'employee'],
           },
         ],
