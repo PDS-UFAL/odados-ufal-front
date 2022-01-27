@@ -27,29 +27,30 @@ jobs:
           tags: |
             registry.digitalocean.com/${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/web:latest
             registry.digitalocean.com/${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/web:sha-${{ github.sha }}
+          build-args: |
+            VUE_APP_API_BASE_URL=https://odadosufal.com.br
 
   deploy-web:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      # Droplets already have docker, doctl + auth, and curl installed
-      - name: Deploy web to DigitalOcean Droplet
-        uses: appleboy/ssh-action@v0.1.4
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: root
-          key: ${{ secrets.SSH_KEY }}
-          port: 80
-          script: |
-            doctl registry login --expiry-seconds 180
-            docker pull registry.digitalocean.com/${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/web:latest
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/production.key
+          chmod 600 ~/.ssh/production.key
+          cat >>~/.ssh/config <<END
+          Host production
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/production.key
+            StrictHostKeyChecking no
+          END
+        env:
+          SSH_USER: ${{ secrets.SSH_USERNAME }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+      - name: Connect to SSH and Deploy web to DigitalOcean Droplet
+        run: ssh production "doctl registry login --expiry-seconds 180; docker pull registry.digitalocean.com/${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/web:latest; docker stop web || true; docker rm web || true; echo 'starting server instance...'; docker run -d --restart always -p 0.0.0.0:80:80 --name web registry.digitalocean.com/${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/web:latest"
 
-            docker stop web || true
-            docker rm web || true
-
-            echo "starting server instance..."
-            docker run -d \
-              --restart always \
-              -p 0.0.0.0:80:80 \
-              --name web \
-              registry.digitalocean.com/${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/web:latest
+            
