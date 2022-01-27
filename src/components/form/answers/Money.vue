@@ -33,8 +33,13 @@
     },
     mixins: [rules],
     computed: {
-      response() {
-        return this.question.responses && this.question.responses[0]?.answer;
+      response: {
+        get() {
+          return this.question.responses && this.question.responses[0]?.answer;
+        },
+        set(newVal) {
+          this.question.response = newVal;
+        },
       },
     },
   };

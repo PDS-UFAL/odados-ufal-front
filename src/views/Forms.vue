@@ -261,6 +261,7 @@
           };
           await this.createForm({ payload });
           this.saveFunction();
+          this.$router.push({ name: 'Home' });
         } catch (err) {
           this.errorFunction(err);
         } finally {

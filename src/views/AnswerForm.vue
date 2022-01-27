@@ -30,6 +30,7 @@
             color="primary"
             v-bind="attrs"
             v-on="on"
+            :loading="loading"
             @click="saveResponse"
           >
             <v-icon>mdi-check</v-icon>
@@ -137,6 +138,12 @@
           };
 
           await this.createAnswers({ payload });
+
+          this.setAlert({
+            alertMessage: 'Resposta enviada com sucesso.',
+            alertColor: 'green',
+          });
+          this.$router.push({ name: 'Home' });
         } catch (err) {
           this.setAlert({
             alertMessage:

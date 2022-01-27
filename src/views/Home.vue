@@ -93,7 +93,7 @@
               <v-icon> mdi-eye </v-icon>
             </v-btn>
 
-            <v-btn small icon @click="deleteFormHandler(item)">
+            <v-btn small icon v-if="isAdmin" @click="deleteFormHandler(item)">
               <v-icon> mdi-delete </v-icon>
             </v-btn>
           </template>
@@ -262,6 +262,9 @@
           formatDate(date),
         );
         return formattedDates.join(' à ');
+      },
+      isAdmin() {
+        return this.getUser.role === 'admin';
       },
     },
     watch: {
