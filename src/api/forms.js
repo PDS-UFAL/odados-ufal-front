@@ -2,8 +2,8 @@ import request from './request';
 
 const resource = '/api/forms';
 export default {
-  fetchForms() {
-    return request.$http.get(`${resource}`);
+  fetchForms(options) {
+    return request.$http.get(`${resource}`, options);
   },
   fetchForm(id) {
     return request.$http.get(`${resource}/${id}`);

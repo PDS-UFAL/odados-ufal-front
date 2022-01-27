@@ -68,9 +68,18 @@
       if (this.$route.params.id) {
         await this.loadForm();
       }
+      if (this.$route.params.sectorId) {
+        await this.loadAnswers();
+      }
     },
     methods: {
-      ...mapActions(['fetchForm', 'setAlert', 'setQuestions', 'createAnswers']),
+      ...mapActions([
+        'fetchForm',
+        'fetchAnswersBySector',
+        'setAlert',
+        'setQuestions',
+        'createAnswers',
+      ]),
       back() {
         this.$router.back();
       },
@@ -138,6 +147,15 @@
         } finally {
           this.loading = false;
         }
+      },
+      async loadAnswers() {
+        const { data } = await this.fetchAnswersBySector({
+          formId: this.$route.params.id,
+          sector: this.$route.params.sectorId,
+        });
+        this.form = { ...data.form };
+
+        this.setQuestions(this.form.sections[0].questions);
       },
     },
     computed: {

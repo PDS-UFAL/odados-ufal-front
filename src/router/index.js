@@ -27,7 +27,7 @@ const routes = [
         component: () => import('@/views/Forms.vue'),
       },
       {
-        path: '/answer/:id',
+        path: '/resposta/:id/:sectorId?',
         name: 'AnswerForm',
         component: () => import('@/views/AnswerForm.vue'),
       },

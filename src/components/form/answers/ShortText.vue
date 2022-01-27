@@ -6,7 +6,7 @@
       </span>
 
       <v-text-field
-        v-model="question.response"
+        v-model="response"
         :counter="question.max_char"
         :maxlength="question.max_char"
         :rules="[rules.required]"
@@ -14,7 +14,8 @@
         class="mt-2"
         dense
         outlined
-        clearable
+        :clearable="!response"
+        :readonly="!!response"
       />
     </v-col>
   </v-row>
@@ -32,6 +33,11 @@
       },
     },
     mixins: [rules],
+    computed: {
+      response() {
+        return this.question.responses && this.question.responses[0]?.answer;
+      },
+    },
   };
 </script>
 

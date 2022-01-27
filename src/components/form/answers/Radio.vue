@@ -5,16 +5,13 @@
         {{ question.title }}
       </span>
 
-      <v-radio-group
-        v-model="question.response"
-        :rules="[rules.required]"
-        dense
-      >
+      <v-radio-group v-model="response" :rules="[rules.required]" dense>
         <v-radio
           v-for="(option, index) in question.options"
           :key="index"
           :label="option"
           :value="option"
+          :readonly="!!response"
         />
       </v-radio-group>
     </v-col>
@@ -33,6 +30,11 @@
       },
     },
     mixins: [rules],
+    computed: {
+      response() {
+        return this.question.responses && this.question.responses[0]?.answer;
+      },
+    },
   };
 </script>
 
