@@ -39,7 +39,7 @@
             outlined
           ></v-text-field>
 
-          <a class="mt-n6 v-btn__content justify-end">Esqueceu a senha?</a>
+          <!-- <a class="mt-n6 v-btn__content justify-end">Esqueceu a senha?</a> -->
 
           <v-card-actions class="pa-0 mt-8">
             <v-btn
