@@ -39,10 +39,18 @@
             outlined
           ></v-text-field>
 
-          <a class="mt-n6 v-btn__content justify-end">Esqueceu a senha?</a>
+          <!-- <a class="mt-n6 v-btn__content justify-end">Esqueceu a senha?</a> -->
 
           <v-card-actions class="pa-0 mt-8">
-            <v-btn light block large color="primary" @click="login">
+            <v-btn
+              light
+              block
+              large
+              color="primary"
+              @click="login"
+              :loading="loading"
+              :disabled="loading"
+            >
               Entrar
             </v-btn>
           </v-card-actions>
@@ -65,11 +73,13 @@
         email: null,
         password: null,
         backgroundImage: require('@/assets/login/background.png'),
+        loading: false,
       };
     },
     methods: {
       ...mapActions(['executeLogin', 'setAlert', 'setAuthToken', 'setUser']),
       async login() {
+        this.loading = true;
         const payload = {
           user: {
             email: this.email,
@@ -92,6 +102,7 @@
             alertColor: 'red',
           });
         }
+        this.loading = false;
       },
       togglePassword() {
         this.passwordType =

@@ -10,7 +10,7 @@
         'px-md-16': true,
       }"
     >
-      <router-view />
+      <router-view :key="$route.path" />
     </div>
   </div>
 </template>

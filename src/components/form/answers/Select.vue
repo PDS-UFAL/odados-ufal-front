@@ -7,7 +7,7 @@
 
       <v-select
         :items="question.options"
-        v-model="question.response"
+        v-model="response"
         :rules="[rules.required]"
         :menu-props="{ 'offset-y': true }"
         label="Sua Resposta"
@@ -15,6 +15,7 @@
         dense
         outlined
         no-data-text="Nenhuma opção disponível"
+        :readonly="!!response"
       />
     </v-col>
   </v-row>
@@ -32,6 +33,11 @@
       },
     },
     mixins: [rules],
+    computed: {
+      response() {
+        return this.question.responses && this.question.responses[0]?.answer;
+      },
+    },
   };
 </script>
 

@@ -6,7 +6,7 @@
       </span>
 
       <v-text-field
-        v-model="question.response"
+        v-model="response"
         :rules="[rules.required]"
         label="Sua Resposta"
         class="mt-2"
@@ -14,6 +14,7 @@
         suffix="%"
         dense
         outlined
+        :readonly="!!response"
       />
     </v-col>
   </v-row>
@@ -31,6 +32,11 @@
       },
     },
     mixins: [rules],
+    computed: {
+      response() {
+        return this.question.responses && this.question.responses[0]?.answer;
+      },
+    },
   };
 </script>
 

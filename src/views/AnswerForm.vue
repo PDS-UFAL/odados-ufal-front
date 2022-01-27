@@ -50,7 +50,7 @@
   import Number from '@/components/form/answers/Number';
   import Money from '@/components/form/answers/Money';
   import Percent from '@/components/form/answers/Percent';
-  import File from '@/components/form/answers/File';
+  // import File from '@/components/form/answers/File';
   import Select from '@/components/form/answers/Select';
   import Checkbox from '@/components/form/answers/Checkbox';
   import Radio from '@/components/form/answers/Radio';
@@ -68,9 +68,18 @@
       if (this.$route.params.id) {
         await this.loadForm();
       }
+      if (this.$route.params.sectorId) {
+        await this.loadAnswers();
+      }
     },
     methods: {
-      ...mapActions(['fetchForm', 'setAlert', 'setQuestions', 'createAnswers']),
+      ...mapActions([
+        'fetchForm',
+        'fetchAnswersBySector',
+        'setAlert',
+        'setQuestions',
+        'createAnswers',
+      ]),
       back() {
         this.$router.back();
       },
@@ -81,7 +90,7 @@
           number: Number,
           money: Money,
           percent: Percent,
-          file: File,
+          // file: File,
           select: Select,
           checkbox: Checkbox,
           radio: Radio,
@@ -138,6 +147,15 @@
         } finally {
           this.loading = false;
         }
+      },
+      async loadAnswers() {
+        const { data } = await this.fetchAnswersBySector({
+          formId: this.$route.params.id,
+          sector: this.$route.params.sectorId,
+        });
+        this.form = { ...data.form };
+
+        this.setQuestions(this.form.sections[0].questions);
       },
     },
     computed: {

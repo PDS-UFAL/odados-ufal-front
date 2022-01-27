@@ -1,8 +1,8 @@
 import formsApi from '@/api/forms';
 
 export default {
-  async fetchForms() {
-    return await formsApi.fetchForms();
+  async fetchForms(store, options = {}) {
+    return await formsApi.fetchForms(options);
   },
   async fetchForm(store, { id }) {
     return await formsApi.fetchForm(id);

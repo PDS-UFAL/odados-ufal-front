@@ -105,7 +105,7 @@
       </v-card>
     </v-row>
 
-    <template v-if="viewMode">
+    <template v-if="viewMode && formSectors.length > 0">
       <v-row class="pt-8 mb-4">
         <h3>Respostas</h3>
       </v-row>
@@ -113,12 +113,15 @@
       <v-row>
         <v-card elevation="3" class="px-2" width="100%">
           <v-card-text>
-            <v-layout column class="mx-4">
+            <v-layout column>
               <div
-                class="px-2 px-md-4"
+                class="px-5 px-md-4"
                 v-for="sector in formSectors"
                 :key="sector.name"
               >
+                <v-btn icon @click="getFormAnswerBySector(sector.id)">
+                  <v-icon>mdi-eye</v-icon>
+                </v-btn>
                 {{ sector.name }}
               </div>
             </v-layout>
@@ -132,14 +135,22 @@
       <v-spacer />
     </v-row>
 
-    <v-layout row justify-center>
-      <question-card
-        v-for="(question, index) in getQuestions"
-        :key="index"
-        class="my-4"
-        :question="question"
-        :disabled="viewMode"
-      />
+    <v-layout column justify-center align-center>
+      <draggable
+        v-model="questions"
+        :disabled="questions.length <= 1"
+        class="questions"
+        handle=".grab"
+        ghost-class="ghost"
+      >
+        <question-card
+          v-for="(question, index) in questions"
+          :key="index"
+          class="my-4"
+          :question="question"
+          :disabled="viewMode"
+        />
+      </draggable>
 
       <v-tooltip v-if="!viewMode" top>
         <template v-slot:activator="{ on, attrs }">
@@ -161,7 +172,15 @@
     <div v-if="!viewMode" class="save-btn mb-8 mb-md-0">
       <v-tooltip left>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn fab color="primary" v-bind="attrs" v-on="on" @click="saveForm">
+          <v-btn
+            fab
+            color="primary"
+            v-bind="attrs"
+            v-on="on"
+            @click="saveForm"
+            :loading="loading"
+            :disabled="loading"
+          >
             <v-icon>mdi-check</v-icon>
           </v-btn>
         </template>
@@ -172,6 +191,8 @@
 </template>
 
 <script>
+  import draggable from 'vuedraggable';
+
   import { mapActions, mapGetters } from 'vuex';
   import { formatDate } from '@/utils/formatDate';
   import QuestionCard from '@/components/form/questions/QuestionCard';
@@ -180,6 +201,7 @@
     name: 'CreateForms',
     components: {
       QuestionCard,
+      draggable,
     },
     data: () => {
       return {
@@ -190,14 +212,18 @@
         title: null,
         showDatepicker: false,
         form: null,
+        questions: [],
       };
     },
     async mounted() {
+      this.resetQuestions();
       await this.loadSectors();
 
       if (this.$route.params.id) {
         await this.loadForm();
       }
+
+      this.questions = this.getQuestions;
     },
     methods: {
       ...mapActions([
@@ -207,7 +233,14 @@
         'createForm',
         'setAlert',
         'setQuestions',
+        'resetQuestions',
       ]),
+      async getFormAnswerBySector(sector) {
+        this.$router.push({
+          name: 'AnswerForm',
+          params: { id: this.$route.params.id, sectorId: sector },
+        });
+      },
       async saveForm() {
         try {
           this.loading = true;
@@ -217,24 +250,19 @@
               title: this.title,
               start_date: this.dates[0],
               end_date: this.dates[1],
-              sector_ids: this.sectors.map((sector) => sector.id),
+              sector_ids: this.selectedSectors,
               sections_attributes: [
                 {
                   name: 'Perguntas',
-                  questions_attributes: [...this.getQuestions],
+                  questions_attributes: [...this.questions],
                 },
               ],
             },
           };
-
           await this.createForm({ payload });
+          this.saveFunction();
         } catch (err) {
-          this.setAlert({
-            alertMessage:
-              err.response?.data.error ||
-              'Occorreu um erro ao tentar salvar o formulário.',
-            alertColor: 'red',
-          });
+          this.errorFunction(err);
         } finally {
           this.loading = false;
         }
@@ -256,17 +284,31 @@
           ? 'Intervalo selecionado'
           : formatDate(this.dates[0]) || '-';
       },
+      errorFunction(err) {
+        if (err.response?.data.start_date || err.response?.data.end_date) {
+          this.setAlert({
+            alertMessage: 'A data está incorreta.',
+            alertColor: 'red',
+          });
+        } else {
+          this.setAlert({
+            alertMessage: 'Ocorreu um erro ao carregar os setores.',
+            alertColor: 'red',
+          });
+        }
+      },
+      saveFunction() {
+        this.setAlert({
+          alertMessage: 'Formulário salvo.',
+          alertColor: 'green',
+        });
+      },
       async loadSectors() {
         try {
           const { data } = await this.fetchSectors();
           this.sectors = [...data.sectors];
         } catch (err) {
-          this.setAlert({
-            alertMessage:
-              err.response?.data.error ||
-              'Ocorreu um erro ao carregar os setores.',
-            alertColor: 'red',
-          });
+          this.errorFunction(err);
         }
       },
       async loadForm() {
@@ -310,6 +352,12 @@
       async $route() {
         await this.loadSectors();
       },
+      getQuestions: {
+        handler(newValue) {
+          this.questions = [...newValue];
+        },
+        deep: true,
+      },
     },
   };
 </script>
@@ -319,5 +367,14 @@
     position: fixed;
     bottom: 32px;
     right: 32px;
+  }
+
+  .questions {
+    width: 100%;
+  }
+
+  .ghost {
+    opacity: 0.5;
+    background: #83c5e46e;
   }
 </style>

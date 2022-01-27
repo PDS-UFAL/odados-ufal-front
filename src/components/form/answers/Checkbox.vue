@@ -13,6 +13,7 @@
           :rules="[rules.checkboxRequired]"
           :hide-details="!last(index)"
           dense
+          :readonly="!!response"
         />
       </div>
     </v-col>
@@ -32,8 +33,8 @@
     },
     mixins: [rules],
     mounted() {
-      if (this.question.response) {
-        this.response = this.question.response.split(';@;');
+      if (this.question.responses && this.question.responses[0]?.answer) {
+        this.response = this.question.responses[0]?.answer.split(';@;');
       }
     },
     data: () => {
@@ -49,7 +50,7 @@
     watch: {
       response: {
         handler: function (val) {
-          this.question.response = val.join(';@;');
+          this.question.responses[0].answer = val.join(';@;');
         },
         deep: true,
       },

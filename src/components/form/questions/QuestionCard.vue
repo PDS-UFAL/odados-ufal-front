@@ -115,7 +115,7 @@
   import Number from '@/components/form/answers/Number';
   import Money from '@/components/form/answers/Money';
   import Percent from '@/components/form/answers/Percent';
-  import File from '@/components/form/answers/File';
+  // import File from '@/components/form/answers/File';
   import Select from '@/components/form/answers/Select';
   import Checkbox from '@/components/form/answers/Checkbox';
   import Radio from '@/components/form/answers/Radio';
@@ -144,7 +144,7 @@
           { text: 'Numérico', value: 'number' },
           { text: 'Dinheiro', value: 'money' },
           { text: 'Porcentagem', value: 'percent' },
-          { text: 'Arquivo', value: 'file' },
+          // { text: 'Arquivo', value: 'file' },
           { text: 'Lista de opções', value: 'select' },
           { text: 'Caixa de seleção', value: 'checkbox' },
           { text: 'Múltipla escolha', value: 'radio' },
@@ -162,7 +162,7 @@
           number: Number,
           money: Money,
           percent: Percent,
-          file: File,
+          // file: File,
           select: Select,
           checkbox: Checkbox,
           radio: Radio,
@@ -183,9 +183,9 @@
       isPercent() {
         return this.question.type === 'percent';
       },
-      isFile() {
-        return this.question.type === 'file';
-      },
+      // isFile() {
+      //   return this.question.type === 'file';
+      // },
       isSelect() {
         return this.question.type === 'select';
       },

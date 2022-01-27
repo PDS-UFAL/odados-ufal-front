@@ -14,23 +14,7 @@
           dense
           clearable
           hide-details
-        />
-      </v-col>
-
-      <v-col cols="12" xs="12" md="2" class="py-0 mt-md-3 pr-md-0">
-        <span class="d-flex justify-md-end align-center mt-md-2">
-          Ordenar por:
-        </span>
-      </v-col>
-
-      <v-col cols="12" xs="12" md="3" class="pt-0 pt-md-3">
-        <v-select
-          v-model="sortBy"
-          :items="sortableItems"
-          :menu-props="{ 'offset-y': true }"
-          dense
-          outlined
-          hide-details
+          @change="filterByName"
         />
       </v-col>
 
@@ -48,7 +32,7 @@
             <v-text-field
               v-on="on"
               v-bind="attrs"
-              label="Criado em"
+              label="Início / Fim"
               :value="dateRangeText"
               prepend-inner-icon="mdi-calendar"
               dense
@@ -56,7 +40,7 @@
               outlined
               clearable
               hide-details
-              @click:clear="selectedDates = []"
+              @click:clear="setDates([])"
               @click:prepend-inner="showDatepicker = true"
             />
           </template>
@@ -67,6 +51,7 @@
             range
             scrollable
             @change="setDates"
+            @input="setDates"
             :title-date-format="dateTitle"
           />
         </v-menu>
@@ -81,7 +66,6 @@
           class="elevation-2"
           disable-pagination
           hide-default-footer
-          :disable-sort="$vuetify.breakpoint.smAndDown"
           :loading="loading"
           loading-text="Carregando... Por favor aguarde"
         >
@@ -135,78 +119,87 @@
         filters: [
           {
             title: 'Abertos',
-            status: 'opened',
-            amount: 10,
+            status: 'open',
+            amount: 0,
             color: 'yellow',
             active: false,
           },
           {
             title: 'Não iniciados',
             status: 'not_started',
-            amount: 3,
+            amount: 0,
             color: 'red',
             active: false,
           },
           {
             title: 'Finalizados',
-            status: 'finished',
-            amount: 7,
+            status: 'closed',
+            amount: 0,
             color: 'green',
             active: false,
           },
-        ],
-
-        sortableItems: [
-          { text: 'Nome', value: 'name' },
-          { text: 'Data inicial', value: 'start_date' },
-          { text: 'Data final', value: 'end_date' },
         ],
 
         headers: [
           {
             text: 'Título',
             value: 'title',
-            sortable: false,
+            sortable: true,
             align: 'start',
             width: '40%',
           },
           { text: 'Status', value: 'status', sortable: false, width: '20%' },
-          { text: 'Data inicial', value: 'start_date', sortable: false },
-          { text: 'Data final', value: 'end_date', sortable: false },
+          { text: 'Data inicial', value: 'start_date', sortable: true },
+          { text: 'Data final', value: 'end_date', sortable: true },
           { text: 'Ações', value: 'actions', sortable: false, align: 'end' },
         ],
 
         forms: [],
+
+        params: {},
 
         sortBy: 'name',
         showDatepicker: false,
         selectedDates: [],
       };
     },
-    async mounted() {
-      this.loading = true;
-      try {
-        const { data } = await this.fetchForms();
-        this.forms = data.forms;
-      } catch (err) {
-        this.setAlert({
-          alertMessage:
-            err.response?.data.error ||
-            'Um erro aconteceu ao carregar formulários.',
-          alertColor: 'red',
-        });
-      } finally {
-        this.loading = false;
-      }
+    mounted() {
+      this.filterForms();
     },
     methods: {
       ...mapActions(['fetchForms', 'deleteForm', 'setAlert']),
       formatDate,
-      changeFilter(filterIndex, value) {
+      async filterForms() {
+        this.loading = true;
+        try {
+          const { data } = await this.fetchForms({ params: this.params });
+          this.forms = data.forms;
+          this.filters.forEach((filter) => {
+            filter.amount = data.meta[filter.status];
+          });
+        } catch (err) {
+          this.setAlert({
+            alertMessage:
+              err.response?.data.error ||
+              'Um erro aconteceu ao carregar formulários.',
+            alertColor: 'red',
+          });
+        } finally {
+          this.loading = false;
+        }
+      },
+      async changeFilter(filterIndex, value) {
         this.filters[filterIndex].active = value;
+
+        const activeFilters = this.filters.filter((filter) => filter.active);
+        this.params = {
+          ...this.params,
+          status: activeFilters.map((filter) => filter.status),
+        };
       },
       setDates(dates) {
         this.selectedDates = dates.sort();
+        this.filterByDate();
       },
       dateTitle() {
         return this.selectedDates.length === 2
@@ -232,8 +225,7 @@
       async deleteFormHandler(form) {
         try {
           await this.deleteForm({ id: form.id });
-          const index = this.forms.indexOf(form);
-          this.forms.splice(index, 1);
+          await this.filterForms();
         } catch (err) {
           this.setAlert({
             alertMessage:
@@ -248,6 +240,20 @@
           this.getUser?.role === 'admin' ? 'ViewForms' : 'AnswerForm';
         this.$router.push({ name: routeName, params: { id } });
       },
+      async filterByName(name) {
+        this.params = {
+          ...this.params,
+          title: name,
+        };
+      },
+      filterByDate() {
+        const [range_start_date, range_end_date] = this.selectedDates;
+        this.params = {
+          ...this.params,
+          range_start_date,
+          range_end_date,
+        };
+      },
     },
     computed: {
       ...mapGetters(['getUser']),
@@ -256,6 +262,14 @@
           formatDate(date),
         );
         return formattedDates.join(' à ');
+      },
+    },
+    watch: {
+      params: {
+        handler() {
+          this.filterForms();
+        },
+        deep: true,
       },
     },
   };
