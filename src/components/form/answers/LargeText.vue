@@ -14,8 +14,9 @@
         class="mt-2"
         dense
         outlined
-        clearable
+        clearable="!response"
         auto-grow
+        :readonly="!!response"
       />
     </v-col>
   </v-row>
@@ -33,6 +34,11 @@
       },
     },
     mixins: [rules],
+    computed: {
+      response() {
+        return this.question.responses && this.question.responses[0]?.answer;
+      },
+    },
   };
 </script>
 

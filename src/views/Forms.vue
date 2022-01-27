@@ -113,12 +113,15 @@
       <v-row>
         <v-card elevation="3" class="px-2" width="100%">
           <v-card-text>
-            <v-layout column class="mx-4">
+            <v-layout column>
               <div
-                class="px-2 px-md-4"
+                class="px-5 px-md-4"
                 v-for="sector in formSectors"
                 :key="sector.name"
               >
+                <v-btn icon @click="getFormAnswerBySector(sector.id)">
+                  <v-icon>mdi-eye</v-icon>
+                </v-btn>
                 {{ sector.name }}
               </div>
             </v-layout>
@@ -216,6 +219,12 @@
         'setAlert',
         'setQuestions',
       ]),
+      async getFormAnswerBySector(sector) {
+        this.$router.push({
+          name: 'AnswerForm',
+          params: { id: this.$route.params.id, sectorId: sector },
+        });
+      },
       async saveForm() {
         try {
           this.loading = true;
