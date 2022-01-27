@@ -105,7 +105,7 @@
       </v-card>
     </v-row>
 
-    <template v-if="viewMode">
+    <template v-if="viewMode && formSectors.length > 0">
       <v-row class="pt-8 mb-4">
         <h3>Respostas</h3>
       </v-row>
@@ -132,14 +132,22 @@
       <v-spacer />
     </v-row>
 
-    <v-layout row justify-center>
-      <question-card
-        v-for="(question, index) in getQuestions"
-        :key="index"
-        class="my-4"
-        :question="question"
-        :disabled="viewMode"
-      />
+    <v-layout column justify-center align-center>
+      <draggable
+        v-model="questions"
+        :disabled="questions.length <= 1"
+        class="questions"
+        handle=".grab"
+        ghost-class="ghost"
+      >
+        <question-card
+          v-for="(question, index) in questions"
+          :key="index"
+          class="my-4"
+          :question="question"
+          :disabled="viewMode"
+        />
+      </draggable>
 
       <v-tooltip v-if="!viewMode" top>
         <template v-slot:activator="{ on, attrs }">
@@ -180,6 +188,8 @@
 </template>
 
 <script>
+  import draggable from 'vuedraggable';
+
   import { mapActions, mapGetters } from 'vuex';
   import { formatDate } from '@/utils/formatDate';
   import QuestionCard from '@/components/form/questions/QuestionCard';
@@ -188,6 +198,7 @@
     name: 'CreateForms',
     components: {
       QuestionCard,
+      draggable,
     },
     data: () => {
       return {
@@ -198,14 +209,18 @@
         title: null,
         showDatepicker: false,
         form: null,
+        questions: [],
       };
     },
     async mounted() {
+      this.resetQuestions();
       await this.loadSectors();
 
       if (this.$route.params.id) {
         await this.loadForm();
       }
+
+      this.questions = this.getQuestions;
     },
     methods: {
       ...mapActions([
@@ -215,6 +230,7 @@
         'createForm',
         'setAlert',
         'setQuestions',
+        'resetQuestions',
       ]),
       async saveForm() {
         try {
@@ -225,11 +241,11 @@
               title: this.title,
               start_date: this.dates[0],
               end_date: this.dates[1],
-              sector_ids: this.sectors.map((sector) => sector.id),
+              sector_ids: this.selectedSectors,
               sections_attributes: [
                 {
                   name: 'Perguntas',
-                  questions_attributes: [...this.getQuestions],
+                  questions_attributes: [...this.questions],
                 },
               ],
             },
@@ -336,5 +352,14 @@
     position: fixed;
     bottom: 32px;
     right: 32px;
+  }
+
+  .questions {
+    width: 100%;
+  }
+
+  .ghost {
+    opacity: 0.5;
+    background: #83c5e46e;
   }
 </style>

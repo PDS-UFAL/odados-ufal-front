@@ -4,6 +4,9 @@ export default {
   [TYPES.SET_QUESTIONS](state, questions) {
     state.questions = [...questions];
   },
+  [TYPES.RESET_QUESTIONS](state) {
+    state.questions = [JSON.parse(JSON.stringify(state.defaultQuestion))];
+  },
   [TYPES.ADD_QUESTION](state) {
     state.questions.push({
       ...state.defaultQuestion,

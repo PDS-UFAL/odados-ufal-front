@@ -4,6 +4,9 @@ export default {
   setQuestions({ commit }, questions) {
     commit(TYPES.SET_QUESTIONS, questions);
   },
+  resetQuestions({ commit }) {
+    commit(TYPES.RESET_QUESTIONS);
+  },
   addQuestion({ commit }, question) {
     commit(TYPES.ADD_QUESTION, question);
   },
