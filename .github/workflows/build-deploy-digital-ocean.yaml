@@ -28,7 +28,7 @@ jobs:
             registry.digitalocean.com/${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/web:latest
             registry.digitalocean.com/${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/web:sha-${{ github.sha }}
           build-args: |
-            VUE_APP_API_BASE_URL=https://odadosufal.com.br
+            VUE_APP_API_BASE_URL=https://pgdc-api.herokuapp.com
 
   deploy-web:
     needs: build
