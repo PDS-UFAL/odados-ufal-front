@@ -3,7 +3,7 @@ FROM node:14.18.3-alpine3.14 as builder
 ENV WORKDIR /app
 WORKDIR $WORKDIR
 
-RUN apk update && apk add git yarn
+RUN apk update && apk add yarn
 
 RUN npm install -g http-server
 
