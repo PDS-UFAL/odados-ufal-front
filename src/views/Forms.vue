@@ -343,6 +343,12 @@
       async $route() {
         await this.loadSectors();
       },
+      getQuestions: {
+        handler(newValue) {
+          this.questions = [...newValue];
+        },
+        deep: true,
+      },
     },
   };
 </script>

@@ -16,6 +16,7 @@ export default {
   ],
 
   defaultQuestion: {
+    id: 0,
     title: null,
     response: null,
     required: true,
