@@ -5,6 +5,8 @@ WORKDIR $WORKDIR
 
 RUN apk update && apk add git yarn
 
+RUN yarn install -g http-server
+
 COPY package.json .
 COPY yarn.lock .
 
@@ -18,8 +20,5 @@ ENV VUE_APP_API_BASE_URL $VUE_APP_API_BASE_URL
 
 RUN yarn build
 
-FROM nginx
-
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY --from=builder /app/dist /usr/share/nginx/html
-EXPOSE 80
+EXPOSE 8080
+CMD [ "http-server", "dist" ]
