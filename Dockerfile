@@ -3,7 +3,9 @@ FROM node:14.18.3-alpine3.14 as builder
 ENV WORKDIR /app
 WORKDIR $WORKDIR
 
-RUN apk update && apk add git yarn
+RUN apk update && apk add yarn
+
+RUN npm install -g http-server
 
 COPY package.json .
 COPY yarn.lock .
@@ -18,8 +20,5 @@ ENV VUE_APP_API_BASE_URL $VUE_APP_API_BASE_URL
 
 RUN yarn build
 
-FROM nginx
-
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY --from=builder /app/dist /usr/share/nginx/html
-EXPOSE 80
+EXPOSE 8080
+CMD [ "http-server", "dist" ]
