@@ -5,7 +5,7 @@ WORKDIR $WORKDIR
 
 RUN apk update && apk add git yarn
 
-RUN yarn install -g http-server
+RUN npm install -g http-server
 
 COPY package.json .
 COPY yarn.lock .
