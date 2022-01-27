@@ -51,6 +51,6 @@ jobs:
           SSH_KEY: ${{ secrets.SSH_KEY }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
       - name: Connect to SSH and Deploy web to DigitalOcean Droplet
-        run: ssh production "doctl registry login --expiry-seconds 180; docker pull registry.digitalocean.com/${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/web:latest; docker stop web || true; docker rm web || true; echo 'starting server instance...'; docker run -d --restart always -p 0.0.0.0:80:80 --name web registry.digitalocean.com/${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/web:latest"
+        run: ssh production "doctl registry login --expiry-seconds 180; docker pull registry.digitalocean.com/${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/web:latest; docker stop web || true; docker rm web || true; echo 'starting server instance...'; docker run -d --restart always -p 0.0.0.0:8080:8080 --name web registry.digitalocean.com/${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/web:latest"
 
             
