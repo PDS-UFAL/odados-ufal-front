@@ -50,7 +50,7 @@
   import Number from '@/components/form/answers/Number';
   import Money from '@/components/form/answers/Money';
   import Percent from '@/components/form/answers/Percent';
-  import File from '@/components/form/answers/File';
+  // import File from '@/components/form/answers/File';
   import Select from '@/components/form/answers/Select';
   import Checkbox from '@/components/form/answers/Checkbox';
   import Radio from '@/components/form/answers/Radio';
@@ -81,7 +81,7 @@
           number: Number,
           money: Money,
           percent: Percent,
-          file: File,
+          // file: File,
           select: Select,
           checkbox: Checkbox,
           radio: Radio,
