@@ -20,5 +20,7 @@ ENV VUE_APP_API_BASE_URL $VUE_APP_API_BASE_URL
 
 RUN yarn build
 
+RUN rm -rf node_modules
+
 EXPOSE 8080
 CMD [ "http-server", "dist" ]
