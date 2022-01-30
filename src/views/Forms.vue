@@ -286,9 +286,25 @@
           : formatDate(this.dates[0]) || '-';
       },
       errorFunction(err) {
-        if (err.response?.data.start_date || err.response?.data.end_date) {
+        if (err.response?.data.title) {
           this.setAlert({
-            alertMessage: 'A data está incorreta.',
+            alertMessage: 'Título do formuário em branco.',
+            alertColor: 'red',
+          });
+        } else if (err.response?.data.start_date) {
+          this.setAlert({
+            alertMessage:
+              'A data inicial deve ser pelo menos a partir de hoje.',
+            alertColor: 'red',
+          });
+        } else if (err.response?.data.end_date) {
+          this.setAlert({
+            alertMessage: 'A data do formulário está incorreta.',
+            alertColor: 'red',
+          });
+        } else if (err.response?.data['sections.questions.title']) {
+          this.setAlert({
+            alertMessage: 'Título da pergunta não pode estar em branco.',
             alertColor: 'red',
           });
         } else {
