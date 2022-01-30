@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Check Out Repo 
+      - name: Check Out Repo
         uses: actions/checkout@v2
       - name: Install DigitalOcean Controller
         uses: digitalocean/action-doctl@v2
@@ -28,7 +28,7 @@ jobs:
             registry.digitalocean.com/${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/web:latest
             registry.digitalocean.com/${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/web:sha-${{ github.sha }}
           build-args: |
-            VUE_APP_API_BASE_URL=https://pgdc-api.herokuapp.com
+            VUE_APP_API_BASE_URL=https://odadosufal.com.br
 
   deploy-web:
     needs: build
@@ -52,5 +52,3 @@ jobs:
           SSH_HOST: ${{ secrets.SSH_HOST }}
       - name: Connect to SSH and Deploy web to DigitalOcean Droplet
         run: ssh production "doctl registry login --expiry-seconds 180; docker pull registry.digitalocean.com/${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/web:latest; docker stop web || true; docker rm web || true; echo 'starting server instance...'; docker run -d --restart always -p 0.0.0.0:8080:8080 --name web registry.digitalocean.com/${{ secrets.DIGITALOCEAN_REGISTRY_NAME }}/web:latest"
-
-            
