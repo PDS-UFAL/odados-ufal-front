@@ -36,19 +36,36 @@
           <span>Duplicar</span>
         </v-tooltip>
 
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn
-              icon
-              class="ml-sm-4"
-              v-on="on"
-              @click="removeQuestion(question)"
-            >
-              <v-icon>mdi-delete</v-icon>
-            </v-btn>
+        <v-dialog v-model="dialog" max-width="290">
+          <template v-slot:activator="{ on: ondialog }">
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on: ontooltip }">
+                <v-btn
+                  icon
+                  class="ml-sm-4"
+                  v-on="{ ...ondialog, ...ontooltip }"
+                >
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn>
+              </template>
+              <span>Remover</span>
+            </v-tooltip>
           </template>
-          <span>Remover</span>
-        </v-tooltip>
+          <v-card>
+            <v-card-title class="text-h5"> Apagar a pergunta? </v-card-title>
+            <v-card-text> Esta ação não pode ser desfeita </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions>
+              <v-btn color="primary" text @click="dialog = false">
+                Cancelar
+              </v-btn>
+              <v-spacer></v-spacer>
+              <v-btn color="red" text @click="confirmRemoval(question)">
+                Confirmar
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </template>
     </v-card-title>
     <v-card-text>
@@ -149,10 +166,15 @@
           { text: 'Caixa de seleção', value: 'checkbox' },
           { text: 'Múltipla escolha', value: 'radio' },
         ],
+        dialog: false,
       };
     },
     methods: {
       ...mapActions(['removeQuestion', 'duplicateQuestion']),
+      confirmRemoval(question) {
+        this.removeQuestion(question);
+        this.dialog = false;
+      },
     },
     computed: {
       questionType() {
