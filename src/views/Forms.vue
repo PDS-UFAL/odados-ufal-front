@@ -24,7 +24,7 @@
 
       <v-col cols="12" md="3" class="pa-0">
         <v-menu
-          v-model="showDatepicker"
+          v-model="showStartDatepicker"
           :close-on-content-click="false"
           :nudge-right="0"
           transition="scale-transition"
@@ -36,26 +36,64 @@
             <v-text-field
               v-on="on"
               v-bind="attrs"
-              label="Data"
-              :value="dateRangeText"
+              label="Abre em"
+              :value="formatedDate(startDate)"
+              prepend-inner-icon="mdi-calendar"
+              dense
+              readonly
+              outlined
+              clearable
+              @click:clear="startDate = ''"
+              @click:prepend-inner="showStartDatepicker = true"
+              :disabled="viewMode"
+            />
+          </template>
+          <v-date-picker
+            color="primary"
+            v-model="startDate"
+            locale="pt-br"
+            :min="yesterday"
+            scrollable
+            @input="showStartDatepicker = false"
+          />
+        </v-menu>
+      </v-col>
+
+      <v-spacer />
+
+      <v-col cols="12" md="3" class="pa-0">
+        <v-menu
+          v-model="showEndDatepicker"
+          :close-on-content-click="false"
+          :nudge-right="0"
+          transition="scale-transition"
+          offset-y
+          max-width="290px"
+          min-width="290px"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+              v-on="on"
+              v-bind="attrs"
+              label="Fecha em"
+              :value="formatedDate(endDate)"
               prepend-inner-icon="mdi-calendar"
               dense
               readonly
               outlined
               clearable
               @click:clear="dates = []"
-              @click:prepend-inner="showDatepicker = true"
+              @click:prepend-inner="showEndDatepicker = true"
               :disabled="viewMode"
             />
           </template>
           <v-date-picker
             color="primary"
-            v-model="dates"
+            v-model="endDate"
             locale="pt-br"
-            range
+            :min="startDate || yesterday"
             scrollable
-            @change="setDates"
-            :title-date-format="dateTitle"
+            @input="showEndDatepicker = false"
           />
         </v-menu>
       </v-col>
@@ -86,20 +124,19 @@
           </v-btn>
         </v-card-title>
 
-        <v-card-text>
-          <v-row class="mx-4">
-            <div
-              class="px-2 px-md-4"
-              v-for="sector in sectors"
-              :key="sector.name"
-            >
-              <v-checkbox
-                v-model="selectedSectors"
-                :value="sector.id"
-                :label="sector.name"
-                :disabled="viewMode"
-              />
-            </div>
+        <v-card-text class="overflow my-4">
+          <v-row class="pa-0">
+            <v-col class="pa-0">
+              <div class="px-2" v-for="sector in sectors" :key="sector.name">
+                <v-checkbox
+                  v-model="selectedSectors"
+                  :value="sector.id"
+                  :label="sector.name"
+                  :disabled="viewMode"
+                  dense
+                />
+              </div>
+            </v-col>
           </v-row>
         </v-card-text>
       </v-card>
@@ -142,10 +179,12 @@
         class="questions"
         handle=".grab"
         ghost-class="ghost"
+        :scroll-sensitivity="200"
+        @sort="updateQuestions"
       >
         <question-card
-          v-for="(question, index) in questions"
-          :key="index"
+          v-for="question in questions"
+          :key="question.id"
           class="my-4"
           :question="question"
           :disabled="viewMode"
@@ -208,9 +247,11 @@
         loading: false,
         sectors: [],
         selectedSectors: [],
-        dates: [],
+        startDate: '',
+        endDate: '',
         title: null,
-        showDatepicker: false,
+        showStartDatepicker: false,
+        showEndDatepicker: false,
         form: null,
         questions: [],
       };
@@ -248,8 +289,8 @@
           const payload = {
             form: {
               title: this.title,
-              start_date: this.dates[0],
-              end_date: this.dates[1],
+              start_date: this.startDate,
+              end_date: this.endDate,
               sector_ids: this.selectedSectors,
               sections_attributes: [
                 {
@@ -268,22 +309,17 @@
           this.loading = false;
         }
       },
+      formatedDate(date) {
+        return formatDate(date);
+      },
       back() {
         this.$router.back();
-      },
-      setDates(dates) {
-        this.dates = dates.sort();
       },
       checkAll() {
         this.selectedSectors = [...this.sectors.map((sector) => sector.id)];
       },
       uncheckAll() {
         this.selectedSectors = [];
-      },
-      dateTitle() {
-        return this.dates.length === 2
-          ? 'Intervalo selecionado'
-          : formatDate(this.dates[0]) || '-';
       },
       errorFunction(err) {
         if (err.response?.data.start_date || err.response?.data.end_date) {
@@ -332,13 +368,12 @@
           }
         }
       },
+      updateQuestions() {
+        this.setQuestions(this.questions);
+      },
     },
     computed: {
       ...mapGetters(['getQuestions']),
-      dateRangeText() {
-        const formattedDates = this.dates.map((date) => formatDate(date));
-        return formattedDates.join(' à ');
-      },
       formSectors() {
         return (
           this.form?.sectors.filter((sector) => sector.status === 'answered') ||
@@ -347,6 +382,11 @@
       },
       viewMode() {
         return !!this.$route.params.id;
+      },
+      yesterday() {
+        let date = new Date();
+        date.setDate(date.getDate() - 1);
+        return date.toISOString();
       },
     },
     watch: {
@@ -358,6 +398,11 @@
           this.questions = [...newValue];
         },
         deep: true,
+      },
+      startDate(val) {
+        if (this.endDate && val > this.endDate) {
+          this.endDate = '';
+        }
       },
     },
   };
@@ -377,5 +422,10 @@
   .ghost {
     opacity: 0.5;
     background: #83c5e46e;
+  }
+
+  .overflow {
+    overflow-y: auto;
+    height: 300px;
   }
 </style>
