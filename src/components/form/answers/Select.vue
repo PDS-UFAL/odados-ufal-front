@@ -7,7 +7,7 @@
 
       <v-select
         :items="question.options"
-        v-model="response"
+        v-model="question.response"
         :rules="[rules.required]"
         :menu-props="{ 'offset-y': true }"
         label="Sua Resposta"
@@ -15,7 +15,7 @@
         dense
         outlined
         no-data-text="Nenhuma opção disponível"
-        :readonly="!!response"
+        :readonly="!canEdit"
       />
     </v-col>
   </v-row>
@@ -31,18 +31,12 @@
         type: Object,
         required: true,
       },
-    },
-    mixins: [rules],
-    computed: {
-      response: {
-        get() {
-          return this.question.responses && this.question.responses[0]?.answer;
-        },
-        set(newVal) {
-          this.question.response = newVal;
-        },
+      canEdit: {
+        type: Boolean,
+        default: true,
       },
     },
+    mixins: [rules],
   };
 </script>
 

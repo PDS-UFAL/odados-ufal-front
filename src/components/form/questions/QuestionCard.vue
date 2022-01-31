@@ -226,6 +226,11 @@
         return this.hasMaxChar || this.hasRange;
       },
     },
+    watch: {
+      'question.type'() {
+        this.question.response = null;
+      },
+    },
   };
 </script>
 

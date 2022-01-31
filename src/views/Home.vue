@@ -13,7 +13,7 @@
     </v-row>
 
     <v-row class="my-8">
-      <v-col cols="12" xs="12" md="4">
+      <v-col cols="12" md="4">
         <v-text-field
           name="search"
           label="Pesquisar"
@@ -26,7 +26,9 @@
         />
       </v-col>
 
-      <v-col cols="12" xs="12" md="3">
+      <v-spacer />
+
+      <v-col cols="12" md="4">
         <v-menu
           v-model="showDatepicker"
           :close-on-content-click="false"
@@ -196,7 +198,7 @@
           this.setAlert({
             alertMessage:
               err.response?.data.error ||
-              'Um erro aconteceu ao carregar formulários.',
+              'Ocorreu um erro ao carregar formulários.',
             alertColor: 'red',
           });
         } finally {
@@ -250,7 +252,7 @@
           this.setAlert({
             alertMessage:
               err.response?.data.error ||
-              'Um erro aconteceu ao deletar o formulário.',
+              'Ocorreu um erro ao deletar o formulário.',
             alertColor: 'red',
           });
         }
