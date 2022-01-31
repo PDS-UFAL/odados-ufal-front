@@ -18,11 +18,12 @@
           :question="question"
           class="mt-2"
           :key="question.id"
+          :canEdit="canEdit"
         />
       </template>
     </v-form>
 
-    <div class="save-btn mb-8 mb-md-0">
+    <div class="save-btn mb-8 mb-md-0" v-if="canEdit">
       <v-tooltip left>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
@@ -63,14 +64,12 @@
         form: {},
         loading: false,
         valid: false,
+        hasResponse: false,
       };
     },
     async mounted() {
       if (this.$route.params.id) {
         await this.loadForm();
-      }
-      if (this.$route.params.sectorId) {
-        await this.loadAnswers();
       }
     },
     methods: {
@@ -99,11 +98,34 @@
       },
       async loadForm() {
         try {
-          const { data } = await this.fetchForm({ id: this.$route.params.id });
+          let response;
+
+          if (this.$route.params.sectorId) {
+            this.hasResponse = true;
+            response = await this.fetchAnswersBySector({
+              formId: this.$route.params.id,
+              sector: this.$route.params.sectorId,
+            });
+          } else {
+            response = await this.fetchForm({ id: this.$route.params.id });
+          }
+
+          const { data } = response;
           this.form = { ...data.form };
 
           // TODO: Refactor when sections are working
-          this.setQuestions(this.form.sections[0].questions);
+          const questions = data.form.sections[0].questions.map((question) => {
+            if (question.responses?.length > 0) {
+              this.hasResponse = true;
+              return {
+                ...question,
+                response: question.responses[0].answer,
+              };
+            }
+
+            return { ...question };
+          });
+          this.setQuestions(questions);
         } catch (err) {
           if (err.response?.status === 404) {
             this.$router.push({ name: 'Home' });
@@ -155,18 +177,9 @@
           this.loading = false;
         }
       },
-      async loadAnswers() {
-        const { data } = await this.fetchAnswersBySector({
-          formId: this.$route.params.id,
-          sector: this.$route.params.sectorId,
-        });
-        this.form = { ...data.form };
-
-        this.setQuestions(this.form.sections[0].questions);
-      },
     },
     computed: {
-      ...mapGetters(['getQuestions']),
+      ...mapGetters(['getQuestions', 'getUser']),
       relativeTime() {
         if (!this.form.end_date) return null;
 
@@ -177,6 +190,19 @@
           new Date(this.form.end_date).getTime(),
           'pt-BR',
         )}`;
+      },
+      isAdmin() {
+        return this.getUser.role === 'admin';
+      },
+      canEdit() {
+        const today = new Date();
+
+        return (
+          !this.isAdmin &&
+          new Date(this.form.start_date) <= today &&
+          new Date(this.form.end_date) >= today &&
+          !this.hasResponse
+        );
       },
     },
   };

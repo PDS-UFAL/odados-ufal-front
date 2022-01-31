@@ -5,13 +5,17 @@
         {{ question.title }}
       </span>
 
-      <v-radio-group v-model="response" :rules="[rules.required]" dense>
+      <v-radio-group
+        v-model="question.response"
+        :rules="[rules.required]"
+        dense
+      >
         <v-radio
           v-for="(option, index) in question.options"
           :key="index"
           :label="option"
           :value="option"
-          :readonly="!!response"
+          :readonly="!canEdit"
         />
       </v-radio-group>
     </v-col>
@@ -28,18 +32,12 @@
         type: Object,
         required: true,
       },
-    },
-    mixins: [rules],
-    computed: {
-      response: {
-        get() {
-          return this.question.responses && this.question.responses[0]?.answer;
-        },
-        set(newVal) {
-          this.question.response = newVal;
-        },
+      canEdit: {
+        type: Boolean,
+        default: true,
       },
     },
+    mixins: [rules],
   };
 </script>
 

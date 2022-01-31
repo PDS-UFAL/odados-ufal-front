@@ -6,7 +6,7 @@
       </span>
 
       <v-textarea
-        v-model="response"
+        v-model="question.response"
         :counter="question.max_char"
         :maxlength="question.max_char"
         :rules="[rules.required]"
@@ -14,9 +14,9 @@
         class="mt-2"
         dense
         outlined
-        clearable="!response"
         auto-grow
-        :readonly="!!response"
+        :clearable="canEdit"
+        :readonly="!canEdit"
       />
     </v-col>
   </v-row>
@@ -32,18 +32,12 @@
         type: Object,
         required: true,
       },
-    },
-    mixins: [rules],
-    computed: {
-      response: {
-        get() {
-          return this.question.responses && this.question.responses[0]?.answer;
-        },
-        set(newVal) {
-          this.question.response = newVal;
-        },
+      canEdit: {
+        type: Boolean,
+        default: true,
       },
     },
+    mixins: [rules],
   };
 </script>
 
