@@ -1,11 +1,19 @@
 <template>
   <v-container>
+    <confirmation-dialog
+      ref="showDeleteFormDialog"
+      width="400"
+      title="Apagar o formulário?"
+      description="Esta ação não pode ser desfeita."
+      confirmButton="Apagar"
+    />
+
     <v-row>
       <filter-cards :options="filters" @clickOption="changeFilter" />
     </v-row>
 
     <v-row class="my-8">
-      <v-col cols="12" xs="12" md="4">
+      <v-col cols="12" md="4">
         <v-text-field
           name="search"
           label="Pesquisar"
@@ -18,7 +26,9 @@
         />
       </v-col>
 
-      <v-col cols="12" xs="12" md="3">
+      <v-spacer />
+
+      <v-col cols="12" md="4">
         <v-menu
           v-model="showDatepicker"
           :close-on-content-click="false"
@@ -93,7 +103,12 @@
               <v-icon> mdi-eye </v-icon>
             </v-btn>
 
-            <v-btn small icon v-if="isAdmin" @click="deleteFormHandler(item)">
+            <v-btn
+              small
+              icon
+              v-if="isAdmin"
+              @click="openDeleteFormDialog(item)"
+            >
               <v-icon> mdi-delete </v-icon>
             </v-btn>
           </template>
@@ -107,11 +122,13 @@
   import { mapActions, mapGetters } from 'vuex';
   import { formatDate } from '@/utils/formatDate';
   import FilterCards from '@/components/FilterCards.vue';
+  import ConfirmationDialog from '@/components/ConfirmationDialog';
 
   export default {
     name: 'Home',
     components: {
       FilterCards,
+      ConfirmationDialog,
     },
     data: () => {
       return {
@@ -181,7 +198,7 @@
           this.setAlert({
             alertMessage:
               err.response?.data.error ||
-              'Um erro aconteceu ao carregar formulários.',
+              'Ocorreu um erro ao carregar formulários.',
             alertColor: 'red',
           });
         } finally {
@@ -222,6 +239,11 @@
           not_started: 'Não iniciado',
         }[status];
       },
+      openDeleteFormDialog(form) {
+        this.$refs.showDeleteFormDialog.open(() => {
+          this.deleteFormHandler(form);
+        });
+      },
       async deleteFormHandler(form) {
         try {
           await this.deleteForm({ id: form.id });
@@ -230,7 +252,7 @@
           this.setAlert({
             alertMessage:
               err.response?.data.error ||
-              'Um erro aconteceu ao deletar o formulário.',
+              'Ocorreu um erro ao deletar o formulário.',
             alertColor: 'red',
           });
         }

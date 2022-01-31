@@ -6,7 +6,7 @@
       </span>
 
       <v-text-field
-        v-model="response"
+        v-model="question.response"
         :rules="[rules.required]"
         label="Sua Resposta"
         class="mt-2"
@@ -14,7 +14,7 @@
         suffix="%"
         dense
         outlined
-        :readonly="!!response"
+        :readonly="!canEdit"
       />
     </v-col>
   </v-row>
@@ -30,18 +30,12 @@
         type: Object,
         required: true,
       },
-    },
-    mixins: [rules],
-    computed: {
-      response: {
-        get() {
-          return this.question.responses && this.question.responses[0]?.answer;
-        },
-        set(newVal) {
-          this.question.response = newVal;
-        },
+      canEdit: {
+        type: Boolean,
+        default: true,
       },
     },
+    mixins: [rules],
   };
 </script>
 

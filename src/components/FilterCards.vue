@@ -81,5 +81,6 @@
   .filter-card {
     cursor: pointer;
     border: 1px solid;
+    user-select: none;
   }
 </style>
