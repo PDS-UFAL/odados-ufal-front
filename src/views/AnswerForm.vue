@@ -192,7 +192,7 @@
         )}`;
       },
       isAdmin() {
-        return this.getUser.role === 'admin';
+        return this.getUser?.role === 'admin';
       },
       canEdit() {
         const today = new Date();
