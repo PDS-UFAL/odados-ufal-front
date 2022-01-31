@@ -1,107 +1,117 @@
 <template>
-  <v-card width="100%" elevation="3">
-    <v-card-title>
-      <v-tooltip v-if="!disabled" right>
-        <template v-slot:activator="{ on }">
-          <v-btn icon class="grab" v-on="on">
-            <v-icon>mdi-drag</v-icon>
-          </v-btn>
-        </template>
-        <span>Mover</span>
-      </v-tooltip>
+  <v-layout>
+    <confirmation-dialog
+      ref="showRemoveQuestionDialog"
+      width="300"
+      title="Apagar a pergunta?"
+      description="Esta ação não pode ser desfeita."
+      confirmButton="Apagar"
+    />
 
-      <v-spacer />
-
-      <v-switch
-        label="Obrigatório"
-        v-model="question.required"
-        color="primary"
-        hide-details
-        class="pa-0 ma-0"
-        :disabled="disabled"
-      />
-
-      <template v-if="!disabled">
-        <v-tooltip bottom>
+    <v-card width="100%" elevation="3">
+      <v-card-title>
+        <v-tooltip v-if="!disabled" right>
           <template v-slot:activator="{ on }">
-            <v-btn
-              icon
-              class="ml-sm-8"
-              v-on="on"
-              @click="duplicateQuestion(question)"
-            >
-              <v-icon>mdi-content-copy</v-icon>
+            <v-btn icon class="grab" v-on="on">
+              <v-icon>mdi-drag</v-icon>
             </v-btn>
           </template>
-          <span>Duplicar</span>
+          <span>Mover</span>
         </v-tooltip>
 
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn
-              icon
-              class="ml-sm-4"
-              v-on="on"
-              @click="removeQuestion(question)"
-            >
-              <v-icon>mdi-delete</v-icon>
-            </v-btn>
-          </template>
-          <span>Remover</span>
-        </v-tooltip>
-      </template>
-    </v-card-title>
-    <v-card-text>
-      <v-divider />
-
-      <v-row class="my-8">
-        <v-col cols="12" md="6">
-          <v-text-field
-            v-model="question.title"
-            label="Título da pergunta"
-            dense
-            outlined
-            clearable
-            hide-details
-            :disabled="disabled"
-          />
-        </v-col>
         <v-spacer />
-        <v-col cols="12" md="5">
-          <v-select
-            :items="questionTypes"
-            v-model="question.type"
-            label="Tipo do campo de resposta"
-            :menu-props="{ 'offset-y': true }"
-            dense
-            outlined
-            hide-details
-            :disabled="disabled"
-          />
-        </v-col>
-      </v-row>
 
-      <parameters
-        :question="question"
-        :show="showParameters"
-        :maxChar="hasMaxChar"
-        :range="hasRange"
-        :disabled="disabled"
-      />
-      <options-list
-        :question="question"
-        v-if="hasOptions"
-        :disabled="disabled"
-      />
+        <v-switch
+          label="Obrigatório"
+          v-model="question.required"
+          color="primary"
+          hide-details
+          class="pa-0 ma-0"
+          :disabled="disabled"
+        />
 
-      <template v-if="!disabled">
-        <v-divider class="my-8" />
+        <template v-if="!disabled">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                icon
+                class="ml-sm-8"
+                v-on="on"
+                @click="duplicateQuestion(question)"
+              >
+                <v-icon>mdi-content-copy</v-icon>
+              </v-btn>
+            </template>
+            <span>Duplicar</span>
+          </v-tooltip>
 
-        <span class="text-subtitle-1 font-weight-bold">Como ficará:</span>
-        <component :is="questionType" :question="question" class="mt-2" />
-      </template>
-    </v-card-text>
-  </v-card>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                icon
+                class="ml-sm-4"
+                v-on="on"
+                @click="openRemoveQuestionDialog"
+              >
+                <v-icon>mdi-delete</v-icon>
+              </v-btn>
+            </template>
+            <span>Remover</span>
+          </v-tooltip>
+        </template>
+      </v-card-title>
+      <v-card-text>
+        <v-divider />
+
+        <v-row class="my-8">
+          <v-col cols="12" md="6">
+            <v-text-field
+              v-model="question.title"
+              label="Título da pergunta"
+              dense
+              outlined
+              clearable
+              hide-details
+              :disabled="disabled"
+            />
+          </v-col>
+          <v-spacer />
+          <v-col cols="12" md="5">
+            <v-select
+              :items="questionTypes"
+              v-model="question.type"
+              label="Tipo do campo de resposta"
+              :menu-props="{ 'offset-y': true }"
+              dense
+              outlined
+              hide-details
+              :disabled="disabled"
+            />
+          </v-col>
+        </v-row>
+
+        <parameters
+          :question="question"
+          :show="showParameters"
+          :maxChar="hasMaxChar"
+          :range="hasRange"
+          :disabled="disabled"
+        />
+        <options-list
+          :question="question"
+          v-if="hasOptions"
+          :disabled="disabled"
+        />
+
+        <template v-if="!disabled">
+          <v-divider class="my-8" />
+
+          <span class="text-subtitle-1 font-weight-bold">Como ficará:</span>
+          <component :is="questionType" :question="question" class="mt-2" />
+        </template>
+      </v-card-text>
+    </v-card>
+  </v-layout>
 </template>
 
 <script>
@@ -109,6 +119,8 @@
 
   import Parameters from './Parameters';
   import OptionsList from './OptionsList';
+
+  import ConfirmationDialog from '@/components/ConfirmationDialog';
 
   import ShortText from '@/components/form/answers/ShortText';
   import LargeText from '@/components/form/answers/LargeText';
@@ -135,6 +147,7 @@
     components: {
       Parameters,
       OptionsList,
+      ConfirmationDialog,
     },
     data: () => {
       return {
@@ -153,6 +166,11 @@
     },
     methods: {
       ...mapActions(['removeQuestion', 'duplicateQuestion']),
+      openRemoveQuestionDialog() {
+        this.$refs.showRemoveQuestionDialog.open(() => {
+          this.removeQuestion(this.question);
+        });
+      },
     },
     computed: {
       questionType() {
