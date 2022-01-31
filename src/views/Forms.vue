@@ -52,7 +52,7 @@
             color="primary"
             v-model="startDate"
             locale="pt-br"
-            :min="yesterday"
+            :min="today"
             scrollable
             @input="showStartDatepicker = false"
           />
@@ -91,7 +91,7 @@
             color="primary"
             v-model="endDate"
             locale="pt-br"
-            :min="startDate || yesterday"
+            :min="startDate || today"
             scrollable
             @input="showEndDatepicker = false"
           />
@@ -383,9 +383,8 @@
       viewMode() {
         return !!this.$route.params.id;
       },
-      yesterday() {
+      today() {
         let date = new Date();
-        date.setDate(date.getDate() - 1);
         return date.toISOString();
       },
     },
