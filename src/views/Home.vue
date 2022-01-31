@@ -1,5 +1,13 @@
 <template>
   <v-container>
+    <confirmation-dialog
+      ref="showDeleteFormDialog"
+      width="400"
+      title="Apagar o formulário?"
+      description="Esta ação não pode ser desfeita."
+      confirmButton="Apagar"
+    />
+
     <v-row>
       <filter-cards :options="filters" @clickOption="changeFilter" />
     </v-row>
@@ -93,7 +101,12 @@
               <v-icon> mdi-eye </v-icon>
             </v-btn>
 
-            <v-btn small icon v-if="isAdmin" @click="deleteFormHandler(item)">
+            <v-btn
+              small
+              icon
+              v-if="isAdmin"
+              @click="openDeleteFormDialog(item)"
+            >
               <v-icon> mdi-delete </v-icon>
             </v-btn>
           </template>
@@ -107,11 +120,13 @@
   import { mapActions, mapGetters } from 'vuex';
   import { formatDate } from '@/utils/formatDate';
   import FilterCards from '@/components/FilterCards.vue';
+  import ConfirmationDialog from '@/components/ConfirmationDialog';
 
   export default {
     name: 'Home',
     components: {
       FilterCards,
+      ConfirmationDialog,
     },
     data: () => {
       return {
@@ -221,6 +236,11 @@
           finished: 'Fechado',
           not_started: 'Não iniciado',
         }[status];
+      },
+      openDeleteFormDialog(form) {
+        this.$refs.showDeleteFormDialog.open(() => {
+          this.deleteFormHandler(form);
+        });
       },
       async deleteFormHandler(form) {
         try {
