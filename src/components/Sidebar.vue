@@ -10,8 +10,6 @@
       <v-img src="/logo_nameless.svg" max-width="50%" contain />
     </v-layout>
 
-    <v-divider></v-divider>
-
     <v-list dense nav class="pa-0">
       <v-list-item
         v-for="item in items"

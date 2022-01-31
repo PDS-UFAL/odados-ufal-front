@@ -8,7 +8,7 @@
     </v-row>
 
     <v-row>
-      <v-col cols="12" md="6" class="pa-0">
+      <v-col cols="12" md="5" class="pa-0">
         <v-text-field
           v-model="title"
           name="title"
@@ -22,7 +22,7 @@
 
       <v-spacer />
 
-      <v-col cols="12" md="4" class="pa-0 mr-4">
+      <v-col cols="12" md="3" class="pa-0">
         <v-menu
           v-model="showDatepicker"
           :close-on-content-click="false"
@@ -66,8 +66,8 @@
     </v-row>
 
     <v-row>
-      <v-card elevation="3" class="px-2" width="100%">
-        <v-card-title v-if="!viewMode" class="d-flex justify-end">
+      <v-card elevation="3" class="px-4" width="100%">
+        <v-card-title v-if="!viewMode" class="px-0 d-flex justify-end">
           <v-btn
             @click="checkAll"
             :disabled="selectedSectors.length == sectors.length"
