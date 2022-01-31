@@ -183,7 +183,7 @@
           this.setAlert({
             alertMessage:
               err.response?.data.error ||
-              'Um erro aconteceu ao carregar formulários.',
+              'Ocorreu um erro ao carregar formulários.',
             alertColor: 'red',
           });
         } finally {
@@ -232,7 +232,7 @@
           this.setAlert({
             alertMessage:
               err.response?.data.error ||
-              'Um erro aconteceu ao deletar o formulário.',
+              'Ocorreu um erro ao deletar o formulário.',
             alertColor: 'red',
           });
         }

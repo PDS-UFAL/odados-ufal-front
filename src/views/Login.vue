@@ -98,7 +98,9 @@
         } catch (err) {
           this.error = true;
           this.setAlert({
-            alertMessage: err.response?.data.error || 'Um erro aconteceu',
+            alertMessage:
+              err.response?.data.error ||
+              'Ocorreu um erro ao tentar entrar no sistema',
             alertColor: 'red',
           });
         }
