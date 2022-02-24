@@ -227,7 +227,7 @@
         return (
           {
             open: 'yellow',
-            finished: 'green',
+            closed: 'green',
             not_started: 'red',
           }[status] || 'primary'
         );
@@ -235,7 +235,7 @@
       translatedStatus(status) {
         return {
           open: 'Aberto',
-          finished: 'Fechado',
+          closed: 'Fechado',
           not_started: 'Não iniciado',
         }[status];
       },
