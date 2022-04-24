@@ -375,7 +375,8 @@
 
           this.title = this.form.title;
           this.dates = [this.form.start_date, this.form.end_date];
-
+          this.startDate = this.form.start_date;
+          this.endDate = this.form.end_date;
           // TODO: Refactor when sections are working
           this.setQuestions(this.form.sections[0].questions);
         } catch (err) {
