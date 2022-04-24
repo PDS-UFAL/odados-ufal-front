@@ -98,6 +98,7 @@
           :disabled="disabled"
         />
         <options-list
+          :key="question.id"
           :question="question"
           v-if="hasOptions"
           :disabled="disabled"
