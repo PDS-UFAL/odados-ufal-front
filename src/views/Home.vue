@@ -259,7 +259,7 @@
       },
       viewForm(id) {
         const routeName =
-          this.getUser?.role === 'admin' ? 'ViewForms' : 'AnswerForm';
+          this.getUser?.role === 'admin' ? 'VisualizationForm' : 'AnswerForm';
         this.$router.push({ name: routeName, params: { id } });
       },
       async filterByName(name) {
