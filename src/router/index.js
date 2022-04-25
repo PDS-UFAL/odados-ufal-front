@@ -23,11 +23,6 @@ const routes = [
       },
       {
         path: '/formulario/:id',
-        name: 'ViewForms',
-        component: () => import('@/views/Forms.vue'),
-      },
-      {
-        path: '/formulario/:id',
         name: 'VisualizationForm',
         component: () => import('@/views/FormVisualization.vue'),
       },
