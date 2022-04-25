@@ -37,7 +37,7 @@
           </v-card-text>
         </v-card>
       </v-tab-item>
-      <v-tabs-items v-model="tab2">
+      <v-tabs-items v-model="tab2" v-if="tab == 'tab-2'">
         <v-tab-item style="padding: 8px" :value="'tab2-1'">
           <div v-for="question in questions" :key="question.id">
             <v-card color="basil" style="margin: 16px 0" flat elevation="3">
@@ -53,7 +53,9 @@
             style="width: 256px"
             v-model="select"
             :items="items"
+            item-text="name"
             outlined
+            return-object
           ></v-select>
           <div v-for="question in questions" :key="question.id">
             <v-card color="basil" style="margin: 16px 0" flat elevation="3">
@@ -82,7 +84,7 @@
         tab: null,
         tab2: null,
         questions: [],
-        select: 'teste',
+        select: { name: 'Todos' },
         items: ['teste'],
       };
     },
@@ -98,6 +100,9 @@
         const { data } = await this.fetchForm({ id: this.$route.params.id });
         this.form = { ...data.form };
         this.questions = this.form.sections[0].questions;
+        this.items = this.form.sectors;
+
+        this.items.push({ name: 'Todos' });
       },
     },
   };
