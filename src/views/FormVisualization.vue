@@ -103,7 +103,9 @@
         });
 
         if (this.form.sectors !== undefined) {
-          this.sectors = this.form.sectors;
+          this.sectors = this.form.sectors.filter((sector) => {
+            return sector.status === 'answered';
+          });
           this.sectors.push({ name: 'Todos' });
         }
       },

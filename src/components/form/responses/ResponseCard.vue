@@ -33,8 +33,8 @@
           this.responses = this.question.responses;
         } else {
           //filtrar por setor
-          this.responses = this.responses.filter((response) => {
-            return response.user.sector_id === this.sector_id;
+          this.responses = this.question.responses.filter((response) => {
+            return response.user.sector_id === this.sector.id;
           });
         }
       },
