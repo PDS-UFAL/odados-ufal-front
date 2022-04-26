@@ -1,8 +1,9 @@
 <template>
   <v-card color="basil" style="margin: 16px 0" flat elevation="3">
-    <v-card-title>{{
-      question.title + (question.required ? ' *' : '')
-    }}</v-card-title>
+    <v-card-title
+      >{{ question.title }}
+      <span style="color: red">{{ question.required ? '*' : '' }}</span>
+    </v-card-title>
     <v-divider />
     <v-card-text> Gráfico </v-card-text>
   </v-card>
