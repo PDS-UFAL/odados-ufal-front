@@ -95,23 +95,15 @@
           values = [values];
         }
 
-        console.log('chegou aqui');
-        console.log(this.question.title);
-        console.log(values);
-
         if (this.currentChart.type == 'bar') {
-          console.log('bar');
           this.seriesChart = [
             {
               data: values.map(Number),
             },
           ];
         } else {
-          console.log('outro chart');
           this.seriesChart = values.map(Number);
         }
-
-        console.log(this.seriesChart);
       },
     },
     watch: {
