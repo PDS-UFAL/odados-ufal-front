@@ -46,7 +46,7 @@
               :key="question.id"
               class="my-4"
               :question="question"
-              :sectors="sectorsSelected"
+              :sectorsProps="sectorsSelected"
               :disabled="true"
             />
           </div>
