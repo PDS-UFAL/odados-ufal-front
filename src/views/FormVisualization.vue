@@ -34,7 +34,7 @@
           <v-select
             style="width: 256px"
             label="Setor(es)"
-            v-model="sectorSelected"
+            v-model="sectorsSelected"
             :items="sectors"
             item-text="name"
             outlined
@@ -46,7 +46,7 @@
               :key="question.id"
               class="my-4"
               :question="question"
-              :sector="sectorSelected"
+              :sector="sectorsSelected"
               :disabled="true"
             />
           </div>
@@ -72,7 +72,7 @@
         tab: null,
         questions: [],
         responsesCount: 0,
-        sectorSelected: { name: 'Todos' },
+        sectorsSelected: { name: 'Todos' },
         sectors: [],
       };
     },

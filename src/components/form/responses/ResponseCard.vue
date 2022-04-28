@@ -1,48 +1,120 @@
 <template>
   <v-card color="basil" style="margin: 16px 0" flat elevation="3">
-    <v-card-title
-      >{{ question.title }}
-      <span style="color: red">{{ question.required ? '*' : '' }}</span>
+    <v-card-title>
+      <v-col>
+        {{ question.title }}
+        <span style="color: red">{{ question.required ? '*' : '' }}</span>
+      </v-col>
+      <v-col>
+        <v-select
+          v-model="currentChart"
+          :items="chartTypes"
+          item-text="name"
+          outlined
+          return-object
+        ></v-select>
+      </v-col>
     </v-card-title>
     <v-divider />
-    <v-card-text> Gráfico </v-card-text>
+    <apexchart
+      :type="currentChart.type"
+      :options="optionsChart"
+      :series="seriesChart"
+    ></apexchart>
   </v-card>
 </template>
 <script>
+  import VueApexCharts from 'vue-apexcharts';
+
   export default {
+    components: {
+      apexchart: VueApexCharts,
+    },
     props: {
       question: {
         type: Object,
         required: true,
       },
-      sector: {
-        type: Object,
+      sectors: {
         required: true,
       },
     },
     data: () => {
       return {
         responses: [],
+        answers: [],
+        currentChart: { name: 'Barra', type: 'bar' },
+        chartTypes: [
+          { name: 'Barra', type: 'bar' },
+          { name: 'Pizza', type: 'pie' },
+        ],
+        optionsChart: {},
+        seriesChart: [],
       };
     },
     created() {
       this.getResponses();
+      this.updateOptionsChart();
     },
     methods: {
       getResponses() {
-        if (this.sector.name == 'Todos') {
+        if (this.sectors.name == 'Todos') {
           this.responses = this.question.responses;
-        } else {
-          //filtrar por setor
+        } else if (!Array.isArray(this.sectors)) {
           this.responses = this.question.responses.filter((response) => {
             return response.user.sector_id === this.sector.id;
           });
+        } else {
+          this.responses = this.question.responses.filter((response) => {
+            return this.sectors.find(
+              (sector) => sector.id === response.user.sector_id,
+            );
+          });
+        }
+
+        this.answers = this.question.responses.map(
+          (response) => response.answer,
+        );
+      },
+
+      updateOptionsChart() {
+        if (!Array.isArray(sectors)) {
+          this.optionsChart = {
+            xaxis: {
+              categories: [sectors.name],
+            },
+          };
+        } else {
+          this.optionsChart = {
+            labels: sectors.map((y) => y.name),
+          };
+        }
+      },
+
+      updateSeriesChart() {
+        let values = this.answers;
+        if (!Array.isArray(values)) {
+          values = [values];
+        }
+
+        if (this.currentChart.type == 'bar') {
+          this.seriesChart = [
+            {
+              data: values.map(Number),
+            },
+          ];
+        } else {
+          this.seriesChart = values.map(Number);
         }
       },
     },
     watch: {
       sector() {
         this.getResponses();
+        this.updateOptionsChart();
+      },
+      answers() {
+        this.updateSeriesChart();
       },
     },
   };
