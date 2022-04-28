@@ -58,17 +58,13 @@
     },
     methods: {
       getResponses() {
-        console.log('ghnnn');
         if (this.sectors.name == 'Todos') {
-          console.log('todoss');
           this.responses = this.question.responses;
         } else if (!Array.isArray(this.sectors)) {
-          console.log('n é array');
           this.responses = this.question.responses.filter((response) => {
             return response.user.sector_id === this.sectors.id;
           });
         } else {
-          console.log('s é array');
           this.responses = this.question.responses.filter((response) => {
             return this.sectors.find(
               (sector) => sector.id === response.user.sector_id,
