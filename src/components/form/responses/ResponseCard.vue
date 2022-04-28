@@ -58,13 +58,17 @@
     },
     methods: {
       getResponses() {
+        console.log('ghnnn');
         if (this.sectors.name == 'Todos') {
+          console.log('todoss');
           this.responses = this.question.responses;
         } else if (!Array.isArray(this.sectors)) {
+          console.log('n é array');
           this.responses = this.question.responses.filter((response) => {
-            return response.user.sector_id === this.sector.id;
+            return response.user.sector_id === this.sectors.id;
           });
         } else {
+          console.log('s é array');
           this.responses = this.question.responses.filter((response) => {
             return this.sectors.find(
               (sector) => sector.id === response.user.sector_id,
@@ -72,21 +76,19 @@
           });
         }
 
-        this.answers = this.question.responses.map(
-          (response) => response.answer,
-        );
+        this.answers = this.responses.map((response) => response.answer);
       },
 
       updateOptionsChart() {
-        if (!Array.isArray(sectors)) {
+        if (!Array.isArray(this.sectors)) {
           this.optionsChart = {
             xaxis: {
-              categories: [sectors.name],
+              categories: [this.sectors.name],
             },
           };
         } else {
           this.optionsChart = {
-            labels: sectors.map((y) => y.name),
+            labels: this.sectors.map((y) => y.name),
           };
         }
       },
@@ -97,19 +99,27 @@
           values = [values];
         }
 
+        console.log('chegou aqui');
+        console.log(this.question.title);
+        console.log(values);
+
         if (this.currentChart.type == 'bar') {
+          console.log('bar');
           this.seriesChart = [
             {
               data: values.map(Number),
             },
           ];
         } else {
+          console.log('outro chart');
           this.seriesChart = values.map(Number);
         }
+
+        console.log(this.seriesChart);
       },
     },
     watch: {
-      sector() {
+      sectors() {
         this.getResponses();
         this.updateOptionsChart();
       },

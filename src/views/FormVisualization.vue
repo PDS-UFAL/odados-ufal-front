@@ -46,7 +46,7 @@
               :key="question.id"
               class="my-4"
               :question="question"
-              :sector="sectorsSelected"
+              :sectors="sectorsSelected"
               :disabled="true"
             />
           </div>
@@ -72,7 +72,7 @@
         tab: null,
         questions: [],
         responsesCount: 0,
-        sectorsSelected: { name: 'Todos' },
+        sectorsSelected: {},
         sectors: [],
       };
     },
@@ -106,7 +106,10 @@
           this.sectors = this.form.sectors.filter((sector) => {
             return sector.status === 'answered';
           });
-          this.sectors.push({ name: 'Todos' });
+
+          let sector = { name: 'Todos', allSectors: this.sectors };
+          this.sectors.push(sector);
+          this.sectorsSelected = sector;
         }
       },
     },
