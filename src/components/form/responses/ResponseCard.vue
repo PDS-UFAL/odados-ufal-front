@@ -1,39 +1,58 @@
 <template>
   <v-card color="basil" style="margin: 16px 0" flat elevation="3">
-    <v-card-title>
-      <v-col>
-        {{ question.title }}
-        <span style="color: red">{{ question.required ? '*' : '' }}</span>
-      </v-col>
-      <v-col>
-        <v-select
-          v-model="currentChart"
-          :items="chartTypes"
-          item-text="name"
-          outlined
-          return-object
-        ></v-select>
-      </v-col>
+    <v-card-title class="align-middle">
+      <v-row>
+        <v-col cols="12" md="8">
+          <p style="font-size: 22px; padding-top: 15px">
+            {{ question.title }}
+            <span style="color: red">{{ question.required ? '*' : '' }}</span>
+          </p>
+        </v-col>
+        <v-col cols="12" md="4">
+          <v-select
+            label="Tipo de Visualização"
+            v-model="currentChart"
+            :items="chartTypes"
+            item-text="name"
+            outlined
+            return-object
+          ></v-select>
+        </v-col>
+      </v-row>
     </v-card-title>
     <v-divider />
-    <div v-if="chartQuestionTypes.includes(question.type)">
-      <apexchart
-        :type="currentChart.type"
-        :options="optionsChart"
-        :series="seriesChart"
-      ></apexchart>
-    </div>
-    <div v-else v-for="(answer, index) in answers" :key="index">
-      <p>{{ answer }}</p>
-    </div>
+    <v-card-text>
+      <div v-if="['bar', 'pie', 'line'].includes(currentChart.type)">
+        <chart-card
+          :chartType="currentChart.type"
+          :sectors="sectors"
+          :answers="answers"
+        ></chart-card>
+      </div>
+      <div v-else-if="currentChart.type === 'table'">
+        <table-card
+          :question="question"
+          :sectors="sectors"
+          :responses="responses"
+        ></table-card>
+      </div>
+      <div v-else v-for="response in responses" :key="response.id">
+        <p style="background-color: #f8f9fa">
+          <b>{{ getSectorNameById(response.user.sector_id) }} :</b>
+          {{ response.answer }}
+        </p>
+      </div>
+    </v-card-text>
   </v-card>
 </template>
 <script>
-  import VueApexCharts from 'vue-apexcharts';
+  import ChartCard from './ChartCard.vue';
+  import TableCard from './TableCard.vue';
 
   export default {
     components: {
-      apexchart: VueApexCharts,
+      ChartCard,
+      TableCard,
     },
     props: {
       question: {
@@ -48,25 +67,35 @@
       return {
         responses: [],
         answers: [],
-        currentChart: { name: 'Barra', type: 'bar' },
-        chartTypes: [
-          { name: 'Barra', type: 'bar' },
-          { name: 'Pizza', type: 'pie' },
-          { name: 'Linha', type: 'line' },
-        ],
-        optionsChart: {},
-        seriesChart: [],
+        currentChart: { name: 'Resposta Escrita', type: 'none' },
+        chartTypes: [],
         sectors: [],
         chartQuestionTypes: ['number', 'money', 'percent'],
       };
     },
     created() {
-      this.updateSectors().then(() => {
-        this.getResponses();
-        this.updateOptionsChart();
-      });
+      this.setChartTypes();
+      this.updateSectors();
     },
     methods: {
+      setChartTypes() {
+        if (this.chartQuestionTypes.includes(this.question.type)) {
+          this.currentChart = { name: 'Barra', type: 'bar' };
+          this.chartTypes = [
+            { name: 'Barra', type: 'bar' },
+            { name: 'Pizza', type: 'pie' },
+            { name: 'Linha', type: 'line' },
+            { name: 'Tabela', type: 'table' },
+            { name: 'Resposta Escrita', type: 'none' },
+          ];
+        } else {
+          this.currentChart = { name: 'Resposta Escrita', type: '' };
+          this.chartTypes = [
+            { name: 'Resposta Escrita', type: 'none' },
+            { name: 'Tabela', type: 'table' },
+          ];
+        }
+      },
       updateSectors() {
         if (
           Object.prototype.hasOwnProperty.call(this.sectorsProps, 'name') &&
@@ -133,33 +162,11 @@
         });
       },
 
-      updateOptionsChart() {
-        if (!Array.isArray(this.sectors)) {
-          this.optionsChart = {
-            labels: [this.sectors.name],
-          };
-        } else {
-          this.optionsChart = {
-            labels: this.sectors.map((y) => y.name),
-          };
-        }
-      },
-
-      updateSeriesChart() {
-        let values = this.answers;
-        if (!Array.isArray(values)) {
-          values = [values];
-        }
-
-        if (['bar', 'line'].includes(this.currentChart.type)) {
-          this.seriesChart = [
-            {
-              data: values.map(Number),
-            },
-          ];
-        } else {
-          this.seriesChart = values.map(Number);
-        }
+      getSectorNameById(sectorId) {
+        let sect = this.sectors.filter((sector) => {
+          return sectorId == sector.id;
+        });
+        return sect[0].name;
       },
     },
     watch: {
@@ -168,14 +175,12 @@
       },
       sectors() {
         this.getResponses();
-        this.updateOptionsChart();
-      },
-      answers() {
-        this.updateSeriesChart();
-      },
-      currentChart() {
-        this.updateSeriesChart();
       },
     },
   };
 </script>
+<style>
+  .v-text-field.v-text-field--solo .v-input__control {
+    max-height: 10px;
+  }
+</style>
