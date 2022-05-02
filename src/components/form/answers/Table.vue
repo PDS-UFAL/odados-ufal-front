@@ -41,38 +41,9 @@
 
         <v-col cols="12" md="6">
           <v-row class="ma-0 mb-2 d-flex align-center">
-            <v-col cols="8" sm="9" class="pa-0">
-              <v-text-field
-                v-model="rowToAdd"
-                label="Adicionar linha"
-                dense
-                outlined
-                hide-details
-              />
-            </v-col>
-
-            <v-col>
-              <v-btn
-                color="primary"
-                class="mr-2"
-                @click="addRow"
-                icon
-                outlined
-                small
-              >
-                <v-icon>mdi-plus</v-icon>
-              </v-btn>
-              <v-btn
-                color="red"
-                :disabled="lines.length < 1"
-                @click="removeRow(0)"
-                icon
-                outlined
-                small
-              >
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </v-col>
+            <v-btn color="blue" @click="addRow()" outlined>
+              Adicionar Linha
+            </v-btn>
           </v-row>
         </v-col>
       </v-row>
@@ -87,7 +58,7 @@
           </span>
           <div id="table">
             <v-grid
-              theme="darkCompact"
+              theme="compact"
               :resize="true"
               :autoSizeColumn="true"
               stretch
@@ -135,13 +106,14 @@
       addRow() {
         let grid = document.querySelector('revo-grid');
         let rowUpdate = [...grid.source];
-        rowUpdate.push({
-          name: this.rowToAdd,
-          details: this.lines.length + 1,
-        });
+        let newLine = {};
 
+        for (let i = 0; i < this.columns.length; i++) {
+          newLine[this.columns.map((x) => x.props)[i]] = '';
+        }
+
+        rowUpdate.push(newLine);
         grid.source = rowUpdate;
-
         grid.refresh('all');
         this.lines = rowUpdate;
       },
@@ -149,7 +121,7 @@
         let grid = document.querySelector('revo-grid');
         let columnUpdate = [...grid.columns];
         columnUpdate.push({
-          prop: 'name',
+          prop: this.columnToAdd,
           name: this.columnToAdd,
         });
 
@@ -169,7 +141,7 @@
   }
   .header-wrapper,
   .rowHeaders {
-    background-color: #44475a !important;
+    background-color: #f2f2f2 !important;
   }
   revo-grid {
     height: 50%;
