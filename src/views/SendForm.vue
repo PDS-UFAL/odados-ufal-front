@@ -1,9 +1,208 @@
 <template>
-  <v-container></v-container>
+  <v-container>
+    <v-row class="ml-1">
+      <h3>Enviar Fomulário</h3>
+    </v-row>
+    <v-row>
+      <v-select
+        :items="['Form 1', 'Form 2', 'Form 3']"
+        :rules="[rules.required]"
+        :menu-props="{ 'offset-y': true }"
+        label="Selecionar Fomulário"
+        dense
+        outlined
+        no-data-text="Nenhuma opção disponível"
+        :readonly="loading"
+        cols="12"
+        md="5"
+        class="pa-0"
+      />
+      <v-menu
+        v-model="showStartDatepicker"
+        :close-on-content-click="false"
+        :nudge-right="0"
+        transition="scale-transition"
+        offset-y
+        max-width="290px"
+        min-width="290px"
+        cols="12"
+        md="3"
+        class="pa-0"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-text-field
+            v-on="on"
+            v-bind="attrs"
+            label="Abre em"
+            :value="formatedDate(startDate)"
+            prepend-inner-icon="mdi-calendar"
+            dense
+            readonly
+            outlined
+            clearable
+            @click:clear="startDate = ''"
+            @click:prepend-inner="showStartDatepicker = true"
+            :disabled="viewMode"
+          />
+        </template>
+        <v-date-picker
+          color="primary"
+          v-model="startDate"
+          locale="pt-br"
+          :min="today"
+          scrollable
+          @input="showStartDatepicker = false"
+        />
+      </v-menu>
+      <v-menu
+        v-model="showEndDatepicker"
+        :close-on-content-click="false"
+        :nudge-right="0"
+        transition="scale-transition"
+        offset-y
+        max-width="290px"
+        min-width="290px"
+        cols="12"
+        md="3"
+        class="pa-0"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-text-field
+            v-on="on"
+            v-bind="attrs"
+            label="Fecha em"
+            :value="formatedDate(endDate)"
+            prepend-inner-icon="mdi-calendar"
+            dense
+            readonly
+            outlined
+            clearable
+            @click:clear="dates = []"
+            @click:prepend-inner="showEndDatepicker = true"
+            :disabled="viewMode"
+          />
+        </template>
+        <v-date-picker
+          color="primary"
+          v-model="endDate"
+          locale="pt-br"
+          :min="startDate || today"
+          scrollable
+          @input="showEndDatepicker = false"
+        />
+      </v-menu>
+    </v-row>
+    <v-row>
+      <v-text-field
+        v-model="subtitle"
+        name="title"
+        label="Subtítulo do Formulário"
+        dense
+        outlined
+        clearable
+        :disabled="loading"
+      />
+    </v-row>
+    <v-row class="pt-8 mb-4">
+      <h3>Quem vai responder?</h3>
+    </v-row>
+
+    <v-row>
+      <v-card elevation="3" class="px-4" width="100%">
+        <v-card-title v-if="!viewMode" class="px-0 d-flex justify-end">
+          <v-btn
+            @click="checkAll"
+            :disabled="selectedSectors.length == sectors.length"
+            text
+            small
+          >
+            Marcar todos
+          </v-btn>
+          <v-btn
+            :disabled="selectedSectors.length == 0"
+            text
+            small
+            @click="uncheckAll"
+          >
+            Desmarcar todos
+          </v-btn>
+        </v-card-title>
+
+        <v-card-text class="overflow my-4">
+          <v-row class="pa-0">
+            <v-col class="pa-0">
+              <div class="px-2" v-for="sector in sectors" :key="sector.name">
+                <v-checkbox
+                  v-model="selectedSectors"
+                  :value="sector.id"
+                  :label="sector.name"
+                  :disabled="viewMode"
+                  dense
+                />
+              </div>
+            </v-col>
+          </v-row>
+        </v-card-text>
+      </v-card>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
-  export default {};
+  import { formatDate } from '@/utils/formatDate';
+  import rules from '@/mixins/questionRules';
+  import { mapActions } from 'vuex';
+
+  export default {
+    data: () => {
+      return {
+        loading: false,
+        sectors: [],
+        selectedSectors: [],
+        startDate: '',
+        endDate: '',
+        title: null,
+        showStartDatepicker: false,
+        showEndDatepicker: false,
+        form: null,
+        questions: [],
+        subtitle: '',
+      };
+    },
+    async mounted() {
+      await this.loadSectors();
+    },
+    computed: {
+      today() {
+        let date = new Date();
+        return date.toISOString();
+      },
+      viewMode() {
+        return !!this.$route.params.id;
+      },
+    },
+    methods: {
+      ...mapActions(['fetchSectors']),
+      formatedDate(date) {
+        return formatDate(date);
+      },
+      checkAll() {
+        this.selectedSectors = [...this.sectors.map((sector) => sector.id)];
+      },
+      uncheckAll() {
+        this.selectedSectors = [];
+      },
+      async loadSectors() {
+        try {
+          const { data } = await this.fetchSectors();
+          this.sectors = [...data.sectors];
+        } catch (err) {
+          this.errorFunction(err);
+        }
+      },
+    },
+    mixins: [rules],
+  };
 </script>
 
 <style></style>
