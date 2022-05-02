@@ -145,6 +145,9 @@
         </v-card-text>
       </v-card>
     </v-row>
+    <v-row style="margin-top: 40px">
+      <v-btn color="primary">Enviar</v-btn>
+    </v-row>
   </v-container>
 </template>
 
