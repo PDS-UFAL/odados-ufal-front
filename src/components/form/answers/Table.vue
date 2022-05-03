@@ -20,7 +20,7 @@
                 <v-btn
                   color="primary"
                   class="mr-2"
-                  @click="addColumn"
+                  @click="addColumn()"
                   icon
                   outlined
                   small
@@ -40,14 +40,28 @@
 
         <v-col cols="12" md="6">
           <v-row class="ma-0 mb-2 d-flex align-center">
-            <v-btn color="blue" @click="lockColumn()" outlined>
-              Fixar última coluna
-            </v-btn>
-          </v-row>
+            <v-select
+              :items="this.columns.map((x) => x.name)"
+              v-model="select"
+              :rules="[rules.required]"
+              :menu-props="{ 'offset-y': true }"
+              label="Fixar coluna"
+              class="mt-2"
+              dense
+              outlined
+              no-data-text="Nenhuma opção disponível"
+              :readonly="!canEdit"
+            />
 
-          <v-row>
-            <v-btn color="blue" @click="lockRow()" outlined>
-              Fixar última linha
+            <v-btn
+              color="primary"
+              class="mr-2"
+              @click="lockColumn()"
+              icon
+              outlined
+              small
+            >
+              <v-icon>mdi-plus</v-icon>
             </v-btn>
           </v-row>
         </v-col>
@@ -97,6 +111,7 @@
     mixins: [rules],
     data() {
       return {
+        select: null,
         columns: [],
         rows: [],
         rowHeaders: false,
@@ -138,10 +153,20 @@
         this.columns = columnUpdate;
       },
       lockColumn() {
-        this.columns.at(-1).readonly = true;
+        let grid = document.querySelector('revo-grid');
+        let columnUpdate = [...grid.columns];
+        let index = columnUpdate.map((x) => x.name).indexOf(this.select);
+
+        columnUpdate.at(index).readonly = true;
+
+        grid.columns = columnUpdate;
+
+        grid.refresh('all');
+
+        this.columns = grid.columns;
       },
       lockRow() {
-        let rowToLock = this.rows.at(-1);
+        let rowToLock = this.rows.at(0);
         let key;
         let grid = document.querySelector('revo-grid');
         let columnUpdate = [...grid.columns];
