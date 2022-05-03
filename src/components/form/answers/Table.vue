@@ -4,45 +4,50 @@
       <v-row class="pt-4">
         <v-col cols="12" md="6">
           <v-row class="ma-0 mb-2 d-flex align-center">
-            <v-col cols="8" sm="9" class="pa-0">
-              <v-text-field
-                v-model="columnToAdd"
-                label="Adicionar coluna"
-                dense
-                outlined
-                hide-details
-              />
-            </v-col>
+            <v-row>
+              <v-col>
+                <v-text-field
+                  v-model="columnToAdd"
+                  label="Adicionar coluna"
+                  clearable
+                  dense
+                  outlined
+                  hide-details
+                />
+              </v-col>
 
-            <v-col>
-              <v-btn
-                color="primary"
-                class="mr-2"
-                @click="addColumn"
-                icon
-                outlined
-                small
-              >
-                <v-icon>mdi-plus</v-icon>
+              <v-col>
+                <v-btn
+                  color="primary"
+                  class="mr-2"
+                  @click="addColumn"
+                  icon
+                  outlined
+                  small
+                >
+                  <v-icon>mdi-plus</v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+
+            <v-row>
+              <v-btn color="blue" @click="addRow()" outlined>
+                Adicionar Linha
               </v-btn>
-              <v-btn
-                color="red"
-                :disabled="columns.length < 1"
-                @click="removeColumn(0)"
-                icon
-                outlined
-                small
-              >
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </v-col>
+            </v-row>
           </v-row>
         </v-col>
 
         <v-col cols="12" md="6">
           <v-row class="ma-0 mb-2 d-flex align-center">
-            <v-btn color="blue" @click="addRow()" outlined>
-              Adicionar Linha
+            <v-btn color="blue" @click="lockColumn()" outlined>
+              Fixar última coluna
+            </v-btn>
+          </v-row>
+
+          <v-row>
+            <v-btn color="blue" @click="lockRow()" outlined>
+              Fixar última linha
             </v-btn>
           </v-row>
         </v-col>
@@ -61,8 +66,7 @@
               theme="compact"
               :resize="true"
               :autoSizeColumn="true"
-              stretch
-              :source="lines"
+              :source="rows"
               :columns="columns"
             />
           </div>
@@ -94,8 +98,8 @@
     data() {
       return {
         columns: [],
-        lines: [],
-        rowToAdd: null,
+        rows: [],
+        rowHeaders: false,
         columnToAdd: null,
       };
     },
@@ -106,6 +110,7 @@
       addRow() {
         let grid = document.querySelector('revo-grid');
         let rowUpdate = [...grid.source];
+
         let newLine = {};
 
         for (let i = 0; i < this.columns.length; i++) {
@@ -114,16 +119,42 @@
 
         rowUpdate.push(newLine);
         grid.source = rowUpdate;
+
         grid.refresh('all');
-        this.lines = rowUpdate;
+        this.rows = rowUpdate;
       },
       addColumn() {
         let grid = document.querySelector('revo-grid');
         let columnUpdate = [...grid.columns];
+
         columnUpdate.push({
           prop: this.columnToAdd,
           name: this.columnToAdd,
         });
+
+        grid.columns = columnUpdate;
+
+        grid.refresh('all');
+        this.columns = columnUpdate;
+      },
+      lockColumn() {
+        this.columns.at(-1).readonly = true;
+      },
+      lockRow() {
+        let rowToLock = this.rows.at(-1);
+        let key;
+        let grid = document.querySelector('revo-grid');
+        let columnUpdate = [...grid.columns];
+
+        for (let i = 0; i < columnUpdate.length; i++) {
+          key = columnUpdate[i].prop;
+          columnUpdate[i].children = [
+            {
+              name: rowToLock[key],
+              prop: rowToLock[key],
+            },
+          ];
+        }
 
         grid.columns = columnUpdate;
 
