@@ -26,11 +26,11 @@
             <v-col class="pa-0">
               <v-data-table
                 :headers="headers_1"
-                :items="forms"
+                :items="form_sends"
                 class="elevation-2"
                 disable-pagination
                 hide-default-footer
-                :loading="loading"
+                :loading="loading_sends"
                 loading-text="Carregando... Por favor aguarde"
               >
                 <template slot="no-data">
@@ -77,15 +77,15 @@
                 class="elevation-2"
                 disable-pagination
                 hide-default-footer
-                :loading="loading"
+                :loading="loading_templates"
                 loading-text="Carregando... Por favor aguarde"
               >
                 <template slot="no-data">
                   <div class="">Nenhum formulário encontrado</div>
                 </template>
 
-                <template v-slot:item.end_date="{ item }">
-                  {{ formatDate(item.end_date) }}
+                <template v-slot:item.created_at="{ item }">
+                  {{ formatDate(item.created_at) }}
                 </template>
 
                 <template v-slot:item.actions="{ item }">
@@ -121,16 +121,25 @@
         tab: null,
         select: 'Todos',
         items: ['Todos', 'Abertos', 'Finalizados', 'Não iniciados'],
-        loading: true,
+        loading_sends: true,
+        loading_templates: true,
         forms: [],
-        forms_backup: [],
+        form_sends: [],
+        form_sends_backup: [],
         headers_1: [
           {
             text: 'Título',
-            value: 'title',
+            value: 'subtitle',
             sortable: true,
             align: 'start',
-            width: '40%',
+            width: '25%',
+          },
+          {
+            text: 'Modelo',
+            value: 'form.title',
+            sortable: true,
+            align: 'start',
+            width: '25%',
           },
           { text: 'Status', value: 'status', sortable: false, width: '20%' },
           { text: 'Data inicial', value: 'start_date', sortable: true },
@@ -145,23 +154,23 @@
             align: 'start',
             width: '40%',
           },
-          { text: 'Data de criação', value: 'end_date', sortable: true },
+          { text: 'Data de criação', value: 'created_at', sortable: true },
           { text: 'Ações', value: 'actions', sortable: false, align: 'end' },
         ],
       };
     },
     mounted() {
       this.loadForms();
+      this.loadFormSends();
     },
     methods: {
-      ...mapActions(['fetchForms', 'deleteForm', 'setAlert']),
+      ...mapActions(['fetchForms', 'fetchFormSends', 'deleteForm', 'setAlert']),
       formatDate,
       async loadForms() {
-        this.loading = true;
+        this.loading_templates = true;
         try {
           const { data } = await this.fetchForms({ params: this.params });
           this.forms = data.forms;
-          this.forms_backup = data.forms;
         } catch (err) {
           this.setAlert({
             alertMessage:
@@ -170,7 +179,26 @@
             alertColor: 'red',
           });
         } finally {
-          this.loading = false;
+          this.loading_templates = false;
+        }
+      },
+      async loadFormSends() {
+        this.loading_sends = true;
+        try {
+          const { data } = await this.fetchFormSends({
+            params: this.params,
+          });
+          this.form_sends = data.form_sends;
+          this.form_sends_backup = data.form_sends;
+        } catch (err) {
+          this.setAlert({
+            alertMessage:
+              err.response?.data.error ||
+              'Ocorreu um erro ao carregar formulários.',
+            alertColor: 'red',
+          });
+        } finally {
+          this.loading_sends = false;
         }
       },
       chipStatusColor(status) {
@@ -196,10 +224,10 @@
           'Não iniciados': 'not_started',
         };
         if (this.select !== 'Todos')
-          this.forms = this.forms_backup.filter(
+          this.form_sends = this.form_sends_backup.filter(
             (item) => temp_hash[this.select] === item.status,
           );
-        else this.forms = this.forms_backup;
+        else this.form_sends = this.form_sends_backup;
       },
       viewForm(id) {
         const routeName =

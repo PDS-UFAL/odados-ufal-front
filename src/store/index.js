@@ -4,6 +4,7 @@ import Vuex from 'vuex';
 import Auth from './auth';
 import Alert from './alert';
 import Forms from './forms';
+import FormSends from './form_sends';
 import Answers from './answers';
 import Sectors from './sectors';
 import Questions from './questions';
@@ -15,6 +16,7 @@ const store = new Vuex.Store({
     Auth,
     Alert,
     Forms,
+    FormSends,
     Answers,
     Sectors,
     Questions,
