@@ -17,6 +17,7 @@
         md="5"
         class="pa-0"
       />
+      <div style="width: 50px"></div>
       <v-menu
         v-model="showStartDatepicker"
         :close-on-content-click="false"
@@ -54,6 +55,7 @@
           @input="showStartDatepicker = false"
         />
       </v-menu>
+      <div style="width: 50px"></div>
       <v-menu
         v-model="showEndDatepicker"
         :close-on-content-click="false"
