@@ -5,12 +5,15 @@
     </v-row>
     <v-row>
       <v-select
-        :items="['Form 1', 'Form 2', 'Form 3']"
+        :items="this.forms"
+        v-on:change="this.changeSelectedForm"
         :rules="[rules.required]"
         :menu-props="{ 'offset-y': true }"
         label="Selecionar Fomulário"
         dense
         outlined
+        item-text="title"
+        return-object
         no-data-text="Nenhuma opção disponível"
         :readonly="loading"
         cols="12"
@@ -148,7 +151,7 @@
       </v-card>
     </v-row>
     <v-row style="margin-top: 40px">
-      <v-btn color="primary">Enviar</v-btn>
+      <v-btn color="primary" @click="this.sendForm">Enviar</v-btn>
     </v-row>
   </v-container>
 </template>
@@ -172,10 +175,13 @@
         form: null,
         questions: [],
         subtitle: '',
+        forms: [],
+        selectedForm: {},
       };
     },
     async mounted() {
       await this.loadSectors();
+      await this.loadForms();
     },
     computed: {
       today() {
@@ -187,9 +193,30 @@
       },
     },
     methods: {
-      ...mapActions(['fetchSectors']),
+      ...mapActions(['fetchSectors', 'fetchForms']),
       formatedDate(date) {
         return formatDate(date);
+      },
+      changeSelectedForm(item) {
+        this.selectedForm = item;
+      },
+      sendForm() {
+        let dataToSend = {
+          form_send: {
+            subtitle: this.subtitle,
+            start_date: this.startDate,
+            end_date: this.endDate,
+            form_id: this.selectedForm.id,
+            sector_ids: this.selectedSectors,
+          },
+        };
+        console.log(dataToSend);
+      },
+      loadForms() {
+        this.fetchForms({ params: this.params }).then((value) => {
+          this.forms = value.data.forms;
+        });
+        this.forms = ['Carregando...'];
       },
       checkAll() {
         this.selectedSectors = [...this.sectors.map((sector) => sector.id)];
