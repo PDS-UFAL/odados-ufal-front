@@ -193,7 +193,12 @@
       },
     },
     methods: {
-      ...mapActions(['fetchSectors', 'fetchForms']),
+      ...mapActions([
+        'fetchSectors',
+        'fetchForms',
+        'createFormSend',
+        'setAlert',
+      ]),
       formatedDate(date) {
         return formatDate(date);
       },
@@ -201,16 +206,30 @@
         this.selectedForm = item;
       },
       sendForm() {
-        let dataToSend = {
-          form_send: {
-            subtitle: this.subtitle,
-            start_date: this.startDate,
-            end_date: this.endDate,
-            form_id: this.selectedForm.id,
-            sector_ids: this.selectedSectors,
-          },
-        };
-        console.log(dataToSend);
+        try {
+          let payload = {
+            form_send: {
+              subtitle: this.subtitle,
+              start_date: this.startDate,
+              end_date: this.endDate,
+              form_id: this.selectedForm.id,
+              sector_ids: this.selectedSectors,
+            },
+          };
+          this.createFormSend({ payload }).then(() => {
+            this.setAlert({
+              alertMessage: 'Formulario enviado com sucesso!',
+              alertColor: 'green',
+            });
+          });
+        } catch (e) {
+          this.setAlert({
+            alertMessage:
+              e.response?.data.error ||
+              'Ocorreu um erro ao carregar formulários.',
+            alertColor: 'red',
+          });
+        }
       },
       loadForms() {
         this.fetchForms({ params: this.params }).then((value) => {
