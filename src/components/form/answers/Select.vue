@@ -3,6 +3,7 @@
     <v-col>
       <span class="text-subtitle-1 font-weight-bold">
         {{ question.title }}
+        <span style="color: red">{{ question.required ? '*' : '' }}</span>
       </span>
 
       <v-select
