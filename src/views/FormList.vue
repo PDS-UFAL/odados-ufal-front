@@ -79,6 +79,7 @@
                 hide-default-footer
                 :loading="loading_templates"
                 loading-text="Carregando... Por favor aguarde"
+                v-if="isAdmin"
               >
                 <template slot="no-data">
                   <div class="">Nenhum formulário encontrado</div>
@@ -160,7 +161,7 @@
       };
     },
     mounted() {
-      this.loadForms();
+      if (this.isAdmin) this.loadForms();
       this.loadFormSends();
     },
     methods: {

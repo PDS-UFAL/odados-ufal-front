@@ -4,7 +4,7 @@
       <v-btn @click="back" text fab small class="mr-2">
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
-      <h3>{{ form.title }}</h3>
+      <h3>{{ form.subtitle }}</h3>
 
       <v-spacer />
 
@@ -74,7 +74,7 @@
     },
     methods: {
       ...mapActions([
-        'fetchForm',
+        'fetchFormSend',
         'fetchAnswersBySector',
         'setAlert',
         'setQuestions',
@@ -107,24 +107,26 @@
               sector: this.$route.params.sectorId,
             });
           } else {
-            response = await this.fetchForm({ id: this.$route.params.id });
+            response = await this.fetchFormSend({ id: this.$route.params.id });
           }
 
           const { data } = response;
-          this.form = { ...data.form };
+          this.form = { ...data.form_send };
 
           // TODO: Refactor when sections are working
-          const questions = data.form.sections[0].questions.map((question) => {
-            if (question.responses?.length > 0) {
-              this.hasResponse = true;
-              return {
-                ...question,
-                response: question.responses[0].answer,
-              };
-            }
+          const questions = data.form_send.form.sections[0].questions.map(
+            (question) => {
+              if (question.responses?.length > 0) {
+                this.hasResponse = true;
+                return {
+                  ...question,
+                  response: question.responses[0].answer,
+                };
+              }
 
-            return { ...question };
-          });
+              return { ...question };
+            },
+          );
           this.setQuestions(questions);
         } catch (err) {
           if (err.response?.status === 404) {
@@ -156,7 +158,7 @@
             responses: this.getQuestions.map((question) => {
               return { answer: question.response, question_id: question.id };
             }),
-            form_id: this.$route.params.id,
+            form_send_id: this.$route.params.id,
           };
 
           await this.createAnswers({ payload });
