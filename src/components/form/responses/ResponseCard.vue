@@ -62,6 +62,7 @@
       sectorsProps: {
         required: true,
       },
+      formSends: {},
     },
     data: () => {
       return {

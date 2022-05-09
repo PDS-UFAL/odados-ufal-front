@@ -31,15 +31,24 @@
           <br />
         </v-card>
         <div style="padding: 8px">
-          <v-select
-            style="width: 256px"
-            label="Setor(es)"
-            v-model="sectorsSelected"
-            :items="sectors"
-            item-text="name"
-            outlined
-            return-object
-          ></v-select>
+          <v-row>
+            <v-select
+              label="Setor(es)"
+              v-model="sectorsSelected"
+              :items="sectors"
+              item-text="name"
+              outlined
+              return-object
+            ></v-select>
+            <!-- <v-select
+              label="Setor(es)"
+              v-model="sectorsSelected"
+              :items="sectors"
+              item-text="name"
+              outlined
+              return-object
+            ></v-select> -->
+          </v-row>
           <div>
             <response-card
               v-for="question in questions"
@@ -48,6 +57,7 @@
               :question="question"
               :sectorsProps="sectorsSelected"
               :disabled="true"
+              :formSends="formSends"
             />
           </div>
         </div>
@@ -74,13 +84,15 @@
         responsesCount: 0,
         sectorsSelected: {},
         sectors: [],
+        formSends: null,
       };
     },
     async mounted() {
-      await this.loadForm();
+      // await this.loadForm();
+      await this.loadFormSends();
     },
     methods: {
-      ...mapActions(['fetchForm']),
+      ...mapActions(['fetchForm', 'fetchFormSends']),
       back() {
         this.$router.back();
       },
@@ -102,10 +114,44 @@
           return true;
         });
 
-        if (this.form.sectors !== undefined) {
-          this.sectors = this.form.sectors.filter((sector) => {
-            return sector.status === 'answered';
-          });
+        // if (this.form.sectors !== undefined) {
+        //   this.sectors = this.form.sectors.filter((sector) => {
+        //     return sector.status === 'answered';
+        //   });
+
+        //   let sector = { name: 'Todos', allSectors: this.sectors };
+        //   this.sectors.push(sector);
+        //   this.sectorsSelected = sector;
+        // }
+      },
+      async loadFormSends() {
+        const { data } = await this.fetchFormSends({
+          form_id: this.$route.params.id,
+        });
+        this.formSends = { ...data.form_sends };
+
+        this.form = this.formSends[0].form;
+
+        this.form.sections.forEach((section) => {
+          if (section.questions !== undefined) {
+            this.questions.push(...section.questions);
+          }
+        });
+
+        this.questions.every((question) => {
+          if (question.responses !== undefined) {
+            this.responsesCount = question.responses.length;
+            return false;
+          }
+          return true;
+        });
+
+        if (this.formSends[0].sectors !== undefined) {
+          this.sectors = this.formSends[0].sectors;
+
+          // .filter((sector) => {
+          //   return sector.status === 'answered';
+          // });
 
           let sector = { name: 'Todos', allSectors: this.sectors };
           this.sectors.push(sector);
