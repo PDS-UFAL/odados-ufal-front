@@ -8,13 +8,13 @@
     </v-row>
     <v-tabs centered v-model="tab">
       <v-tab href="#tab-1">PERGUNTAS</v-tab>
-      <v-tab href="#tab-2">RESPOSTAS (0)</v-tab>
+      <v-tab href="#tab-2">RESPOSTAS ({{ responsesCount }})</v-tab>
     </v-tabs>
     <v-tabs-items v-model="tab">
       <v-tab-item style="padding: 8px" :value="'tab-1'">
         <v-card color="basil" flat>
           <h3>Perguntas</h3>
-          <div v-for="question in questions" :key="question.id">
+          <div>
             <question-card
               v-for="question in questions"
               :key="question.id"
@@ -26,46 +26,42 @@
         </v-card>
       </v-tab-item>
       <v-tab-item style="padding: 8px" :value="'tab-2'">
-        <v-card color="basil" style="margin: 16px 0" flat elevation="3">
-          <v-card-title>Respostas</v-card-title>
-          <v-divider />
-          <v-card-text>
-            <v-tabs centered v-model="tab2">
-              <v-tab href="#tab2-1">RESUMO</v-tab>
-              <v-tab href="#tab2-2">INDIVIDUAL</v-tab>
-            </v-tabs>
-          </v-card-text>
+        <v-card color="basil" flat>
+          <h3>Respostas</h3>
+          <br />
         </v-card>
+        <div style="padding: 8px">
+          <v-row>
+            <v-select
+              label="Setor(es)"
+              v-model="sectorsSelected"
+              :items="sectors"
+              item-text="name"
+              outlined
+              return-object
+            ></v-select>
+            <!-- <v-select
+              label="Setor(es)"
+              v-model="sectorsSelected"
+              :items="sectors"
+              item-text="name"
+              outlined
+              return-object
+            ></v-select> -->
+          </v-row>
+          <div>
+            <response-card
+              v-for="question in questions"
+              :key="question.id"
+              class="my-4"
+              :question="question"
+              :sectorsProps="sectorsSelected"
+              :disabled="true"
+              :formSends="formSends"
+            />
+          </div>
+        </div>
       </v-tab-item>
-      <v-tabs-items v-model="tab2" v-if="tab == 'tab-2'">
-        <v-tab-item style="padding: 8px" :value="'tab2-1'">
-          <div v-for="question in questions" :key="question.id">
-            <v-card color="basil" style="margin: 16px 0" flat elevation="3">
-              <v-card-title>{{ question.title }}</v-card-title>
-              <v-divider />
-              <v-card-text> Gráfico </v-card-text>
-            </v-card>
-          </div>
-        </v-tab-item>
-        <v-tab-item style="padding: 8px" :value="'tab2-2'">
-          <p>Setor</p>
-          <v-select
-            style="width: 256px"
-            v-model="select"
-            :items="items"
-            item-text="name"
-            outlined
-            return-object
-          ></v-select>
-          <div v-for="question in questions" :key="question.id">
-            <v-card color="basil" style="margin: 16px 0" flat elevation="3">
-              <v-card-title>{{ question.title }}</v-card-title>
-              <v-divider />
-              <v-card-text> Gráfico </v-card-text>
-            </v-card>
-          </div>
-        </v-tab-item>
-      </v-tabs-items>
     </v-tabs-items>
   </v-container>
 </template>
@@ -73,36 +69,94 @@
 <script>
   import { mapActions } from 'vuex';
   import QuestionCard from '@/components/form/questions/QuestionCard';
+  import ResponseCard from '@/components/form/responses/ResponseCard';
 
   export default {
     components: {
       QuestionCard,
+      ResponseCard,
     },
     data: () => {
       return {
         form: null,
         tab: null,
-        tab2: null,
         questions: [],
-        select: { name: 'Todos' },
-        items: ['teste'],
+        responsesCount: 0,
+        sectorsSelected: {},
+        sectors: [],
+        formSends: null,
       };
     },
     async mounted() {
-      await this.loadForm();
+      // await this.loadForm();
+      await this.loadFormSends();
     },
     methods: {
-      ...mapActions(['fetchForm']),
+      ...mapActions(['fetchForm', 'fetchFormSends']),
       back() {
         this.$router.back();
       },
       async loadForm() {
         const { data } = await this.fetchForm({ id: this.$route.params.id });
         this.form = { ...data.form };
-        this.questions = this.form.sections[0].questions;
-        this.items = this.form.sectors;
 
-        this.items.push({ name: 'Todos' });
+        this.form.sections.forEach((section) => {
+          if (section.questions !== undefined) {
+            this.questions.push(...section.questions);
+          }
+        });
+
+        this.questions.every((question) => {
+          if (question.responses !== undefined) {
+            this.responsesCount = question.responses.length;
+            return false;
+          }
+          return true;
+        });
+
+        // if (this.form.sectors !== undefined) {
+        //   this.sectors = this.form.sectors.filter((sector) => {
+        //     return sector.status === 'answered';
+        //   });
+
+        //   let sector = { name: 'Todos', allSectors: this.sectors };
+        //   this.sectors.push(sector);
+        //   this.sectorsSelected = sector;
+        // }
+      },
+      async loadFormSends() {
+        const { data } = await this.fetchFormSends({
+          form_id: this.$route.params.id,
+        });
+        this.formSends = { ...data.form_sends };
+
+        this.form = this.formSends[0].form;
+
+        this.form.sections.forEach((section) => {
+          if (section.questions !== undefined) {
+            this.questions.push(...section.questions);
+          }
+        });
+
+        this.questions.every((question) => {
+          if (question.responses !== undefined) {
+            this.responsesCount = question.responses.length;
+            return false;
+          }
+          return true;
+        });
+
+        if (this.formSends[0].sectors !== undefined) {
+          this.sectors = this.formSends[0].sectors;
+
+          // .filter((sector) => {
+          //   return sector.status === 'answered';
+          // });
+
+          let sector = { name: 'Todos', allSectors: this.sectors };
+          this.sectors.push(sector);
+          this.sectorsSelected = sector;
+        }
       },
     },
   };

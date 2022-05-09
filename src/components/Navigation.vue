@@ -26,9 +26,15 @@
             roles: ['admin', 'employee'],
           },
           {
-            title: 'Formulário',
+            title: 'Criar Formulário',
             icon: 'mdi-text-box-plus',
             path: '/formulario',
+            roles: ['admin'],
+          },
+          {
+            title: 'Enviar Formulário',
+            icon: 'mdi-file-send',
+            path: '/enviar-formulario',
             roles: ['admin'],
           },
           // {

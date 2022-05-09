@@ -132,6 +132,7 @@
   import Select from '@/components/form/answers/Select';
   import Checkbox from '@/components/form/answers/Checkbox';
   import Radio from '@/components/form/answers/Radio';
+  import Table from '@/components/form/answers/Table';
 
   export default {
     name: 'QuestionCard',
@@ -162,6 +163,7 @@
           { text: 'Lista de opções', value: 'select' },
           { text: 'Caixa de seleção', value: 'checkbox' },
           { text: 'Múltipla escolha', value: 'radio' },
+          { text: 'Tabela', value: 'table' },
         ],
       };
     },
@@ -185,6 +187,7 @@
           select: Select,
           checkbox: Checkbox,
           radio: Radio,
+          table: Table,
         }[this.question.type];
       },
       isShortText() {
@@ -214,6 +217,11 @@
       isRadio() {
         return this.question.type === 'radio';
       },
+
+      isTable() {
+        return this.question.type === 'table';
+      },
+
       hasMaxChar() {
         return this.isShortText || this.isLargeText;
       },
@@ -221,7 +229,7 @@
         return this.isNumber || this.isMoney;
       },
       hasOptions() {
-        return this.isSelect || this.isCheckbox || this.isRadio;
+        return this.isSelect || this.isCheckbox || this.isRadio || this.isT;
       },
       showParameters() {
         return this.hasMaxChar || this.hasRange;
