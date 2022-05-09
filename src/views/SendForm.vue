@@ -3,7 +3,7 @@
     <v-row class="ml-1">
       <h3>Enviar Fomulário</h3>
     </v-row>
-    <v-row>
+    <v-row style="padding-top: 20px">
       <v-select
         :items="this.forms"
         v-on:change="this.changeSelectedForm"
@@ -20,7 +20,9 @@
         md="5"
         class="pa-0"
       />
-      <div style="width: 50px"></div>
+    </v-row>
+    <v-row>
+      <div></div>
       <v-menu
         v-model="showStartDatepicker"
         :close-on-content-click="false"
