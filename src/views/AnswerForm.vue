@@ -12,15 +12,21 @@
     </v-row>
 
     <v-form v-model="valid" ref="form">
-      <template v-for="question in getQuestions">
-        <component
-          :is="questionType(question)"
-          :question="question"
-          class="mt-2"
-          :key="question.id"
-          :canEdit="canEdit"
-        />
-      </template>
+      <v-card
+        v-for="section in form.form.sections"
+        :key="section.id"
+        class="mb-3"
+      >
+        <v-card-title> {{ section.name }}</v-card-title>
+        <v-card-text v-for="question in getQuestions" :key="question.id">
+          <component
+            :is="questionType(question)"
+            :question="question"
+            :key="question.id"
+            :canEdit="canEdit"
+          />
+        </v-card-text>
+      </v-card>
     </v-form>
 
     <div class="save-btn mb-8 mb-md-0" v-if="canEdit">
@@ -190,7 +196,7 @@
       },
     },
     computed: {
-      ...mapGetters(['getQuestions', 'getUser']),
+      ...mapGetters(['getQuestions', 'getUser', 'getSections']),
       relativeTime() {
         if (!this.form.end_date) return null;
 
