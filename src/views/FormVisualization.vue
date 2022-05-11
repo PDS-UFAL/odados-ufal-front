@@ -126,8 +126,16 @@
       },
       async loadFormSends() {
         const { data } = await this.fetchFormSends({
-          form_id: this.$route.params.id,
+          params: {
+            form_id: this.$route.params.id,
+          },
         });
+
+        if (data.form_sends.length === 0) {
+          this.loadForm();
+          return;
+        }
+
         this.formSends = { ...data.form_sends };
 
         this.form = this.formSends[0].form;
