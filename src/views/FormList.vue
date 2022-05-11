@@ -53,7 +53,16 @@
                 </template>
 
                 <template v-slot:item.actions="{ item }">
-                  <v-btn small icon @click="viewForm(item.id)">
+                  <v-btn
+                    small
+                    icon
+                    v-if="isAdmin"
+                    @click="viewForm(item.form.id)"
+                  >
+                    <v-icon> mdi-eye </v-icon>
+                  </v-btn>
+
+                  <v-btn small icon v-else @click="viewForm(item.id)">
                     <v-icon> mdi-eye </v-icon>
                   </v-btn>
 
