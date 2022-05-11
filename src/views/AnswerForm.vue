@@ -18,7 +18,7 @@
         class="mb-3"
       >
         <v-card-title> {{ section.name }}</v-card-title>
-        <v-card-text v-for="question in getQuestions" :key="question.id">
+        <v-card-text v-for="question in section.questions" :key="question.id">
           <component
             :is="questionType(question)"
             :question="question"
