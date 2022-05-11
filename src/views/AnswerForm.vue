@@ -129,19 +129,27 @@
           this.form = { ...data.form_send };
 
           // TODO: Refactor when sections are working
-          const questions = data.form_send.form.sections[0].questions.map(
-            (question) => {
-              if (question.responses?.length > 0) {
-                this.hasResponse = true;
-                return {
-                  ...question,
-                  response: question.responses[0].answer,
-                };
-              }
-
-              return { ...question };
+          let all_questions = [];
+          let sections_questions = data.form_send.form.sections.map(
+            (section) => {
+              return section.questions;
             },
           );
+
+          for (let i = 0; i < sections_questions.length; i++) {
+            all_questions = all_questions.concat(sections_questions[i]);
+          }
+          const questions = all_questions.map((question) => {
+            if (question.responses?.length > 0) {
+              this.hasResponse = true;
+              return {
+                ...question,
+                response: question.responses[0].answer,
+              };
+            }
+
+            return { ...question };
+          });
           this.setQuestions(questions);
         } catch (err) {
           if (err.response?.status === 404) {
@@ -166,11 +174,20 @@
       async saveResponse() {
         try {
           this.loading = true;
-
           this.validateForm();
 
+          //TODO: Refactor question acquisition
+          let all_questions = [];
+          let sections_questions = this.form.form.sections.map((section) => {
+            return section.questions;
+          });
+
+          for (let i = 0; i < sections_questions.length; i++) {
+            all_questions = all_questions.concat(sections_questions[i]);
+          }
+
           const payload = {
-            responses: this.getQuestions.map((question) => {
+            responses: all_questions.map((question) => {
               return { answer: question.response, question_id: question.id };
             }),
             form_send_id: this.$route.params.id,
@@ -196,7 +213,7 @@
       },
     },
     computed: {
-      ...mapGetters(['getQuestions', 'getUser', 'getSections']),
+      ...mapGetters(['getQuestions', 'getUser']),
       relativeTime() {
         if (!this.form.end_date) return null;
 
