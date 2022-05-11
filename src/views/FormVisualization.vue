@@ -49,9 +49,14 @@
               return-object
             ></v-select> -->
           </v-row>
-          <div>
+          <div v-for="section in sections" :key="section.id">
+            <v-card color="basil" style="margin: 16px 0" flat elevation="3">
+              <v-card-title class="align-middle">
+                <h3>{{ section.name }}</h3>
+              </v-card-title>
+            </v-card>
             <response-card
-              v-for="question in questions"
+              v-for="question in section.questions"
               :key="question.id"
               class="my-4"
               :question="question"
@@ -81,6 +86,7 @@
         form: null,
         tab: null,
         questions: [],
+        sections: [],
         responsesCount: 0,
         sectorsSelected: {},
         sectors: [],
@@ -99,6 +105,8 @@
       async loadForm() {
         const { data } = await this.fetchForm({ id: this.$route.params.id });
         this.form = { ...data.form };
+
+        this.sections = this.form.sections;
 
         this.form.sections.forEach((section) => {
           if (section.questions !== undefined) {
@@ -139,6 +147,8 @@
         this.formSends = { ...data.form_sends };
 
         this.form = this.formSends[0].form;
+
+        this.sections = this.form.sections;
 
         this.form.sections.forEach((section) => {
           if (section.questions !== undefined) {
