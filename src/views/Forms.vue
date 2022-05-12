@@ -173,41 +173,67 @@
       <v-spacer />
     </v-row>
 
-    <v-layout column justify-center align-center>
-      <draggable
-        v-model="questions"
-        :disabled="questions.length <= 1"
-        class="questions"
-        handle=".grab"
-        ghost-class="ghost"
-        :scroll-sensitivity="200"
-        @sort="updateQuestions"
-      >
-        <question-card
-          v-for="question in questions"
-          :key="question.id"
-          class="my-4"
-          :question="question"
-          :disabled="viewMode"
-        />
-      </draggable>
+    <div v-for="(section, i) in sections" :key="i">
+      <v-card style="padding: 0 2rem 1rem 2rem; margin: 2rem 0">
+        <v-card-title>
+          Seção 1 de 1
+          <v-spacer></v-spacer>
+          <v-menu bottom left>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn icon v-bind="attrs" v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
 
-      <v-tooltip v-if="!viewMode" top>
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            v-bind="attrs"
-            v-on="on"
-            fab
-            small
-            color="primary"
-            @click="addQuestion"
+            <v-list dense>
+              <v-list-item v-for="(item, i) in items" :key="i" link>
+                <v-list-item-icon>
+                  <v-icon v-text="item.icon"></v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title v-text="item.text"></v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-card-title>
+        <v-layout column justify-center align-center>
+          <draggable
+            v-model="questions"
+            :disabled="questions.length <= 1"
+            class="questions"
+            handle=".grab"
+            ghost-class="ghost"
+            :scroll-sensitivity="200"
+            @sort="updateQuestions"
           >
-            <v-icon>mdi-plus</v-icon>
-          </v-btn>
-        </template>
-        <span>Adicionar pergunta</span>
-      </v-tooltip>
-    </v-layout>
+            <question-card
+              v-for="question in sections[0].questions"
+              :key="question.id"
+              class="my-4"
+              :question="question"
+              :disabled="viewMode"
+            />
+          </draggable>
+
+          <v-tooltip v-if="!viewMode" top>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                v-bind="attrs"
+                v-on="on"
+                fab
+                small
+                color="primary"
+                @click="addQuestion"
+              >
+                <v-icon>mdi-plus</v-icon>
+              </v-btn>
+            </template>
+            <span>Adicionar pergunta</span>
+          </v-tooltip>
+        </v-layout>
+      </v-card>
+    </div>
 
     <div v-if="!viewMode" class="save-btn mb-8 mb-md-0">
       <v-tooltip left>
@@ -246,6 +272,11 @@
     data: () => {
       return {
         loading: false,
+        items: [
+          { text: 'Nova seção', icon: 'mdi-plus' },
+          { text: 'Alterar nome', icon: 'mdi-pencil' },
+          { text: 'Deletar', icon: 'mdi-delete' },
+        ],
         // sectors: [],
         // selectedSectors: [],
         // startDate: '',
@@ -255,6 +286,7 @@
         // showEndDatepicker: false,
         form: null,
         questions: [],
+        sections: [{ name: 'Seção 1 de 1', questions: [] }],
       };
     },
     async mounted() {
@@ -265,7 +297,7 @@
         await this.loadForm();
       }
 
-      this.questions = this.getQuestions;
+      this.sections[0].questions = this.getQuestions;
     },
     methods: {
       ...mapActions([
@@ -388,7 +420,7 @@
         }
       },
       updateQuestions() {
-        this.setQuestions(this.questions);
+        this.setQuestions(this.sections[0].questions);
       },
     },
     computed: {
@@ -413,7 +445,7 @@
       // },
       getQuestions: {
         handler(newValue) {
-          this.questions = [...newValue];
+          this.sections[0].questions = [...newValue];
         },
         deep: true,
       },
