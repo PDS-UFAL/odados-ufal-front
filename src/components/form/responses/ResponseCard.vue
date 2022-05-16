@@ -90,16 +90,15 @@
             { name: 'Tabela', type: 'table' },
             { name: 'Resposta Escrita', type: 'none' },
           ];
+          if (this.question.type !== 'grouped') {
+            this.chartTypes.push({ name: 'Pizza', type: 'pie' });
+          }
         } else {
           this.currentChart = { name: 'Tabela', type: 'table' };
           this.chartTypes = [
             { name: 'Resposta Escrita', type: 'none' },
             { name: 'Tabela', type: 'table' },
           ];
-
-          if (this.question.type !== 'grouped') {
-            this.chartTypes.push({ name: 'Pizza', type: 'pie' });
-          }
         }
       },
       updateSectors() {
