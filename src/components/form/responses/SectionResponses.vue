@@ -68,7 +68,6 @@
               question.type === 'percent' ||
               question.type === 'money'
             ) {
-
               this.groupedQuestion.titles.add(question.title);
 
               let responses = question.responses.map((response) => ({
@@ -116,7 +115,6 @@
             );
 
           this.questions.unshift(this.groupedQuestion);
-
         } else {
           this.questions = this.section.questions.slice();
         }
