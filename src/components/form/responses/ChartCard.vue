@@ -24,10 +24,25 @@
       answers: {
         required: true,
       },
+      question: {
+        required: true,
+      },
     },
     data: () => {
       return {
-        optionsChart: {},
+        optionsChart: {
+          chart: {
+            type: 'bar',
+            height: 350,
+            // stacked: true,
+            toolbar: {
+              show: true,
+            },
+            zoom: {
+              enabled: true,
+            },
+          },
+        },
         seriesChart: [],
       };
     },
@@ -38,30 +53,41 @@
     methods: {
       updateOptionsChart() {
         if (!Array.isArray(this.sectors)) {
-          this.optionsChart = {
-            labels: [this.sectors.name],
-          };
+          this.optionsChart.labels = [this.sectors.abbreviation];
         } else {
-          this.optionsChart = {
-            labels: this.sectors.map((y) => y.name),
-          };
+          this.optionsChart.labels = this.sectors.map((y) => y.abbreviation);
         }
       },
 
       updateSeriesChart() {
-        let values = this.answers;
-        if (!Array.isArray(values)) {
-          values = [values];
-        }
+        this.seriesChart = [];
+        if (this.question.type === 'grouped') {
+          this.question.sectorColumns.forEach((column) => {
+            let serieColumn = {};
+            serieColumn.name = column[0].title;
+            serieColumn.data = [];
 
-        if (['bar', 'line'].includes(this.chartType)) {
-          this.seriesChart = [
-            {
-              data: values.map(Number),
-            },
-          ];
+            column.forEach((item) => {
+              serieColumn.data.push(item.answer);
+            });
+            this.seriesChart.push(serieColumn);
+          });
         } else {
-          this.seriesChart = values.map(Number);
+          let values = this.answers;
+          if (!Array.isArray(values)) {
+            values = [values];
+          }
+
+          if (['bar', 'line'].includes(this.chartType)) {
+            this.seriesChart = [
+              {
+                name: 'Valor',
+                data: values.map(Number),
+              },
+            ];
+          } else {
+            this.seriesChart = values.map(Number);
+          }
         }
       },
     },
@@ -73,6 +99,9 @@
         this.updateSeriesChart();
       },
       chartType() {
+        this.updateSeriesChart();
+      },
+      question() {
         this.updateSeriesChart();
       },
     },

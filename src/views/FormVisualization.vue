@@ -49,11 +49,26 @@
               return-object
             ></v-select> -->
           </v-row>
-          <div v-for="section in sections" :key="section.id">
+
+          <section-responses
+            v-for="section in sections"
+            :key="section.id"
+            :section="section"
+            :sectorsSelected="sectorsSelected"
+            :formSends="formSends"
+          >
+          </section-responses>
+          <!-- <div v-for="section in sections" :key="section.id">
             <v-card color="basil" style="margin: 16px 0" flat elevation="3">
               <v-card-title class="align-middle">
                 <h3>{{ section.name }}</h3>
               </v-card-title>
+              <v-card-text>
+                <v-checkbox
+                  v-model="checkbox"
+                  :label="`Agrupar dados da seção`"
+                ></v-checkbox>
+              </v-card-text>
             </v-card>
             <response-card
               v-for="question in section.questions"
@@ -64,7 +79,7 @@
               :disabled="true"
               :formSends="formSends"
             />
-          </div>
+          </div> -->
         </div>
       </v-tab-item>
     </v-tabs-items>
@@ -74,12 +89,14 @@
 <script>
   import { mapActions } from 'vuex';
   import QuestionCard from '@/components/form/questions/QuestionCard';
-  import ResponseCard from '@/components/form/responses/ResponseCard';
+  // import ResponseCard from '@/components/form/responses/ResponseCard';
+  import SectionResponses from '@/components/form/responses/SectionResponses';
 
   export default {
     components: {
       QuestionCard,
-      ResponseCard,
+      // ResponseCard,
+      SectionResponses,
     },
     data: () => {
       return {
@@ -94,6 +111,7 @@
       };
     },
     async mounted() {
+      this.tab = 'tab-2';
       // await this.loadForm();
       await this.loadFormSends();
     },
@@ -156,25 +174,32 @@
           }
         });
 
+        if (this.formSends[0].sectors !== undefined) {
+          this.sectors = this.formSends[0].sectors;
+        }
+
         this.questions.every((question) => {
           if (question.responses !== undefined) {
             this.responsesCount = question.responses.length;
+
+            let sectorsIds = [];
+            question.responses.every((response) => {
+              sectorsIds.push(response.user.sector_id);
+              return true;
+            });
+
+            this.sectors = this.sectors.filter((sector) => {
+              return sectorsIds.includes(sector.id);
+            });
+
+            let sector = { name: 'Todos', allSectors: this.sectors };
+            this.sectors.push(sector);
+            this.sectorsSelected = sector;
+
             return false;
           }
           return true;
         });
-
-        if (this.formSends[0].sectors !== undefined) {
-          this.sectors = this.formSends[0].sectors;
-
-          // .filter((sector) => {
-          //   return sector.status === 'answered';
-          // });
-
-          let sector = { name: 'Todos', allSectors: this.sectors };
-          this.sectors.push(sector);
-          this.sectorsSelected = sector;
-        }
       },
     },
   };
