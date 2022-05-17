@@ -407,7 +407,7 @@
               sections_attributes: [
                 {
                   name: 'Perguntas',
-                  questions_attributes: [...this.questions],
+                  questions_attributes: [...this.sections[0].questions],
                 },
               ],
             },
