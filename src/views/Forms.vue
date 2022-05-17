@@ -335,7 +335,6 @@
         'resetQuestions',
       ]),
       doItemAction(item, section) {
-        console.log(item.action);
         switch (item.action) {
           case 'createSection':
             this.createFormSection();
@@ -349,7 +348,6 @@
         }
       },
       changeSectionName(section) {
-        console.log(section);
         section.canEdit = !section.canEdit;
       },
       deleteSection(item, section) {
