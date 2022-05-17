@@ -5,11 +5,39 @@ export default {
     state.questions = [...questions];
   },
   [TYPES.RESET_QUESTIONS](state) {
-    state.questions = [JSON.parse(JSON.stringify(state.defaultQuestion))];
+    state.questions = [
+      JSON.parse(
+        JSON.stringify({
+          id: 0,
+          title: null,
+          response: null,
+          required: true,
+          type: 'short-text',
+          max_char: 250,
+          min_value: null,
+          max_value: null,
+          options: [''],
+          file: { name: '', size: '' },
+          fileError: false,
+        }),
+      ),
+    ];
   },
   [TYPES.ADD_QUESTION](state) {
     state.questions.push({
-      ...state.defaultQuestion,
+      ...{
+        id: 0,
+        title: null,
+        response: null,
+        required: true,
+        type: 'short-text',
+        max_char: 250,
+        min_value: null,
+        max_value: null,
+        options: [''],
+        file: { name: '', size: '' },
+        fileError: false,
+      },
       id: state.questions.at(-1).id + 1,
     });
   },

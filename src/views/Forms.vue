@@ -8,7 +8,7 @@
     </v-row>
 
     <v-row>
-      <v-col cols="12" md="5" class="pa-0">
+      <v-col cols="12" class="pa-0">
         <v-text-field
           v-model="title"
           name="title"
@@ -20,9 +20,10 @@
         />
       </v-col>
 
-      <v-spacer />
+      <!-- <v-spacer /> -->
+    </v-row>
 
-      <v-col cols="12" md="3" class="pa-0">
+    <!-- <v-col cols="12" md="3" class="pa-0">
         <v-menu
           v-model="showStartDatepicker"
           :close-on-content-click="false"
@@ -140,9 +141,9 @@
           </v-row>
         </v-card-text>
       </v-card>
-    </v-row>
+    </v-row> -->
 
-    <template v-if="viewMode && formSectors.length > 0">
+    <!-- <template v-if="viewMode && formSectors.length > 0">
       <v-row class="pt-8 mb-4">
         <h3>Respostas</h3>
       </v-row>
@@ -165,7 +166,7 @@
           </v-card-text>
         </v-card>
       </v-row>
-    </template>
+    </template> -->
 
     <v-row class="pt-8">
       <h3>Perguntas</h3>
@@ -245,20 +246,20 @@
     data: () => {
       return {
         loading: false,
-        sectors: [],
-        selectedSectors: [],
-        startDate: '',
-        endDate: '',
+        // sectors: [],
+        // selectedSectors: [],
+        // startDate: '',
+        // endDate: '',
         title: null,
-        showStartDatepicker: false,
-        showEndDatepicker: false,
+        // showStartDatepicker: false,
+        // showEndDatepicker: false,
         form: null,
         questions: [],
       };
     },
     async mounted() {
       this.resetQuestions();
-      await this.loadSectors();
+      // await this.loadSectors();
 
       if (this.$route.params.id) {
         await this.loadForm();
@@ -268,7 +269,7 @@
     },
     methods: {
       ...mapActions([
-        'fetchSectors',
+        // 'fetchSectors',
         'fetchForm',
         'addQuestion',
         'createForm',
@@ -289,9 +290,9 @@
           const payload = {
             form: {
               title: this.title,
-              start_date: this.startDate,
-              end_date: this.endDate,
-              sector_ids: this.selectedSectors,
+              // start_date: this.startDate,
+              // end_date: this.endDate,
+              // sector_ids: this.selectedSectors,
               sections_attributes: [
                 {
                   name: 'Perguntas',
@@ -315,13 +316,14 @@
       back() {
         this.$router.back();
       },
-      checkAll() {
-        this.selectedSectors = [...this.sectors.map((sector) => sector.id)];
-      },
-      uncheckAll() {
-        this.selectedSectors = [];
-      },
+      // checkAll() {
+      //   this.selectedSectors = [...this.sectors.map((sector) => sector.id)];
+      // },
+      // uncheckAll() {
+      //   this.selectedSectors = [];
+      // },
       errorFunction(err) {
+        console.log(err);
         if (err.response?.data.title) {
           this.setAlert({
             alertMessage: 'Título do formuário em branco.',
@@ -356,26 +358,27 @@
           alertColor: 'green',
         });
       },
-      async loadSectors() {
-        try {
-          const { data } = await this.fetchSectors();
-          this.sectors = [...data.sectors];
-        } catch (err) {
-          this.errorFunction(err);
-        }
-      },
+      // async loadSectors() {
+      //   try {
+      //     const { data } = await this.fetchSectors();
+      //     this.sectors = [...data.sectors];
+      //   } catch (err) {
+      //     this.errorFunction(err);
+      //   }
+      // },
       async loadForm() {
         try {
           const { data } = await this.fetchForm({ id: this.$route.params.id });
           this.form = { ...data.form };
 
-          this.selectedSectors = [
-            ...this.form.sectors.map((sector) => sector.id),
-          ];
+          // this.selectedSectors = [
+          //   ...this.form.sectors.map((sector) => sector.id),
+          // ];
 
           this.title = this.form.title;
           this.dates = [this.form.start_date, this.form.end_date];
-
+          this.startDate = this.form.start_date;
+          this.endDate = this.form.end_date;
           // TODO: Refactor when sections are working
           this.setQuestions(this.form.sections[0].questions);
         } catch (err) {
@@ -390,12 +393,12 @@
     },
     computed: {
       ...mapGetters(['getQuestions']),
-      formSectors() {
-        return (
-          this.form?.sectors.filter((sector) => sector.status === 'answered') ||
-          []
-        );
-      },
+      // formSectors() {
+      //   return (
+      //     this.form?.sectors.filter((sector) => sector.status === 'answered') ||
+      //     []
+      //   );
+      // },
       viewMode() {
         return !!this.$route.params.id;
       },
@@ -405,9 +408,9 @@
       },
     },
     watch: {
-      async $route() {
-        await this.loadSectors();
-      },
+      // async $route() {
+      //   await this.loadSectors();
+      // },
       getQuestions: {
         handler(newValue) {
           this.questions = [...newValue];

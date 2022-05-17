@@ -14,7 +14,7 @@ const routes = [
       {
         path: '/',
         name: 'Home',
-        component: () => import('@/views/Home.vue'),
+        component: () => import('@/views/FormList.vue'),
       },
       {
         path: '/formulario',
@@ -22,9 +22,14 @@ const routes = [
         component: () => import('@/views/Forms.vue'),
       },
       {
+        path: '/enviar-formulario',
+        name: 'SendForms',
+        component: () => import('@/views/SendForm.vue'),
+      },
+      {
         path: '/formulario/:id',
-        name: 'ViewForms',
-        component: () => import('@/views/Forms.vue'),
+        name: 'VisualizationForm',
+        component: () => import('@/views/FormVisualization.vue'),
       },
       {
         path: '/resposta/:id/:sectorId?',
