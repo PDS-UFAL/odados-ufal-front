@@ -311,6 +311,7 @@
         disabledSectionNamEdition: false,
         currentFormIndex: 1,
         sections: [{ name: 'Seção 1', questions: [], canEdit: false }],
+        lastSelectableSection: 'Seção 1',
       };
     },
     async mounted() {
@@ -333,6 +334,20 @@
         'setQuestions',
         'resetQuestions',
       ]),
+      addNewQuestion(question, section) {
+        this.lastSelectableSection = section.name;
+        this.addQuestion(question);
+        for (let currentSection in this.sections) {
+          if (
+            this.sections[currentSection].name === this.lastSelectableSection
+          ) {
+            this.sections[currentSection].questions.push(
+              this.getQuestions[this.getQuestions.length - 1],
+            );
+          }
+        }
+        this.sections[0].questions.pop();
+      },
       doItemAction(item, section) {
         switch (item.action) {
           case 'createSection':
