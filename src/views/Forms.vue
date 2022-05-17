@@ -210,8 +210,8 @@
         </v-card-title>
         <v-layout column justify-center align-center>
           <draggable
-            v-model="questions"
-            :disabled="questions.length <= 1"
+            v-model="section.questions"
+            :disabled="section.questions.length <= 1"
             class="questions"
             handle=".grab"
             ghost-class="ghost"
@@ -219,7 +219,7 @@
             @sort="updateQuestions"
           >
             <question-card
-              v-for="question in sections[0].questions"
+              v-for="question in section.questions"
               :key="question.id"
               class="my-4"
               :question="question"
@@ -308,7 +308,6 @@
         // showStartDatepicker: false,
         // showEndDatepicker: false,
         form: null,
-        questions: [],
         disabledSectionNamEdition: false,
         currentFormIndex: 1,
         sections: [{ name: 'Seção 1', questions: [], canEdit: false }],
