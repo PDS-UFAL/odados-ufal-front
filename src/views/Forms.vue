@@ -210,8 +210,8 @@
         </v-card-title>
         <v-layout column justify-center align-center>
           <draggable
-            v-model="section.questions"
-            :disabled="section.questions.length <= 1"
+            v-model="section.questions_attributes"
+            :disabled="section.questions_attributes.length <= 1"
             class="questions"
             handle=".grab"
             ghost-class="ghost"
@@ -219,7 +219,7 @@
             @sort="updateQuestions"
           >
             <question-card
-              v-for="question in section.questions"
+              v-for="question in section.questions_attributes"
               :key="question.id"
               class="my-4"
               :question="question"
@@ -235,7 +235,7 @@
                 fab
                 small
                 color="primary"
-                @click="addQuestion"
+                @click="addQuestion(section)"
               >
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
@@ -310,7 +310,9 @@
         form: null,
         disabledSectionNamEdition: false,
         currentFormIndex: 1,
-        sections: [{ name: 'Seção 1', questions: [], canEdit: false }],
+        // sections: [{ name: 'Seção 1', questions: [], canEdit: false }],
+        sections: [],
+        questions: [],
         lastSelectableSection: 'Seção 1',
       };
     },
@@ -322,36 +324,39 @@
         await this.loadForm();
       }
 
-      this.sections[0].questions = this.getQuestions;
+      // this.sections[0].questions = this.getQuestions;
+      this.sections = this.getSections;
+      this.questions = this.getQuestions;
     },
     methods: {
       ...mapActions([
         // 'fetchSectors',
         'fetchForm',
         'addQuestion',
+        'addSection',
         'createForm',
         'setAlert',
         'setQuestions',
         'resetQuestions',
       ]),
-      addNewQuestion(question, section) {
-        this.lastSelectableSection = section.name;
-        this.addQuestion(question);
-        for (let currentSection in this.sections) {
-          if (
-            this.sections[currentSection].name === this.lastSelectableSection
-          ) {
-            this.sections[currentSection].questions.push(
-              this.getQuestions[this.getQuestions.length - 1],
-            );
-          }
-        }
-        this.sections[0].questions.pop();
-      },
+      // addNewQuestion(question, section) {
+      //   this.lastSelectableSection = section.name;
+      //   this.addQuestion(question);
+      //   for (let currentSection in this.sections) {
+      //     if (
+      //       this.sections[currentSection].name === this.lastSelectableSection
+      //     ) {
+      //       this.sections[currentSection].questions.push(
+      //         this.getQuestions[this.getQuestions.length - 1],
+      //       );
+      //     }
+      //   }
+      //   this.sections[0].questions.pop();
+      // },
       doItemAction(item, section) {
         switch (item.action) {
           case 'createSection':
-            this.createFormSection();
+            this.addSection();
             break;
           case 'changeName':
             this.changeSectionName(section);
@@ -404,12 +409,7 @@
               // start_date: this.startDate,
               // end_date: this.endDate,
               // sector_ids: this.selectedSectors,
-              sections_attributes: [
-                {
-                  name: 'Perguntas',
-                  questions_attributes: [...this.sections[0].questions],
-                },
-              ],
+              sections_attributes: this.sections,
             },
           };
           await this.createForm({ payload });
@@ -503,7 +503,7 @@
       },
     },
     computed: {
-      ...mapGetters(['getQuestions']),
+      ...mapGetters(['getQuestions', 'getSections']),
       // formSectors() {
       //   return (
       //     this.form?.sectors.filter((sector) => sector.status === 'answered') ||
@@ -522,12 +522,12 @@
       // async $route() {
       //   await this.loadSectors();
       // },
-      getQuestions: {
-        handler(newValue) {
-          this.sections[0].questions = [...newValue];
-        },
-        deep: true,
-      },
+      // getQuestions: {
+      //   handler(newValue) {
+      //     this.sections[0].questions = [...newValue];
+      //   },
+      //   deep: true,
+      // },
       startDate(val) {
         if (this.endDate && val > this.endDate) {
           this.endDate = '';

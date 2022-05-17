@@ -7,13 +7,16 @@ export default {
   resetQuestions({ commit }) {
     commit(TYPES.RESET_QUESTIONS);
   },
-  addQuestion({ commit }, question) {
-    commit(TYPES.ADD_QUESTION, question);
+  addQuestion({ commit }, section) {
+    commit(TYPES.ADD_QUESTION, section);
   },
   removeQuestion({ commit }, question) {
     commit(TYPES.REMOVE_QUESTION, question);
   },
   duplicateQuestion({ commit }, question) {
     commit(TYPES.DUPLICATE_QUESTION, question);
+  },
+  addSection({ commit }) {
+    commit(TYPES.ADD_SECTION);
   },
 };
