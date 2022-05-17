@@ -176,7 +176,13 @@
     <div v-for="(section, i) in sections" :key="i">
       <v-card style="padding: 0 2rem 1rem 2rem; margin: 2rem 0">
         <v-card-title>
-          Seção 1 de 1
+          <input
+            type="text"
+            :disabled="disabledSectionNamEdition"
+            :placeholder="section.name"
+            v-model="section.name"
+            :readonly="!section.canEdit"
+          />
           <v-spacer></v-spacer>
           <v-menu bottom left>
             <template v-slot:activator="{ on, attrs }">
@@ -186,7 +192,12 @@
             </template>
 
             <v-list dense>
-              <v-list-item v-for="(item, i) in items" :key="i" link>
+              <v-list-item
+                v-for="(item, i) in items"
+                :key="i"
+                link
+                v-on:click="doItemAction(item, section)"
+              >
                 <v-list-item-icon>
                   <v-icon v-text="item.icon"></v-icon>
                 </v-list-item-icon>
@@ -273,9 +284,21 @@
       return {
         loading: false,
         items: [
-          { text: 'Nova seção', icon: 'mdi-plus' },
-          { text: 'Alterar nome', icon: 'mdi-pencil' },
-          { text: 'Deletar', icon: 'mdi-delete' },
+          {
+            text: 'Nova seção',
+            icon: 'mdi-plus',
+            action: 'createSection',
+          },
+          {
+            text: 'Alterar nome',
+            icon: 'mdi-pencil',
+            action: 'changeName',
+          },
+          {
+            text: 'Deletar',
+            icon: 'mdi-delete',
+            action: 'deleteSection',
+          },
         ],
         // sectors: [],
         // selectedSectors: [],
@@ -286,7 +309,9 @@
         // showEndDatepicker: false,
         form: null,
         questions: [],
-        sections: [{ name: 'Seção 1 de 1', questions: [] }],
+        disabledSectionNamEdition: false,
+        currentFormIndex: 1,
+        sections: [{ name: 'Seção 1', questions: [], canEdit: false }],
       };
     },
     async mounted() {
@@ -309,6 +334,47 @@
         'setQuestions',
         'resetQuestions',
       ]),
+      doItemAction(item, section) {
+        console.log(item.action);
+        switch (item.action) {
+          case 'createSection':
+            this.createFormSection();
+            break;
+          case 'changeName':
+            this.changeSectionName(section);
+            break;
+          case 'deleteSection':
+            this.deleteSection(item, section);
+            break;
+        }
+      },
+      changeSectionName(section) {
+        console.log(section);
+        section.canEdit = !section.canEdit;
+      },
+      deleteSection(item, section) {
+        if (this.currentFormIndex === 1) return;
+        if (this.sections[0] === section) {
+          this.setAlert({
+            alertMessage: 'Não é possível deletar a primeira seção',
+            alertColor: 'red',
+          });
+          return;
+        }
+        for (let i = 0; i < this.sections.length; i++) {
+          if (this.sections[i].name === section.name) {
+            this.sections.splice(i, 1);
+            break;
+          }
+        }
+      },
+      createFormSection() {
+        this.currentFormIndex++;
+        this.sections.push({
+          name: 'Seção ' + this.currentFormIndex,
+          questions: [],
+        });
+      },
       async getFormAnswerBySector(sector) {
         this.$router.push({
           name: 'AnswerForm',
@@ -316,6 +382,7 @@
         });
       },
       async saveForm() {
+        //todo: refactor here
         try {
           this.loading = true;
 
