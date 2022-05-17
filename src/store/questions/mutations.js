@@ -82,6 +82,36 @@ export default {
     state.questions.push(newQuestion);
     state.sections.push(newSection);
   },
+
+  [TYPES.RESET_SECTIONS](state) {
+    let newQuestion = {
+      ...{
+        id: 0,
+        title: null,
+        response: null,
+        required: true,
+        type: 'short-text',
+        max_char: 250,
+        min_value: null,
+        max_value: null,
+        options: [''],
+        file: { name: '', size: '' },
+        fileError: false,
+      },
+    };
+    let newSection = {
+      ...{
+        id: 0,
+        name: 'Seção 1',
+        questions_attributes: [],
+      },
+    };
+    newSection.questions_attributes.push(newQuestion);
+
+    state.questions = [newQuestion];
+    state.sections = [newSection];
+  },
+
   // [TYPES.REMOVE_QUESTION](state, { id }) {
   //   if (state.questions.length === 1) return;
 

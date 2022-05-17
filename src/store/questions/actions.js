@@ -19,4 +19,7 @@ export default {
   addSection({ commit }) {
     commit(TYPES.ADD_SECTION);
   },
+  resetSections({ commit }) {
+    commit(TYPES.RESET_SECTIONS);
+  },
 };

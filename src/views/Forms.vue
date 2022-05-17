@@ -317,7 +317,8 @@
       };
     },
     async mounted() {
-      this.resetQuestions();
+      // this.resetQuestions();
+      this.resetSections();
       // await this.loadSectors();
 
       if (this.$route.params.id) {
@@ -338,6 +339,7 @@
         'setAlert',
         'setQuestions',
         'resetQuestions',
+        'resetSections',
       ]),
       // addNewQuestion(question, section) {
       //   this.lastSelectableSection = section.name;
