@@ -185,6 +185,7 @@
       await this.loadSectors();
       await this.loadForms();
     },
+
     computed: {
       today() {
         let date = new Date();
@@ -215,7 +216,8 @@
               start_date: this.startDate,
               end_date: this.endDate,
               form_id: this.selectedForm.id,
-              sector_ids: this.selectedSectors,
+              year: new Date(this.startDate).getFullYear(),
+              sector_id: this.selectedSectors,
             },
           };
           this.createFormSend({ payload }).then(() => {
