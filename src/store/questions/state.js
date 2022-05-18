@@ -18,6 +18,7 @@ export default {
     {
       id: 0,
       name: 'Seção 1',
+      canEdit: false,
       questions_attributes: [
         {
           id: 0,
