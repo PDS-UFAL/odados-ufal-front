@@ -61,7 +61,7 @@ router.beforeEach((to, from, next) => {
     to.name !== 'Login' &&
     (!store.getters.authenticated || isJwtExpired(store.getters.authToken))
   ) {
-    next({ name: 'Login' });
+    next({ name: 'Login', path: '/login', query: { redirect: to.fullPath } });
   } else {
     next();
   }

@@ -22,11 +22,12 @@
     </v-card-title>
     <v-divider />
     <v-card-text>
-      <div v-if="['bar', 'pie', 'line'].includes(currentChart.type)">
+      <div v-if="['bar', 'pie'].includes(currentChart.type)">
         <chart-card
           :chartType="currentChart.type"
           :sectors="sectors"
           :answers="answers"
+          :question="question"
         ></chart-card>
       </div>
       <div v-else-if="currentChart.type === 'table'">
@@ -71,7 +72,7 @@
         currentChart: { name: 'Resposta Escrita', type: 'none' },
         chartTypes: [],
         sectors: [],
-        chartQuestionTypes: ['number', 'money', 'percent'],
+        chartQuestionTypes: ['number', 'money', 'percent', 'grouped'],
       };
     },
     created() {
@@ -84,13 +85,16 @@
           this.currentChart = { name: 'Barra', type: 'bar' };
           this.chartTypes = [
             { name: 'Barra', type: 'bar' },
-            { name: 'Pizza', type: 'pie' },
-            { name: 'Linha', type: 'line' },
+            // { name: 'Pizza', type: 'pie' },
+            // { name: 'Linha', type: 'line' },
             { name: 'Tabela', type: 'table' },
             { name: 'Resposta Escrita', type: 'none' },
           ];
+          if (this.question.type !== 'grouped') {
+            this.chartTypes.push({ name: 'Pizza', type: 'pie' });
+          }
         } else {
-          this.currentChart = { name: 'Resposta Escrita', type: '' };
+          this.currentChart = { name: 'Tabela', type: 'table' };
           this.chartTypes = [
             { name: 'Resposta Escrita', type: 'none' },
             { name: 'Tabela', type: 'table' },
