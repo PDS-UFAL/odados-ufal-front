@@ -372,7 +372,7 @@
         section.canEdit = !section.canEdit;
       },
       deleteSection(item, section) {
-        if (this.currentFormIndex === 1) return;
+        console.log(section.id);
         if (this.sections[0] === section) {
           this.setAlert({
             alertMessage: 'Não é possível deletar a primeira seção',
