@@ -177,6 +177,7 @@
       <v-card style="padding: 0 2rem 1rem 2rem; margin: 2rem 0">
         <v-card-title>
           <input
+            class="input-name"
             type="text"
             :disabled="disabledSectionNamEdition"
             :placeholder="section.name"
@@ -406,7 +407,7 @@
         this.currentFormIndex++;
         this.sections.push({
           name: 'Seção ' + this.currentFormIndex,
-          canEdit: false,
+          canEdit: true,
           questions_attributes: [
             {
               id: 0,
@@ -584,6 +585,12 @@
 
   .questions {
     width: 100%;
+  }
+
+  .input-name {
+    padding: 10px;
+    border: 1px solid lightgray;
+    border-radius: 10px;
   }
 
   .ghost {
