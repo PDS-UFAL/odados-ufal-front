@@ -110,49 +110,8 @@
         :disabled="loading"
       />
     </v-row>
-    <v-row class="pt-8 mb-4">
-      <h3>Quem vai responder?</h3>
-    </v-row>
 
-    <v-row>
-      <v-card elevation="3" class="px-4" width="100%">
-        <v-card-title v-if="!viewMode" class="px-0 d-flex justify-end">
-          <v-btn
-            @click="checkAll"
-            :disabled="selectedSectors.length == sectors.length"
-            text
-            small
-          >
-            Marcar todos
-          </v-btn>
-          <v-btn
-            :disabled="selectedSectors.length == 0"
-            text
-            small
-            @click="uncheckAll"
-          >
-            Desmarcar todos
-          </v-btn>
-        </v-card-title>
-
-        <v-card-text class="overflow my-4">
-          <v-row class="pa-0">
-            <v-col class="pa-0">
-              <div class="px-2" v-for="sector in sectors" :key="sector.name">
-                <v-checkbox
-                  v-model="selectedSectors"
-                  :value="sector.id"
-                  :label="sector.name"
-                  :disabled="viewMode"
-                  dense
-                />
-              </div>
-            </v-col>
-          </v-row>
-        </v-card-text>
-      </v-card>
-    </v-row>
-    <v-row style="margin-top: 40px">
+    <v-row style="margin-top: 10px">
       <v-btn color="primary" @click="this.sendForm">Enviar</v-btn>
     </v-row>
   </v-container>
@@ -217,7 +176,6 @@
               end_date: this.endDate,
               form_id: this.selectedForm.id,
               year: new Date(this.startDate).getFullYear(),
-              sector_id: this.selectedSectors,
             },
           };
           this.createFormSend({ payload }).then(() => {

@@ -99,7 +99,7 @@
         </v-menu>
       </v-col>
     </v-row>
-
+ -->
     <v-row class="pt-8 mb-4">
       <h3>Quem vai responder?</h3>
     </v-row>
@@ -141,7 +141,8 @@
           </v-row>
         </v-card-text>
       </v-card>
-    </v-row> -->
+    </v-row>
+    -->
 
     <!-- <template v-if="viewMode && formSectors.length > 0">
       <v-row class="pt-8 mb-4">
@@ -177,6 +178,7 @@
       <v-card style="padding: 0 2rem 1rem 2rem; margin: 2rem 0">
         <v-card-title>
           <input
+            class="input-name"
             type="text"
             :disabled="disabledSectionNamEdition"
             :placeholder="section.name"
@@ -210,8 +212,8 @@
         </v-card-title>
         <v-layout column justify-center align-center>
           <draggable
-            v-model="section.questions"
-            :disabled="section.questions.length <= 1"
+            v-model="section.questions_attributes"
+            :disabled="section.questions_attributes.length <= 1"
             class="questions"
             handle=".grab"
             ghost-class="ghost"
@@ -219,7 +221,7 @@
             @sort="updateQuestions"
           >
             <question-card
-              v-for="question in section.questions"
+              v-for="question in section.questions_attributes"
               :key="question.id"
               class="my-4"
               :question="question"
@@ -235,7 +237,7 @@
                 fab
                 small
                 color="primary"
-                @click="addQuestion"
+                @click="addQuestion(section)"
               >
                 <v-icon>mdi-plus</v-icon>
               </v-btn>
@@ -262,6 +264,22 @@
           </v-btn>
         </template>
         <span>Salvar formulário</span>
+      </v-tooltip>
+    </div>
+    <div v-if="!viewMode" class="new-section-btn mb-8 mb-md-0">
+      <v-tooltip left>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            color="primary"
+            v-bind="attrs"
+            v-on="on"
+            @click="createFormSection"
+          >
+            <v-icon>mdi-new-box</v-icon>
+          </v-btn>
+        </template>
+        <span>Nova seção</span>
       </v-tooltip>
     </div>
   </v-container>
@@ -300,8 +318,8 @@
             action: 'deleteSection',
           },
         ],
-        // sectors: [],
-        // selectedSectors: [],
+        sectors: [],
+        selectedSectors: [],
         // startDate: '',
         // endDate: '',
         title: null,
@@ -310,48 +328,55 @@
         form: null,
         disabledSectionNamEdition: false,
         currentFormIndex: 1,
-        sections: [{ name: 'Seção 1', questions: [], canEdit: false }],
+        // sections: [{ name: 'Seção 1', questions: [], canEdit: false }],
+        sections: [],
+        questions: [],
         lastSelectableSection: 'Seção 1',
       };
     },
     async mounted() {
-      this.resetQuestions();
-      // await this.loadSectors();
+      // this.resetQuestions();
+      this.resetSections();
+      await this.loadSectors();
 
       if (this.$route.params.id) {
         await this.loadForm();
       }
 
-      this.sections[0].questions = this.getQuestions;
+      // this.sections[0].questions = this.getQuestions;
+      this.sections = this.getSections;
+      this.questions = this.getQuestions;
     },
     methods: {
       ...mapActions([
-        // 'fetchSectors',
+        'fetchSectors',
         'fetchForm',
         'addQuestion',
+        'addSection',
         'createForm',
         'setAlert',
         'setQuestions',
         'resetQuestions',
+        'resetSections',
       ]),
-      addNewQuestion(question, section) {
-        this.lastSelectableSection = section.name;
-        this.addQuestion(question);
-        for (let currentSection in this.sections) {
-          if (
-            this.sections[currentSection].name === this.lastSelectableSection
-          ) {
-            this.sections[currentSection].questions.push(
-              this.getQuestions[this.getQuestions.length - 1],
-            );
-          }
-        }
-        this.sections[0].questions.pop();
-      },
+      // addNewQuestion(question, section) {
+      //   this.lastSelectableSection = section.name;
+      //   this.addQuestion(question);
+      //   for (let currentSection in this.sections) {
+      //     if (
+      //       this.sections[currentSection].name === this.lastSelectableSection
+      //     ) {
+      //       this.sections[currentSection].questions.push(
+      //         this.getQuestions[this.getQuestions.length - 1],
+      //       );
+      //     }
+      //   }
+      //   this.sections[0].questions.pop();
+      // },
       doItemAction(item, section) {
         switch (item.action) {
           case 'createSection':
-            this.createFormSection();
+            this.addSection();
             break;
           case 'changeName':
             this.changeSectionName(section);
@@ -365,7 +390,6 @@
         section.canEdit = !section.canEdit;
       },
       deleteSection(item, section) {
-        if (this.currentFormIndex === 1) return;
         if (this.sections[0] === section) {
           this.setAlert({
             alertMessage: 'Não é possível deletar a primeira seção',
@@ -384,7 +408,22 @@
         this.currentFormIndex++;
         this.sections.push({
           name: 'Seção ' + this.currentFormIndex,
-          questions: [],
+          canEdit: true,
+          questions_attributes: [
+            {
+              id: 0,
+              title: null,
+              response: null,
+              required: true,
+              type: 'short-text',
+              max_char: 250,
+              min_value: null,
+              max_value: null,
+              options: [''],
+              file: { name: '', size: '' },
+              fileError: false,
+            },
+          ],
         });
       },
       async getFormAnswerBySector(sector) {
@@ -403,13 +442,8 @@
               title: this.title,
               // start_date: this.startDate,
               // end_date: this.endDate,
-              // sector_ids: this.selectedSectors,
-              sections_attributes: [
-                {
-                  name: 'Perguntas',
-                  questions_attributes: [...this.sections[0].questions],
-                },
-              ],
+              sector_ids: this.selectedSectors,
+              sections_attributes: this.sections,
             },
           };
           await this.createForm({ payload });
@@ -427,12 +461,12 @@
       back() {
         this.$router.back();
       },
-      // checkAll() {
-      //   this.selectedSectors = [...this.sectors.map((sector) => sector.id)];
-      // },
-      // uncheckAll() {
-      //   this.selectedSectors = [];
-      // },
+      checkAll() {
+        this.selectedSectors = [...this.sectors.map((sector) => sector.id)];
+      },
+      uncheckAll() {
+        this.selectedSectors = [];
+      },
       errorFunction(err) {
         console.log(err);
         if (err.response?.data.title) {
@@ -469,22 +503,22 @@
           alertColor: 'green',
         });
       },
-      // async loadSectors() {
-      //   try {
-      //     const { data } = await this.fetchSectors();
-      //     this.sectors = [...data.sectors];
-      //   } catch (err) {
-      //     this.errorFunction(err);
-      //   }
-      // },
+      async loadSectors() {
+        try {
+          const { data } = await this.fetchSectors();
+          this.sectors = [...data.sectors];
+        } catch (err) {
+          this.errorFunction(err);
+        }
+      },
       async loadForm() {
         try {
           const { data } = await this.fetchForm({ id: this.$route.params.id });
           this.form = { ...data.form };
 
-          // this.selectedSectors = [
-          //   ...this.form.sectors.map((sector) => sector.id),
-          // ];
+          this.selectedSectors = [
+            ...this.form.sectors.map((sector) => sector.id),
+          ];
 
           this.title = this.form.title;
           this.dates = [this.form.start_date, this.form.end_date];
@@ -503,13 +537,13 @@
       },
     },
     computed: {
-      ...mapGetters(['getQuestions']),
-      // formSectors() {
-      //   return (
-      //     this.form?.sectors.filter((sector) => sector.status === 'answered') ||
-      //     []
-      //   );
-      // },
+      ...mapGetters(['getQuestions', 'getSections']),
+      formSectors() {
+        return (
+          this.form?.sectors.filter((sector) => sector.status === 'answered') ||
+          []
+        );
+      },
       viewMode() {
         return !!this.$route.params.id;
       },
@@ -519,9 +553,9 @@
       },
     },
     watch: {
-      // async $route() {
-      //   await this.loadSectors();
-      // },
+      async $route() {
+        await this.loadSectors();
+      },
       getQuestions: {
         handler(newValue) {
           this.sections[0].questions = [...newValue];
@@ -544,8 +578,20 @@
     right: 32px;
   }
 
+  .new-section-btn {
+    position: fixed;
+    bottom: 100px;
+    right: 32px;
+  }
+
   .questions {
     width: 100%;
+  }
+
+  .input-name {
+    padding: 10px;
+    border: 1px solid lightgray;
+    border-radius: 10px;
   }
 
   .ghost {

@@ -51,4 +51,33 @@ export default {
   [TYPES.DUPLICATE_QUESTION](state, question) {
     state.questions.push({ ...question, id: state.questions.at(-1).id + 1 });
   },
+
+  [TYPES.RESET_SECTIONS](state) {
+    let newQuestion = {
+      ...{
+        id: 0,
+        title: null,
+        response: null,
+        required: true,
+        type: 'short-text',
+        max_char: 250,
+        min_value: null,
+        max_value: null,
+        options: [''],
+        file: { name: '', size: '' },
+        fileError: false,
+      },
+    };
+    let newSection = {
+      ...{
+        id: 0,
+        name: 'Seção 1',
+        questions_attributes: [],
+      },
+    };
+    newSection.questions_attributes.push(newQuestion);
+
+    state.questions = [newQuestion];
+    state.sections = [newSection];
+  },
 };
