@@ -264,6 +264,22 @@
         <span>Salvar formulário</span>
       </v-tooltip>
     </div>
+    <div v-if="!viewMode" class="new-section-btn mb-8 mb-md-0">
+      <v-tooltip left>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            color="primary"
+            v-bind="attrs"
+            v-on="on"
+            @click="createFormSection"
+          >
+            <v-icon>mdi-new-box</v-icon>
+          </v-btn>
+        </template>
+        <span>Nova seção</span>
+      </v-tooltip>
+    </div>
   </v-container>
 </template>
 
@@ -372,7 +388,6 @@
         section.canEdit = !section.canEdit;
       },
       deleteSection(item, section) {
-        console.log(section.id);
         if (this.sections[0] === section) {
           this.setAlert({
             alertMessage: 'Não é possível deletar a primeira seção',
@@ -391,7 +406,22 @@
         this.currentFormIndex++;
         this.sections.push({
           name: 'Seção ' + this.currentFormIndex,
-          questions: [],
+          canEdit: false,
+          questions_attributes: [
+            {
+              id: 0,
+              title: null,
+              response: null,
+              required: true,
+              type: 'short-text',
+              max_char: 250,
+              min_value: null,
+              max_value: null,
+              options: [''],
+              file: { name: '', size: '' },
+              fileError: false,
+            },
+          ],
         });
       },
       async getFormAnswerBySector(sector) {
@@ -543,6 +573,12 @@
   .save-btn {
     position: fixed;
     bottom: 32px;
+    right: 32px;
+  }
+
+  .new-section-btn {
+    position: fixed;
+    bottom: 100px;
     right: 32px;
   }
 
