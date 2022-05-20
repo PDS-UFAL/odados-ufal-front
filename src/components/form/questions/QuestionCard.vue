@@ -160,9 +160,19 @@
           { text: 'Dinheiro', value: 'money' },
           { text: 'Porcentagem', value: 'percent' },
           // { text: 'Arquivo', value: 'file' },
-          { text: 'Lista de opções', value: 'select' },
-          { text: 'Caixa de seleção', value: 'checkbox' },
-          { text: 'Múltipla escolha', value: 'radio' },
+          {
+            text: 'Lista de opções (apenas 1 opção)',
+            value: 'select',
+          },
+          {
+            text: 'Múltipla escolha (apenas 1 opção)',
+            value: 'radio',
+          },
+          {
+            text: 'Caixa de seleção (1 ou mais opções)',
+            value: 'checkbox',
+          },
+
           // { text: 'Tabela', value: 'table' },
         ],
       };
