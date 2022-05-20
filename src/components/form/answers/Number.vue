@@ -5,13 +5,23 @@
         {{ question.title }}
         <span style="color: red">{{ question.required ? '*' : '' }}</span>
       </span>
-
+      <div style="display: flex; justify-content: start">
+        <v-data-table
+          :headers="headers"
+          :items="items"
+          disable-pagination
+          hide-default-footer
+          dense
+          class="elevation-4"
+          style="margin: 1rem 0"
+        ></v-data-table>
+      </div>
       <v-text-field
         v-model="question.response"
         :min="question.min_value"
         :max="question.max_value"
         :rules="[rules.required, ...rules.number]"
-        label="Sua Resposta"
+        label="Sua Resposta (2022)"
         class="mt-2"
         type="number"
         dense
@@ -35,6 +45,12 @@
       canEdit: {
         type: Boolean,
         default: true,
+      },
+      headers: {
+        type: Array,
+      },
+      items: {
+        type: Array,
       },
     },
     mixins: [rules],
