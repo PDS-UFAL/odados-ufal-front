@@ -316,11 +316,6 @@
             action: 'createSection',
           },
           {
-            text: 'Alterar nome',
-            icon: 'mdi-pencil',
-            action: 'changeName',
-          },
-          {
             text: 'Deletar',
             icon: 'mdi-delete',
             action: 'deleteSection',
