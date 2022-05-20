@@ -1,5 +1,12 @@
 <template>
   <v-container class="px-sm-12">
+    <confirmation-dialog
+      ref="deleteSection"
+      width="400"
+      title="Apagar seção?"
+      description="Esta ação não pode ser desfeita."
+      confirmButton="Apagar"
+    />
     <v-row class="pa-0 align-center mt-md-4 mb-8">
       <v-btn @click="back" text fab small class="mr-2">
         <v-icon>mdi-arrow-left</v-icon>
@@ -290,12 +297,14 @@
   import { mapActions, mapGetters } from 'vuex';
   import { formatDate } from '@/utils/formatDate';
   import QuestionCard from '@/components/form/questions/QuestionCard';
+  import ConfirmationDialog from '@/components/ConfirmationDialog';
 
   export default {
     name: 'CreateForms',
     components: {
       QuestionCard,
       draggable,
+      ConfirmationDialog,
     },
     data: () => {
       return {
@@ -398,7 +407,9 @@
         }
         for (let i = 0; i < this.sections.length; i++) {
           if (this.sections[i].name === section.name) {
-            this.sections.splice(i, 1);
+            this.$refs.deleteSection.open(() => {
+              this.sections.splice(i, 1);
+            });
             break;
           }
         }
