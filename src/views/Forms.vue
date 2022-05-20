@@ -1,5 +1,12 @@
 <template>
   <v-container class="px-sm-12">
+    <confirmation-dialog
+      ref="deleteSection"
+      width="400"
+      title="Apagar seção?"
+      description="Esta ação não pode ser desfeita."
+      confirmButton="Apagar"
+    />
     <v-row class="pa-0 align-center mt-md-4 mb-8">
       <v-btn @click="back" text fab small class="mr-2">
         <v-icon>mdi-arrow-left</v-icon>
@@ -177,6 +184,7 @@
       <v-card style="padding: 0 2rem 1rem 2rem; margin: 2rem 0">
         <v-card-title>
           <input
+            class="input-name"
             type="text"
             :disabled="disabledSectionNamEdition"
             :placeholder="section.name"
@@ -264,6 +272,22 @@
         <span>Salvar formulário</span>
       </v-tooltip>
     </div>
+    <div v-if="!viewMode" class="new-section-btn mb-8 mb-md-0">
+      <v-tooltip left>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            color="primary"
+            v-bind="attrs"
+            v-on="on"
+            @click="createFormSection"
+          >
+            <v-icon>mdi-new-box</v-icon>
+          </v-btn>
+        </template>
+        <span>Nova seção</span>
+      </v-tooltip>
+    </div>
   </v-container>
 </template>
 
@@ -273,12 +297,14 @@
   import { mapActions, mapGetters } from 'vuex';
   import { formatDate } from '@/utils/formatDate';
   import QuestionCard from '@/components/form/questions/QuestionCard';
+  import ConfirmationDialog from '@/components/ConfirmationDialog';
 
   export default {
     name: 'CreateForms',
     components: {
       QuestionCard,
       draggable,
+      ConfirmationDialog,
     },
     data: () => {
       return {
@@ -288,11 +314,6 @@
             text: 'Nova seção',
             icon: 'mdi-plus',
             action: 'createSection',
-          },
-          {
-            text: 'Alterar nome',
-            icon: 'mdi-pencil',
-            action: 'changeName',
           },
           {
             text: 'Deletar',
@@ -372,7 +393,6 @@
         section.canEdit = !section.canEdit;
       },
       deleteSection(item, section) {
-        console.log(section.id);
         if (this.sections[0] === section) {
           this.setAlert({
             alertMessage: 'Não é possível deletar a primeira seção',
@@ -382,7 +402,9 @@
         }
         for (let i = 0; i < this.sections.length; i++) {
           if (this.sections[i].name === section.name) {
-            this.sections.splice(i, 1);
+            this.$refs.deleteSection.open(() => {
+              this.sections.splice(i, 1);
+            });
             break;
           }
         }
@@ -391,7 +413,22 @@
         this.currentFormIndex++;
         this.sections.push({
           name: 'Seção ' + this.currentFormIndex,
-          questions: [],
+          canEdit: true,
+          questions_attributes: [
+            {
+              id: 0,
+              title: null,
+              response: null,
+              required: true,
+              type: 'short-text',
+              max_char: 250,
+              min_value: null,
+              max_value: null,
+              options: [''],
+              file: { name: '', size: '' },
+              fileError: false,
+            },
+          ],
         });
       },
       async getFormAnswerBySector(sector) {
@@ -546,8 +583,20 @@
     right: 32px;
   }
 
+  .new-section-btn {
+    position: fixed;
+    bottom: 100px;
+    right: 32px;
+  }
+
   .questions {
     width: 100%;
+  }
+
+  .input-name {
+    padding: 10px;
+    border: 1px solid lightgray;
+    border-radius: 10px;
   }
 
   .ghost {

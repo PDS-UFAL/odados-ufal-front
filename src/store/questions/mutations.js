@@ -73,7 +73,7 @@ export default {
     let newSection = {
       ...{
         name: 'Seção ' + (state.sections.at(-1).id + 2),
-        canEdit: false,
+        canEdit: true,
         questions_attributes: [],
       },
       id: state.sections.at(-1).id + 1,
@@ -104,7 +104,7 @@ export default {
       ...{
         id: 0,
         name: 'Seção 1',
-        canEdit: false,
+        canEdit: true,
         questions_attributes: [],
       },
     };
