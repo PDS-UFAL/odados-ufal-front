@@ -51,8 +51,11 @@ export default {
       ...state.questions.filter((question) => question.id !== id),
     ];
   },
-  [TYPES.DUPLICATE_QUESTION](state, question) {
-    state.questions.push({ ...question, id: state.questions.at(-1).id + 1 });
+  [TYPES.DUPLICATE_QUESTION](state, { question, section }) {
+    let newQuestion = { ...question, id: state.questions.at(-1).id + 1 };
+
+    state.questions.push(newQuestion);
+    section.questions_attributes.push(newQuestion);
   },
   [TYPES.ADD_SECTION](state) {
     let newQuestion = {

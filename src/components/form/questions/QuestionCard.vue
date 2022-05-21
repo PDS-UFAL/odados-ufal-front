@@ -37,7 +37,7 @@
                 icon
                 class="ml-sm-8"
                 v-on="on"
-                @click="duplicateQuestion(question)"
+                @click="duplicateQuestion({ question, section })"
               >
                 <v-icon>mdi-content-copy</v-icon>
               </v-btn>
@@ -144,6 +144,9 @@
       disabled: {
         type: Boolean,
         default: false,
+      },
+      section: {
+        required: true,
       },
     },
     components: {

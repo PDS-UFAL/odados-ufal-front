@@ -13,8 +13,8 @@ export default {
   removeQuestion({ commit }, question) {
     commit(TYPES.REMOVE_QUESTION, question);
   },
-  duplicateQuestion({ commit }, question) {
-    commit(TYPES.DUPLICATE_QUESTION, question);
+  duplicateQuestion({ commit }, { question, section }) {
+    commit(TYPES.DUPLICATE_QUESTION, { question, section });
   },
   addSection({ commit }) {
     commit(TYPES.ADD_SECTION);
