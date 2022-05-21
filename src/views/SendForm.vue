@@ -140,7 +140,6 @@
             <v-col class="pa-0">
               <div class="px-2" v-for="sector in sectors" :key="sector.name">
                 <v-checkbox
-                  v-if="sector.id >= 18"
                   v-model="selectedSectors"
                   :value="sector.id"
                   :label="sector.name"
@@ -249,7 +248,11 @@
       async loadSectors() {
         try {
           const { data } = await this.fetchSectors();
-          this.sectors = [...data.sectors];
+          this.sectors = data.sectors.filter((sector) => {
+            return sector.id >= 18;
+          });
+
+          // [...data.sectors];
         } catch (err) {
           this.errorFunction(err);
         }
