@@ -78,7 +78,11 @@
                 sector_name: this.getSectorNameById(response.user.sector_id),
               }));
 
-              if (!Array.isArray(this.sectorsSelected)) {
+              if (
+                !Array.isArray(this.sectorsSelected) &&
+                this.sectorsSelected.name !== 'Todos'
+              ) {
+                console.log('entrou aqui');
                 responses = responses.filter((response) => {
                   return response.user.sector_id === this.sectorsSelected.id;
                 });
