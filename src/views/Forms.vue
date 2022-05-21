@@ -86,6 +86,7 @@
               :key="question.id"
               class="my-4"
               :question="question"
+              :section="section"
               :disabled="viewMode"
             />
           </draggable>
