@@ -32,32 +32,40 @@
         </v-card>
         <div style="padding: 8px">
           <v-row>
-            <v-select
-              label="Setor(es)"
-              v-model="sectorsSelected"
-              :items="sectors"
-              item-text="name"
-              outlined
-              return-object
-            ></v-select>
-            <!-- <v-select
-              label="Setor(es)"
-              v-model="sectorsSelected"
-              :items="sectors"
-              item-text="name"
-              outlined
-              return-object
-            ></v-select> -->
+            <v-col cols="10" md="6">
+              <v-select
+                label="Formulário Enviado"
+                v-model="formSendSelected"
+                :items="formSends"
+                item-text="subtitle"
+                outlined
+                return-object
+              ></v-select>
+            </v-col>
+            <v-col cols="10" md="6">
+              <v-select
+                label="Setor(es)"
+                v-model="sectorsSelected"
+                :items="sectors"
+                item-text="name"
+                outlined
+                return-object
+              ></v-select>
+            </v-col>
           </v-row>
 
-          <section-responses
-            v-for="section in sections"
-            :key="section.id"
-            :section="section"
-            :sectorsSelected="sectorsSelected"
-            :formSends="formSends"
-          >
-          </section-responses>
+          <div v-if="sectors.length === 1">Nenhuma Resposta Encontrada</div>
+          <div v-else>
+            <section-responses
+              v-for="section in sections"
+              :key="section.id"
+              :section="section"
+              :sectorsSelected="sectorsSelected"
+              :formSends="formSends"
+            >
+            </section-responses>
+          </div>
+
           <!-- <div v-for="section in sections" :key="section.id">
             <v-card color="basil" style="margin: 16px 0" flat elevation="3">
               <v-card-title class="align-middle">
@@ -106,8 +114,9 @@
         sections: [],
         responsesCount: 0,
         sectorsSelected: {},
+        formSendSelected: {},
         sectors: [],
-        formSends: null,
+        formSends: [],
       };
     },
     async mounted() {
@@ -162,9 +171,22 @@
           return;
         }
 
-        this.formSends = { ...data.form_sends };
+        this.formSends = [...data.form_sends];
+        this.formSendSelected = this.formSends[0];
+        this.updateFormSend();
+      },
+      updateFormSend() {
+        this.form = {};
+        this.sections = [];
+        this.questions = [];
+        this.sectors = [];
+        this.responsesCount = 0;
 
-        this.form = this.formSends[0].form;
+        if (this.formSendSelected.sectors === undefined) {
+          return;
+        }
+
+        this.form = this.formSendSelected.form;
 
         this.sections = this.form.sections;
 
@@ -174,9 +196,7 @@
           }
         });
 
-        if (this.formSends[0].sectors !== undefined) {
-          this.sectors = this.formSends[0].sectors;
-        }
+        this.sectors = this.formSendSelected.sectors;
 
         this.questions.every((question) => {
           if (question.responses !== undefined) {
@@ -200,6 +220,11 @@
           }
           return true;
         });
+      },
+    },
+    watch: {
+      formSendSelected() {
+        this.updateFormSend();
       },
     },
   };

@@ -140,6 +140,7 @@
             <v-col class="pa-0">
               <div class="px-2" v-for="sector in sectors" :key="sector.name">
                 <v-checkbox
+                  v-if="sector.id >= 18"
                   v-model="selectedSectors"
                   :value="sector.id"
                   :label="sector.name"
