@@ -105,9 +105,6 @@
       async loadForm() {
         try {
           let response;
-          // console.log(this.$route.params.sectorId);
-          // console.log(this.getUser?.sector_id);
-
           if (this.$route.params.sectorId || this.getUser?.sector_id) {
             const sectorId =
               this.$route.params.sectorId != undefined
@@ -119,9 +116,7 @@
               formId: this.$route.params.id,
               sector: sectorId,
             });
-            // console.log(response);
           } else {
-            // console.log('entrou sem filtro');
             response = await this.fetchFormSend({ id: this.$route.params.id });
           }
 
