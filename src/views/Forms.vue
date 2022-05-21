@@ -583,6 +583,7 @@
               this.sections[sectionIndex].questions_attributes.push(
                 newValue[newValue.length - 1],
               );
+              return;
             }
           }
         }
