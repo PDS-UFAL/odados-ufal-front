@@ -42,6 +42,11 @@ export default {
     };
 
     state.questions.push(newQuestion);
+    for (let i = 0; i < state.sections.length; i++) {
+      if (section.name === state.sections[i]) {
+        state.sections[i].questions_attributes.push(newQuestion);
+      }
+    }
     section.questions_attributes.push(newQuestion);
   },
   [TYPES.REMOVE_QUESTION](state, { id }) {
