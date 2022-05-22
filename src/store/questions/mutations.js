@@ -42,18 +42,20 @@ export default {
     };
 
     state.questions.push(newQuestion);
-    for (let i = 0; i < state.sections.length; i++) {
-      if (section.name === state.sections[i]) {
-        state.sections[i].questions_attributes.push(newQuestion);
-      }
-    }
     section.questions_attributes.push(newQuestion);
   },
-  [TYPES.REMOVE_QUESTION](state, { id }) {
+  [TYPES.REMOVE_QUESTION](state, { question, section }) {
     if (state.questions.length === 1) return;
-
+    for (let questionIndex in section.questions_attributes) {
+      if (section.questions_attributes[questionIndex] === question) {
+        section.questions_attributes.splice(questionIndex, 1);
+        break;
+      }
+    }
     state.questions = [
-      ...state.questions.filter((question) => question.id !== id),
+      ...state.questions.filter(
+        (currentQuestion) => currentQuestion.id !== question.id,
+      ),
     ];
   },
   [TYPES.DUPLICATE_QUESTION](state, { question, section }) {

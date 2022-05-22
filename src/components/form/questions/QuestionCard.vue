@@ -184,7 +184,10 @@
       ...mapActions(['removeQuestion', 'duplicateQuestion']),
       openRemoveQuestionDialog() {
         this.$refs.showRemoveQuestionDialog.open(() => {
-          this.removeQuestion(this.question);
+          this.removeQuestion({
+            question: this.question,
+            section: this.section,
+          });
         });
       },
     },

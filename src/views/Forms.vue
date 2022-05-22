@@ -423,27 +423,6 @@
       //   },
       //   deep: true,
       // },
-      questions(newValue) {
-        let counter = 0;
-        for (let sectionIndex in this.sections) {
-          counter += this.sections[sectionIndex].questions_attributes.length;
-        }
-        if (newValue.length === counter) return;
-        for (let sectionIndex in this.sections) {
-          for (let questionIndex in this.sections[sectionIndex]
-            .questions_attributes) {
-            if (
-              this.sections[sectionIndex].questions_attributes[questionIndex]
-                .title === newValue[newValue.length - 1].title
-            ) {
-              this.sections[sectionIndex].questions_attributes.push(
-                newValue[newValue.length - 1],
-              );
-              return;
-            }
-          }
-        }
-      },
       startDate(val) {
         if (this.endDate && val > this.endDate) {
           this.endDate = '';
