@@ -248,7 +248,11 @@
       async loadSectors() {
         try {
           const { data } = await this.fetchSectors();
-          this.sectors = [...data.sectors];
+          this.sectors = data.sectors.filter((sector) => {
+            return sector.id >= 18;
+          });
+
+          // [...data.sectors];
         } catch (err) {
           this.errorFunction(err);
         }

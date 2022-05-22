@@ -98,7 +98,7 @@
       },
       getSectorNameById(sectorId) {
         if (!Array.isArray(this.sectors)) {
-          return this.sector.name;
+          return this.sectors.name;
         }
         let sect = this.sectors.filter((sector) => {
           return sectorId == sector.id;

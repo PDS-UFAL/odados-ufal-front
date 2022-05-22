@@ -77,6 +77,16 @@
                 sector_id: response.user.sector_id,
                 sector_name: this.getSectorNameById(response.user.sector_id),
               }));
+
+              if (
+                !Array.isArray(this.sectorsSelected) &&
+                this.sectorsSelected.name !== 'Todos'
+              ) {
+                responses = responses.filter((response) => {
+                  return response.user.sector_id === this.sectorsSelected.id;
+                });
+              }
+
               this.groupedQuestion.responses =
                 this.groupedQuestion.responses.concat(responses);
             } else {
@@ -131,7 +141,9 @@
         };
       },
       getSectorNameById(sectorId) {
-        if (
+        if (!Array.isArray(this.sectorsSelected)) {
+          return this.sectorsSelected.name;
+        } else if (
           Object.prototype.hasOwnProperty.call(this.sectorsSelected, 'name') &&
           this.sectorsSelected.name == 'Todos'
         ) {
@@ -151,6 +163,12 @@
     },
     watch: {
       groupData() {
+        this.updateQuestions();
+      },
+      section() {
+        this.updateQuestions();
+      },
+      sectorsSelected() {
         this.updateQuestions();
       },
     },
