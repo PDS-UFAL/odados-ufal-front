@@ -10,8 +10,8 @@ export default {
   addQuestion({ commit }, section) {
     commit(TYPES.ADD_QUESTION, section);
   },
-  removeQuestion({ commit }, question) {
-    commit(TYPES.REMOVE_QUESTION, question);
+  removeQuestion({ commit }, { question, section }) {
+    commit(TYPES.REMOVE_QUESTION, { question: question, section: section });
   },
   duplicateQuestion({ commit }, { question, section }) {
     commit(TYPES.DUPLICATE_QUESTION, { question, section });
