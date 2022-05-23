@@ -1,5 +1,8 @@
 <template>
-  <v-app id="app">
+  <v-app
+    id="app"
+    :style="{ background: $vuetify.theme.themes[theme].background }"
+  >
     <router-view />
 
     <Alert />
@@ -12,6 +15,11 @@
   export default {
     components: {
       Alert,
+    },
+    computed: {
+      theme() {
+        return this.$vuetify.theme.dark ? 'dark' : 'light';
+      },
     },
   };
 </script>

@@ -84,6 +84,15 @@ export default {
     state.sections.push(newSection);
   },
 
+
+  // [TYPES.REMOVE_QUESTION](state, { id }) {
+  //   if (state.questions.length === 1) return;
+
+  //   state.questions = [
+  //     ...state.questions.filter((question) => question.id !== id),
+  //   ];
+  // },
+
   [TYPES.RESET_SECTIONS](state) {
     let newQuestion = {
       ...{
@@ -104,7 +113,6 @@ export default {
       ...{
         id: 0,
         name: 'Seção 1',
-        canEdit: true,
         questions_attributes: [],
       },
     };
@@ -113,12 +121,4 @@ export default {
     state.questions = [newQuestion];
     state.sections = [newSection];
   },
-
-  // [TYPES.REMOVE_QUESTION](state, { id }) {
-  //   if (state.questions.length === 1) return;
-
-  //   state.questions = [
-  //     ...state.questions.filter((question) => question.id !== id),
-  //   ];
-  // },
 };

@@ -16,6 +16,7 @@ const opts = {
         green: '#6AD90B',
         red: '#D91636',
         yellow: '#D9D016',
+        background: '#f4f5f7',
         'snow-white': '#F8F9FA',
         'cloudy-grey': '#353B42',
         'muddy-grey': '#666666',
