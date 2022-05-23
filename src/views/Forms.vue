@@ -386,7 +386,7 @@
           this.startDate = this.form.start_date;
           this.endDate = this.form.end_date;
           // TODO: Refactor when sections are working
-          this.setQuestions(this.form.sections[0].questions);
+          this.setQuestions(this.form.sections[0].questions_attributes);
         } catch (err) {
           if (err.response?.status === 404) {
             this.$router.push({ name: 'CreateForms' });
@@ -394,7 +394,7 @@
         }
       },
       updateQuestions() {
-        this.setQuestions(this.sections[0].questions);
+        this.setQuestions(this.sections[0].questions_attributes);
       },
     },
     computed: {
