@@ -53,9 +53,21 @@
     methods: {
       updateOptionsChart() {
         if (!Array.isArray(this.sectors)) {
-          this.optionsChart.labels = [this.sectors.abbreviation];
+          this.optionsChart = {
+            ...this.chartOptions,
+            ...{
+              labels: [this.sectors.abbreviation],
+            },
+          };
         } else {
-          this.optionsChart.labels = this.sectors.map((y) => y.abbreviation);
+          this.optionsChart = {
+            ...this.chartOptions,
+            ...{
+              labels: this.sectors.map((y) => y.abbreviation),
+            },
+          };
+
+          // this.optionsChart.labels = this.sectors.map((y) => y.abbreviation);
         }
       },
 
