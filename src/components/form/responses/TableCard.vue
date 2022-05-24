@@ -6,6 +6,7 @@
   ></v-data-table>
 </template>
 <script>
+  import { mapActions } from 'vuex';
   export default {
     props: {
       question: {
@@ -39,12 +40,15 @@
     watch: {
       question() {
         this.updateData();
+        this.updateFormResult();
       },
       sectors() {
         this.updateData();
+        this.updateFormResult();
       },
       responses() {
         this.updateData();
+        this.updateFormResult();
       },
 
       // props() {
@@ -52,6 +56,7 @@
       // },
     },
     methods: {
+      ...mapActions(['createFormResult', 'resetFormResult']),
       updateData() {
         this.headers = [
           {
@@ -93,6 +98,7 @@
               sectorName: this.getSectorNameById(response.user.sector_id),
               answer: response.answer,
             });
+            console.log(this.rows);
           });
         }
       },
@@ -104,6 +110,18 @@
           return sectorId == sector.id;
         });
         return sect[0].name;
+      },
+      updateFormResult() {
+        this.resetFormResult();
+        let form_result = {
+          question_id: this.question.id,
+          header: this.headers,
+          rows: this.rows,
+          question_title: this.question.title,
+          type: 'table',
+        };
+
+        this.createFormResult(form_result);
       },
     },
   };

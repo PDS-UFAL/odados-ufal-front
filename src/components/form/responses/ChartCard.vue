@@ -8,6 +8,7 @@
 
 <script>
   import VueApexCharts from 'vue-apexcharts';
+  import { mapActions } from 'vuex';
 
   export default {
     components: {
@@ -51,6 +52,7 @@
       this.updateSeriesChart();
     },
     methods: {
+      ...mapActions(['createFormResult', 'resetFormResult']),
       updateOptionsChart() {
         if (!Array.isArray(this.sectors)) {
           this.optionsChart = {
@@ -101,6 +103,18 @@
             this.seriesChart = values.map(Number);
           }
         }
+      },
+      updateFormResult() {
+        this.resetFormResult();
+        let form_result = {
+          question_id: this.question.id,
+          header: this.optionsChart,
+          rows: this.seriesChart,
+          question_title: this.question.title,
+          type: 'chart',
+        };
+
+        this.createFormResult(form_result);
       },
     },
     watch: {
