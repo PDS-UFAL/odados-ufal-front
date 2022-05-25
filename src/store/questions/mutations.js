@@ -94,7 +94,6 @@ export default {
     state.sections.push(newSection);
   },
 
-
   // [TYPES.REMOVE_QUESTION](state, { id }) {
   //   if (state.questions.length === 1) return;
 
@@ -123,6 +122,7 @@ export default {
       ...{
         id: 0,
         name: 'Seção 1',
+        canEdit: true,
         questions_attributes: [],
       },
     };

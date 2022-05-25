@@ -149,7 +149,6 @@
         </v-card-text>
       </v-card>
     </v-row>
-    -->
 
     <!-- <template v-if="viewMode && formSectors.length > 0">
       <v-row class="pt-8 mb-4">
@@ -450,12 +449,7 @@
               // start_date: this.startDate,
               // end_date: this.endDate,
               // sector_ids: this.selectedSectors,
-              sections_attributes: [
-                {
-                  name: 'Perguntas',
-                  questions_attributes: [...this.sections[0].questions],
-                },
-              ],
+              sections_attributes: this.sections,
             },
           };
           await this.createForm({ payload });
@@ -549,7 +543,7 @@
       },
     },
     computed: {
-      ...mapGetters(['getQuestions']),
+      ...mapGetters(['getQuestions', 'getSections']),
       // formSectors() {
       //   return (
       //     this.form?.sectors.filter((sector) => sector.status === 'answered') ||
@@ -568,12 +562,12 @@
       // async $route() {
       //   await this.loadSectors();
       // },
-      getQuestions: {
-        handler(newValue) {
-          this.sections[0].questions = [...newValue];
-        },
-        deep: true,
-      },
+      // getQuestions: {
+      //   handler(newValue) {
+      //     this.sections[0].questions = [...newValue];
+      //   },
+      //   deep: true,
+      // },
       startDate(val) {
         if (this.endDate && val > this.endDate) {
           this.endDate = '';
