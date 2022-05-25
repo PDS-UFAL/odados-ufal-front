@@ -27,6 +27,11 @@ const routes = [
         component: () => import('@/views/SendForm.vue'),
       },
       {
+        path: '/inserir-historico',
+        name: 'CreateHistory',
+        component: () => import('@/views/FormHistoric.vue'),
+      },
+      {
         path: '/formulario/:id',
         name: 'VisualizationForm',
         component: () => import('@/views/FormVisualization.vue'),
