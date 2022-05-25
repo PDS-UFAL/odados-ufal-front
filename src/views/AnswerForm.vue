@@ -13,14 +13,14 @@
 
     <v-form v-model="valid" ref="form">
       <v-card
-        v-for="section in form.form.sections"
+        v-for="(section, i) in form.form.sections"
         :key="section.id"
         class="mb-3"
       >
         <v-card-title> {{ section.name }}</v-card-title>
         <v-card-text
           style="margin-top: 1rem"
-          v-for="question in section.questions"
+          v-for="(question, j) in section.questions"
           :key="question.id"
         >
           <component
@@ -28,8 +28,11 @@
             :question="question"
             :key="question.id"
             :canEdit="canEdit"
-            :headers="headers"
-            :items="items"
+            :responses="
+              sectionsTable[i]
+                ? sectionsTable[i].questions[j].responses[0]
+                : sectionsTable
+            "
           />
         </v-card-text>
       </v-card>
@@ -77,57 +80,13 @@
         loading: false,
         valid: false,
         hasResponse: false,
-        headers: [
-          {
-            text: '2017',
-            sortable: false,
-            value: '1',
-            width: '6rem',
-            class: 'grey--text darken-3',
-          },
-          {
-            text: '2018',
-            sortable: false,
-            value: '2',
-            width: '6rem',
-            class: 'grey--text darken-3',
-          },
-          {
-            text: '2019',
-            sortable: false,
-            value: '3',
-            width: '6rem',
-            class: 'grey--text darken-3',
-          },
-          {
-            text: '2020',
-            sortable: false,
-            value: '4',
-            width: '6rem',
-            class: 'grey--text darken-3',
-          },
-          {
-            text: '2021',
-            sortable: false,
-            value: '5',
-            width: '6rem',
-            class: 'grey--text darken-3',
-          },
-        ],
-        items: [
-          {
-            1: 5,
-            2: 159,
-            3: 6.0,
-            4: 24,
-            5: 4.0,
-          },
-        ],
+        sectionsTable: [],
       };
     },
     async mounted() {
       if (this.$route.params.id) {
         await this.loadForm();
+        await this.loadSends();
       }
     },
     methods: {
@@ -137,6 +96,7 @@
         'setAlert',
         'setQuestions',
         'createAnswers',
+        'fetchFormShowSends',
       ]),
       back() {
         this.$router.back();
@@ -153,6 +113,12 @@
           checkbox: Checkbox,
           radio: Radio,
         }[question.type];
+      },
+      async loadSends() {
+        const { data } = await this.fetchFormShowSends({
+          id: this.form.form.id,
+        });
+        this.sectionsTable = data.form.sections;
       },
       async loadForm() {
         try {
