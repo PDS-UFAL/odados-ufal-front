@@ -81,9 +81,6 @@
       responses: function () {
         this.generateTable();
       },
-      question: function () {
-        this.generateTable();
-      },
     },
     computed: {
       getCurrentYear() {
