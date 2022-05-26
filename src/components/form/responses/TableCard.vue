@@ -1,9 +1,12 @@
 <template>
-  <v-data-table
-    :headers="headers"
-    :items="rows"
-    hide-default-footer
-  ></v-data-table>
+  <div>
+    <v-btn>Baixar tabela</v-btn>
+    <v-data-table
+      :headers="headers"
+      :items="rows"
+      hide-default-footer
+    ></v-data-table>
+  </div>
 </template>
 <script>
   import { mapActions } from 'vuex';
@@ -40,15 +43,15 @@
     watch: {
       question() {
         this.updateData();
-        this.updateFormResult();
+        //this.updateFormResult();
       },
       sectors() {
         this.updateData();
-        this.updateFormResult();
+        // this.updateFormResult();
       },
       responses() {
         this.updateData();
-        this.updateFormResult();
+        //   this.updateFormResult();
       },
 
       // props() {
@@ -98,7 +101,7 @@
               sectorName: this.getSectorNameById(response.user.sector_id),
               answer: response.answer,
             });
-            console.log(this.rows);
+            //console.log(this.rows);
           });
         }
       },
@@ -111,7 +114,7 @@
         });
         return sect[0].name;
       },
-      updateFormResult() {
+      /* updateFormResult() {
         this.resetFormResult();
         let form_result = {
           question_id: this.question.id,
@@ -122,7 +125,8 @@
         };
 
         this.createFormResult(form_result);
-      },
+      },*/
+      downloadTable() {},
     },
   };
 </script>

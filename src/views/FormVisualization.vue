@@ -53,6 +53,7 @@
               ></v-select>
             </v-col>
           </v-row>
+          <v-btn @click="downloadAll">Baixar respostas</v-btn>
 
           <div v-if="sectors.length === 1">Nenhuma Resposta Encontrada</div>
           <div v-else>
@@ -62,6 +63,7 @@
               :section="section"
               :sectorsSelected="sectorsSelected"
               :formSends="formSends"
+              :download="download"
             >
             </section-responses>
           </div>
@@ -95,7 +97,8 @@
 </template>
 
 <script>
-  import { mapActions } from 'vuex';
+  import { mapActions, mapGetters } from 'vuex';
+  import store from '../store';
   import QuestionCard from '@/components/form/questions/QuestionCard';
   // import ResponseCard from '@/components/form/responses/ResponseCard';
   import SectionResponses from '@/components/form/responses/SectionResponses';
@@ -108,8 +111,10 @@
     },
     data: () => {
       return {
+        download: false,
         form: null,
         tab: null,
+        form_results: store.state.FormResults.form_results,
         questions: [],
         sections: [],
         responsesCount: 0,
@@ -125,7 +130,8 @@
       await this.loadFormSends();
     },
     methods: {
-      ...mapActions(['fetchForm', 'fetchFormSends']),
+      ...mapActions(['fetchForm', 'fetchFormSends', 'resetFormResults']),
+      ...mapGetters(['fetchFormResults']),
       back() {
         this.$router.back();
       },
@@ -221,10 +227,53 @@
           return true;
         });
       },
+      async downloadAll() {
+        this.download = true;
+
+        /*this.form_results.forEach((form_result) => {
+          var hiddenElement = document.createElement('a');
+
+          hiddenElement.href = form_result.uri;
+          hiddenElement.target = '_blank';
+          hiddenElement.download = 'myFile.png';
+          hiddenElement.click();
+        });*/
+        // this.download = false;
+      },
+      numberOfResults() {
+        let count = 0;
+        this.questions.forEach((question) => {
+          if (['number', 'money', 'percent'].includes(question.type)) {
+            count += 2;
+          } else if (question.type == 'grouped') {
+            count += 2;
+          }
+          //  } else {
+          //   count += 1;
+          //  }
+        });
+        return count;
+      },
     },
     watch: {
       formSendSelected() {
         this.updateFormSend();
+      },
+      form_results() {
+        if (this.form_results.length == this.numberOfResults()) {
+          this.form_results.forEach((form_result) => {
+            var hiddenElement = document.createElement('a');
+
+            hiddenElement.href = form_result.uri;
+            hiddenElement.target = '_blank';
+            hiddenElement.download = form_result.question_title.concat('.png');
+            hiddenElement.click();
+          });
+          this.download = false;
+
+          this.resetFormResults();
+          this.form_results = store.state.FormResults.form_results;
+        }
       },
     },
   };

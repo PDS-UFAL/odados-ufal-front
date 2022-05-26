@@ -19,6 +19,7 @@
       :sectorsProps="sectorsSelected"
       :disabled="true"
       :formSends="formSends"
+      :download="download"
     />
   </div>
 </template>
@@ -31,6 +32,10 @@
       ResponseCard,
     },
     props: {
+      download: {
+        type: Boolean,
+        required: true,
+      },
       section: {
         type: Object,
         required: true,

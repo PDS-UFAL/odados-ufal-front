@@ -22,22 +22,33 @@
     </v-card-title>
     <v-divider />
     <v-card-text>
-      <div v-if="['bar', 'pie'].includes(currentChart.type)">
-        <chart-card
-          :chartType="currentChart.type"
-          :sectors="sectors"
-          :answers="answers"
-          :question="question"
-        ></chart-card>
+      <div v-if="chartQuestionTypes.includes(question.type)">
+        <div
+          v-for="item in ['bar', 'pie']"
+          :key="item"
+          v-show="item === currentChart.type"
+        >
+          <chart-card
+            :chartType="item"
+            :sectors="sectors"
+            :answers="answers"
+            :question="question"
+            :download="download"
+          ></chart-card>
+        </div>
       </div>
-      <div v-else-if="currentChart.type === 'table'">
+      <div v-show="currentChart.type === 'table'">
         <table-card
           :question="question"
           :sectors="sectors"
           :responses="responses"
         ></table-card>
       </div>
-      <div v-else v-for="response in responses" :key="response.id">
+      <div
+        v-show="['bar', 'pie', 'table'].includes(currentChart)"
+        v-for="response in responses"
+        :key="response.id"
+      >
         <p style="background-color: #f8f9fa">
           <b>{{ getSectorNameById(response.user.sector_id) }} :</b>
           {{ response.answer }}
@@ -47,6 +58,7 @@
   </v-card>
 </template>
 <script>
+  import { mapActions } from 'vuex';
   import ChartCard from './ChartCard.vue';
   import TableCard from './TableCard.vue';
 
@@ -56,6 +68,10 @@
       TableCard,
     },
     props: {
+      download: {
+        type: Boolean,
+        required: true,
+      },
       question: {
         type: Object,
         required: true,
@@ -78,8 +94,10 @@
     created() {
       this.setChartTypes();
       this.updateSectors();
+      // this.addFormResult();
     },
     methods: {
+      ...mapActions(['createFormResult']),
       setChartTypes() {
         if (this.chartQuestionTypes.includes(this.question.type)) {
           this.currentChart = { name: 'Barra', type: 'bar' };
@@ -176,13 +194,34 @@
         });
         return sect[0].name;
       },
+      addFormResult() {
+        let form_result, results;
+        this.chartTypes.forEach((chartType) => {
+          if (chartType.type == 'table') {
+            results = this.responses;
+          } else {
+            results = this.answers;
+          }
+          form_result = {
+            id: chartType.type.concat(this.question.id),
+            type: chartType.type,
+            sectors: this.sectors,
+            question: this.question,
+            results: results,
+          };
+
+          this.createFormResult(form_result);
+        });
+      },
     },
     watch: {
       sectorsProps() {
         this.updateSectors();
+        //this.addFormResult();
       },
       sectors() {
         this.getResponses();
+        // this.addFormResult();
       },
     },
   };

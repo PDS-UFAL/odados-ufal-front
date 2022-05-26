@@ -1,9 +1,13 @@
 <template>
-  <apexchart
-    :type="chartType"
-    :options="optionsChart"
-    :series="seriesChart"
-  ></apexchart>
+  <div>
+    <v-btn @click="downloadChart">Baixar gráfico</v-btn>
+    <apexchart
+      ref="chart"
+      :type="chartType"
+      :options="optionsChart"
+      :series="seriesChart"
+    ></apexchart>
+  </div>
 </template>
 
 <script>
@@ -15,6 +19,10 @@
       apexchart: VueApexCharts,
     },
     props: {
+      download: {
+        type: Boolean,
+        required: true,
+      },
       chartType: {
         type: String,
         required: true,
@@ -51,8 +59,13 @@
       this.updateOptionsChart();
       this.updateSeriesChart();
     },
+
     methods: {
       ...mapActions(['createFormResult', 'resetFormResult']),
+      mountedHandler(e, chartContext) {
+        console.log(chartContext);
+        //     this.updateFormResult();
+      },
       updateOptionsChart() {
         if (!Array.isArray(this.sectors)) {
           this.optionsChart = {
@@ -104,17 +117,33 @@
           }
         }
       },
-      updateFormResult() {
-        this.resetFormResult();
-        let form_result = {
-          question_id: this.question.id,
-          header: this.optionsChart,
-          rows: this.seriesChart,
-          question_title: this.question.title,
-          type: 'chart',
-        };
 
-        this.createFormResult(form_result);
+      updateFormResult() {
+        if (this.chartType != 'table')
+          this.$refs.chart.chart.dataURI().then((uri) => {
+            let form_result = {
+              id: this.chartType.concat(this.question.id),
+              question_id: this.question.id,
+              header: this.optionsChart,
+              rows: this.seriesChart,
+              uri: uri.imgURI,
+              question_title: this.question.title,
+              type: 'chart',
+            };
+
+            this.createFormResult(form_result);
+          });
+      },
+
+      downloadChart() {
+        this.$refs.chart.chart.dataURI().then((uri) => {
+          var hiddenElement = document.createElement('a');
+
+          hiddenElement.href = uri.imgURI;
+          hiddenElement.target = '_blank';
+          hiddenElement.download = this.question.title.concat('.png');
+          hiddenElement.click();
+        });
       },
     },
     watch: {
@@ -129,6 +158,9 @@
       },
       question() {
         this.updateSeriesChart();
+      },
+      download() {
+        if (this.download) this.updateFormResult();
       },
     },
   };
