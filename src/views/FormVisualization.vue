@@ -39,6 +39,7 @@
                 :items="formSends"
                 item-text="subtitle"
                 outlined
+                multiple
                 return-object
               ></v-select>
             </v-col>
@@ -49,6 +50,7 @@
                 :items="sectors"
                 item-text="name"
                 outlined
+                multiple
                 return-object
               ></v-select>
             </v-col>

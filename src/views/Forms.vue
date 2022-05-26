@@ -448,7 +448,7 @@
               title: this.title,
               // start_date: this.startDate,
               // end_date: this.endDate,
-              // sector_ids: this.selectedSectors,
+              sector_ids: this.selectedSectors,
               sections_attributes: this.sections,
             },
           };
