@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-btn>Baixar tabela</v-btn>
+    <v-btn color="secondary" @click="downloadTable">Baixar tabela</v-btn>
     <v-data-table
       :headers="headers"
       :items="rows"
@@ -126,7 +126,30 @@
 
         this.createFormResult(form_result);
       },*/
-      downloadTable() {},
+      downloadTable() {
+        let csvRows = [];
+
+        const headers = this.headers.map((header) => header.text);
+
+        csvRows.push(headers.join(','));
+
+        this.rows.forEach((row) => {
+          const values = Object.values(row).join(',');
+          csvRows.push(values);
+        });
+
+        const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+
+        const url = window.URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+
+        a.setAttribute('href', url);
+
+        a.setAttribute('download', this.question.title.concat('.csv'));
+
+        a.click();
+      },
     },
   };
 </script>

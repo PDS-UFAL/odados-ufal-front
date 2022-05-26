@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-btn @click="downloadChart">Baixar gráfico</v-btn>
+    <v-btn color="secondary" @click="downloadChart">Baixar gráfico</v-btn>
     <apexchart
       ref="chart"
       :type="chartType"
