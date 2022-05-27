@@ -1,6 +1,13 @@
 <template>
   <v-container class="px-sm-12">
     <confirmation-dialog
+      ref="showSaveFormDialog"
+      width="300"
+      title="Salvar formulário?"
+      description="Deseja salvar o fomulário?"
+      confirmButton="Salvar"
+    />
+    <confirmation-dialog
       ref="deleteSection"
       width="400"
       title="Apagar seção?"
@@ -118,7 +125,7 @@
             color="primary"
             v-bind="attrs"
             v-on="on"
-            @click="saveForm"
+            @click="showSaveDialog"
             :loading="loading"
             :disabled="loading"
           >
@@ -291,6 +298,11 @@
         this.$router.push({
           name: 'AnswerForm',
           params: { id: this.$route.params.id, sectorId: sector },
+        });
+      },
+      showSaveDialog() {
+        this.$refs.showSaveFormDialog.open(() => {
+          this.saveForm();
         });
       },
       async saveForm() {
