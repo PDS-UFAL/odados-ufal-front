@@ -136,7 +136,7 @@
         'fetchAnswersBySector',
         'setAlert',
         'setQuestions',
-        'createAnswers',
+        'createResponseHistory',
       ]),
       back() {
         this.$router.back();
@@ -249,10 +249,12 @@
             responses: all_questions.map((question) => {
               return { answer: question.response, question_id: question.id };
             }),
-            form_send_id: this.selectedSector.id,
+            sector_id: this.selectedSector.id,
+            year: parseInt(this.date),
+            form_id: this.selectedForm.id,
           };
 
-          await this.createAnswers({ payload });
+          await this.createResponseHistory({ payload });
 
           this.setAlert({
             alertMessage: 'Resposta enviada com sucesso.',
