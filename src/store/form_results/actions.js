@@ -5,4 +5,7 @@ export default {
   async resetFormResults({ commit }) {
     commit('RESET');
   },
+  async deleteFormResult({ commit }, question_id) {
+    commit('DELETE_QUESTION', question_id);
+  },
 };

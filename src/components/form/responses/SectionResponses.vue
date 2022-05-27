@@ -19,23 +19,20 @@
       :sectorsProps="sectorsSelected"
       :disabled="true"
       :formSends="formSends"
-      :download="download"
+      :section="section.name"
     />
   </div>
 </template>
 
 <script>
   import ResponseCard from '@/components/form/responses/ResponseCard';
+  import { mapActions } from 'vuex';
 
   export default {
     components: {
       ResponseCard,
     },
     props: {
-      download: {
-        type: Boolean,
-        required: true,
-      },
       section: {
         type: Object,
         required: true,
@@ -59,6 +56,7 @@
       await this.updateQuestions();
     },
     methods: {
+      ...mapActions(['resetFormResults', 'deleteFormResult']),
       updateQuestions() {
         this.questions = [];
 
@@ -73,6 +71,7 @@
               question.type === 'percent' ||
               question.type === 'money'
             ) {
+              //   this.deleteFormResult(question.id);
               this.groupedQuestion.titles.add(question.title);
 
               let responses = question.responses.map((response) => ({
@@ -168,6 +167,7 @@
     },
     watch: {
       groupData() {
+        //this.resetFormResults();
         this.updateQuestions();
       },
       section() {
@@ -175,6 +175,7 @@
       },
       sectorsSelected() {
         this.updateQuestions();
+        //this.resetFormResults();
       },
     },
   };

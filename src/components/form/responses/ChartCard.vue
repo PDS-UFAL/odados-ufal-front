@@ -19,10 +19,6 @@
       apexchart: VueApexCharts,
     },
     props: {
-      download: {
-        type: Boolean,
-        required: true,
-      },
       chartType: {
         type: String,
         required: true,
@@ -62,10 +58,6 @@
 
     methods: {
       ...mapActions(['createFormResult', 'resetFormResult']),
-      mountedHandler(e, chartContext) {
-        console.log(chartContext);
-        //     this.updateFormResult();
-      },
       updateOptionsChart() {
         if (!Array.isArray(this.sectors)) {
           this.optionsChart = {
@@ -118,23 +110,6 @@
         }
       },
 
-      updateFormResult() {
-        if (this.chartType != 'table')
-          this.$refs.chart.chart.dataURI().then((uri) => {
-            let form_result = {
-              id: this.chartType.concat(this.question.id),
-              question_id: this.question.id,
-              header: this.optionsChart,
-              rows: this.seriesChart,
-              uri: uri.imgURI,
-              question_title: this.question.title,
-              type: 'chart',
-            };
-
-            this.createFormResult(form_result);
-          });
-      },
-
       downloadChart() {
         this.$refs.chart.chart.dataURI().then((uri) => {
           var hiddenElement = document.createElement('a');
@@ -158,9 +133,6 @@
       },
       question() {
         this.updateSeriesChart();
-      },
-      download() {
-        if (this.download) this.updateFormResult();
       },
     },
   };

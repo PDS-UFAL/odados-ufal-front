@@ -63,7 +63,6 @@
               :section="section"
               :sectorsSelected="sectorsSelected"
               :formSends="formSends"
-              :download="download"
             >
             </section-responses>
           </div>
@@ -98,7 +97,6 @@
 
 <script>
   import { mapActions, mapGetters } from 'vuex';
-  import store from '../store';
   import QuestionCard from '@/components/form/questions/QuestionCard';
   // import ResponseCard from '@/components/form/responses/ResponseCard';
   import SectionResponses from '@/components/form/responses/SectionResponses';
@@ -114,7 +112,6 @@
         download: false,
         form: null,
         tab: null,
-        form_results: store.state.FormResults.form_results,
         questions: [],
         sections: [],
         responsesCount: 0,
@@ -227,53 +224,67 @@
           return true;
         });
       },
-      async downloadAll() {
-        this.download = true;
+      async createCsvFromGroupedData() {
+        const form_results = await this.fetchFormResults();
+        let csvRows = [];
+        let history_keys = form_results.header.children.map(
+          (send) => send.value,
+        );
 
-        /*this.form_results.forEach((form_result) => {
-          var hiddenElement = document.createElement('a');
-
-          hiddenElement.href = form_result.uri;
-          hiddenElement.target = '_blank';
-          hiddenElement.download = 'myFile.png';
-          hiddenElement.click();
-        });*/
-        // this.download = false;
-      },
-      numberOfResults() {
-        let count = 0;
-        this.questions.forEach((question) => {
-          if (['number', 'money', 'percent'].includes(question.type)) {
-            count += 2;
-          } else if (question.type == 'grouped') {
-            count += 2;
-          }
-          //  } else {
-          //   count += 1;
-          //  }
+        csvRows.push('Seção,Pergunta,Setor,Envio,Resposta');
+        let currentLine;
+        form_results.forEach((form_result) => {
+          currentLine =
+            form_result.sectionName + ',' + form_result.questionTitle + ',';
+          form_result.rows.forEach((row) => {
+            history_keys.forEach((key) => {
+              csvRows.push(
+                currentLine + ',' + row.sectorName + ',' + key + ',' + row[key],
+              );
+            });
+          });
+          currentLine = '';
         });
-        return count;
+
+        return csvRows;
+      },
+      async createCsvFromSimpleData() {
+        const form_results = await this.fetchFormResults();
+        let csvRows = [];
+
+        csvRows.push('Seção,Pergunta,Setor,Resposta');
+        // question_title, section_name, row.sectorName, row.answer;
+        let currentLine;
+        form_results.forEach((form_result) => {
+          currentLine =
+            form_result.sectionName + ',' + form_result.questionTitle + ',';
+          form_result.rows.forEach((row) => {
+            csvRows.push(currentLine.concat(row.sectorName + ',' + row.answer));
+          });
+          currentLine = '';
+        });
+
+        return csvRows;
+      },
+      async downloadAll() {
+        const csv_data = await this.createCsvFromSimpleData();
+
+        const blob = new Blob([csv_data.join('\n')], { type: 'text/csv' });
+
+        const url = window.URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+
+        a.setAttribute('href', url);
+
+        a.setAttribute('download', this.form.title.concat('.csv'));
+
+        a.click();
       },
     },
     watch: {
       formSendSelected() {
         this.updateFormSend();
-      },
-      form_results() {
-        if (this.form_results.length == this.numberOfResults()) {
-          this.form_results.forEach((form_result) => {
-            var hiddenElement = document.createElement('a');
-
-            hiddenElement.href = form_result.uri;
-            hiddenElement.target = '_blank';
-            hiddenElement.download = form_result.question_title.concat('.png');
-            hiddenElement.click();
-          });
-          this.download = false;
-
-          this.resetFormResults();
-          this.form_results = store.state.FormResults.form_results;
-        }
       },
     },
   };

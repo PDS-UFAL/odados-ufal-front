@@ -22,26 +22,20 @@
     </v-card-title>
     <v-divider />
     <v-card-text>
-      <div v-if="chartQuestionTypes.includes(question.type)">
-        <div
-          v-for="item in ['bar', 'pie']"
-          :key="item"
-          v-show="item === currentChart.type"
-        >
-          <chart-card
-            :chartType="item"
-            :sectors="sectors"
-            :answers="answers"
-            :question="question"
-            :download="download"
-          ></chart-card>
-        </div>
+      <div v-if="['bar', 'pie'].includes(currentChart.type)">
+        <chart-card
+          :chartType="currentChart.type"
+          :sectors="sectors"
+          :answers="answers"
+          :question="question"
+        ></chart-card>
       </div>
       <div v-show="currentChart.type === 'table'">
         <table-card
           :question="question"
           :sectors="sectors"
           :responses="responses"
+          :section="section"
         ></table-card>
       </div>
       <div
@@ -58,7 +52,7 @@
   </v-card>
 </template>
 <script>
-  import { mapActions } from 'vuex';
+  //import { mapActions } from 'vuex';
   import ChartCard from './ChartCard.vue';
   import TableCard from './TableCard.vue';
 
@@ -68,8 +62,8 @@
       TableCard,
     },
     props: {
-      download: {
-        type: Boolean,
+      section: {
+        type: String,
         required: true,
       },
       question: {
@@ -97,7 +91,7 @@
       // this.addFormResult();
     },
     methods: {
-      ...mapActions(['createFormResult']),
+      //...mapActions(['createFormResult']),
       setChartTypes() {
         if (this.chartQuestionTypes.includes(this.question.type)) {
           this.currentChart = { name: 'Barra', type: 'bar' };
@@ -194,7 +188,7 @@
         });
         return sect[0].name;
       },
-      addFormResult() {
+      /*addFormResult() {
         let form_result, results;
         this.chartTypes.forEach((chartType) => {
           if (chartType.type == 'table') {
@@ -212,7 +206,7 @@
 
           this.createFormResult(form_result);
         });
-      },
+      },*/
     },
     watch: {
       sectorsProps() {

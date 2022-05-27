@@ -12,6 +12,10 @@
   import { mapActions } from 'vuex';
   export default {
     props: {
+      section: {
+        type: String,
+        required: true,
+      },
       question: {
         type: Object,
         required: true,
@@ -39,19 +43,20 @@
     },
     created() {
       this.updateData();
+      this.updateFormResult();
     },
     watch: {
       question() {
         this.updateData();
-        //this.updateFormResult();
+        this.updateFormResult();
       },
       sectors() {
         this.updateData();
-        // this.updateFormResult();
+        this.updateFormResult();
       },
       responses() {
         this.updateData();
-        //   this.updateFormResult();
+        this.updateFormResult();
       },
 
       // props() {
@@ -59,7 +64,7 @@
       // },
     },
     methods: {
-      ...mapActions(['createFormResult', 'resetFormResult']),
+      ...mapActions(['createFormResult', 'resetFormResults']),
       updateData() {
         this.headers = [
           {
@@ -114,18 +119,20 @@
         });
         return sect[0].name;
       },
-      /* updateFormResult() {
-        this.resetFormResult();
-        let form_result = {
-          question_id: this.question.id,
-          header: this.headers,
-          rows: this.rows,
-          question_title: this.question.title,
-          type: 'table',
-        };
+      updateFormResult() {
+        if (this.question.type != 'grouped') {
+          let form_result = {
+            id: this.question.id,
+            header: this.headers,
+            rows: this.rows,
+            questionTitle: this.question.title,
+            sectionName: this.section,
+            type: 'table',
+          };
 
-        this.createFormResult(form_result);
-      },*/
+          this.createFormResult(form_result);
+        }
+      },
       downloadTable() {
         let csvRows = [];
 

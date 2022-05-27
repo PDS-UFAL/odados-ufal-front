@@ -15,4 +15,11 @@ export default {
   RESET(state) {
     state.form_results = [];
   },
+  DELETE_QUESTION(state, form_result_id) {
+    console.log(form_result_id);
+    let id_index = state.form_results.findIndex(
+      (result) => result.id === form_result_id,
+    );
+    state.form_results.splice(id_index, 1);
+  },
 };
