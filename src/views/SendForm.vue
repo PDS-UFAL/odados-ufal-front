@@ -1,5 +1,12 @@
 <template>
   <v-container>
+    <confirmation-dialog
+      ref="showSendFormDialog"
+      width="300"
+      title="Enviar formulário?"
+      description="Deseja enviar o fomulário?"
+      confirmButton="Enviar"
+    />
     <v-row class="ml-1">
       <h3>Enviar Fomulário</h3>
     </v-row>
@@ -153,7 +160,7 @@
       </v-card>
     </v-row>
     <v-row style="margin-top: 40px">
-      <v-btn color="primary" @click="this.sendForm">Enviar</v-btn>
+      <v-btn color="primary" @click="this.sendFormDialog">Enviar</v-btn>
     </v-row>
   </v-container>
 </template>
@@ -162,8 +169,12 @@
   import { formatDate } from '@/utils/formatDate';
   import rules from '@/mixins/questionRules';
   import { mapActions } from 'vuex';
+  import ConfirmationDialog from '@/components/ConfirmationDialog';
 
   export default {
+    components: {
+      ConfirmationDialog,
+    },
     data: () => {
       return {
         loading: false,
@@ -206,6 +217,11 @@
       },
       changeSelectedForm(item) {
         this.selectedForm = item;
+      },
+      sendFormDialog() {
+        this.$refs.showSendFormDialog.open(() => {
+          this.sendForm();
+        });
       },
       sendForm() {
         try {
