@@ -224,12 +224,33 @@
           return true;
         });
       },
+      testData() {
+        return [
+          {
+            header: [
+              {
+                text: 'ola',
+                align: 'start',
+                sortable: false,
+                value: 'x',
+                children: [
+                  { text: 'a', value: 'a' },
+                  { text: 'b', value: 'b' },
+                ],
+              },
+            ],
+            rows: [
+              { a: 'oi', b: 'ui' },
+              { a: 'f', b: 'l' },
+              { a: 'z', b: 'x' },
+            ],
+          },
+        ];
+      },
       async createCsvFromGroupedData() {
         const form_results = await this.fetchFormResults();
         let csvRows = [];
-        let history_keys = form_results.header.children.map(
-          (send) => send.value,
-        );
+        let history_keys = form_results.headers.map((send) => send.value);
 
         csvRows.push('Seção,Pergunta,Setor,Envio,Resposta');
         let currentLine;
@@ -253,7 +274,6 @@
         let csvRows = [];
 
         csvRows.push('Seção,Pergunta,Setor,Resposta');
-        // question_title, section_name, row.sectorName, row.answer;
         let currentLine;
         form_results.forEach((form_result) => {
           currentLine =
@@ -267,7 +287,12 @@
         return csvRows;
       },
       async downloadAll() {
-        const csv_data = await this.createCsvFromSimpleData();
+        let csv_data;
+        if (this.formSendSelected.subtitle != 'Todos') {
+          csv_data = await this.createCsvFromSimpleData();
+        } else {
+          csv_data = await this.createCsvFromGroupedData();
+        }
 
         const blob = new Blob([csv_data.join('\n')], { type: 'text/csv' });
 

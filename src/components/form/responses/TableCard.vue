@@ -127,7 +127,6 @@
             rows: this.rows,
             questionTitle: this.question.title,
             sectionName: this.section,
-            type: 'table',
           };
 
           this.createFormResult(form_result);
