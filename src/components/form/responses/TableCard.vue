@@ -9,7 +9,6 @@
   </div>
 </template>
 <script>
-  import { mapActions } from 'vuex';
   export default {
     props: {
       section: {
@@ -64,7 +63,6 @@
       // },
     },
     methods: {
-      ...mapActions(['createFormResult', 'resetFormResults']),
       updateData() {
         this.headers = [
           {
@@ -118,19 +116,6 @@
           return sectorId == sector.id;
         });
         return sect[0].name;
-      },
-      updateFormResult() {
-        if (this.question.type != 'grouped') {
-          let form_result = {
-            id: this.question.id,
-            header: this.headers,
-            rows: this.rows,
-            questionTitle: this.question.title,
-            sectionName: this.section,
-          };
-
-          this.createFormResult(form_result);
-        }
       },
       downloadTable() {
         let csvRows = [];

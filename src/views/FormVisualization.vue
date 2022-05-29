@@ -96,7 +96,7 @@
 </template>
 
 <script>
-  import { mapActions, mapGetters } from 'vuex';
+  import { mapActions } from 'vuex';
   import QuestionCard from '@/components/form/questions/QuestionCard';
   // import ResponseCard from '@/components/form/responses/ResponseCard';
   import SectionResponses from '@/components/form/responses/SectionResponses';
@@ -109,7 +109,6 @@
     },
     data: () => {
       return {
-        download: false,
         form: null,
         tab: null,
         questions: [],
@@ -127,8 +126,7 @@
       await this.loadFormSends();
     },
     methods: {
-      ...mapActions(['fetchForm', 'fetchFormSends', 'resetFormResults']),
-      ...mapGetters(['fetchFormResults']),
+      ...mapActions(['fetchForm', 'fetchFormSends']),
       back() {
         this.$router.back();
       },
@@ -224,64 +222,50 @@
           return true;
         });
       },
-      testData() {
-        return [
-          {
-            header: [
-              {
-                text: 'ola',
-                align: 'start',
-                sortable: false,
-                value: 'x',
-                children: [
-                  { text: 'a', value: 'a' },
-                  { text: 'b', value: 'b' },
-                ],
-              },
-            ],
-            rows: [
-              { a: 'oi', b: 'ui' },
-              { a: 'f', b: 'l' },
-              { a: 'z', b: 'x' },
-            ],
-          },
-        ];
-      },
-      async createCsvFromGroupedData() {
-        const form_results = await this.fetchFormResults();
+      createCsvFromGroupedData() {
         let csvRows = [];
-        let history_keys = form_results.headers.map((send) => send.value);
+        let rowToAdd;
 
-        csvRows.push('Seção,Pergunta,Setor,Envio,Resposta');
-        let currentLine;
-        form_results.forEach((form_result) => {
-          currentLine =
-            form_result.sectionName + ',' + form_result.questionTitle + ',';
-          form_result.rows.forEach((row) => {
-            history_keys.forEach((key) => {
-              csvRows.push(
-                currentLine + ',' + row.sectorName + ',' + key + ',' + row[key],
-              );
+        csvRows.push('Envio,Seção,Pergunta,Setor,Resposta');
+
+        this.formSends.forEach((form) => {
+          form.form.sections.forEach((section) => {
+            section.questions.forEach((question) => {
+              question.responses.forEach((response) => {
+                rowToAdd = [
+                  form.subtitle,
+                  section.name,
+                  question.title,
+                  response.sector.name,
+                  response.answer,
+                ].join(',');
+                console.log(rowToAdd);
+                csvRows.push(rowToAdd);
+              });
             });
           });
-          currentLine = '';
         });
 
         return csvRows;
       },
-      async createCsvFromSimpleData() {
-        const form_results = await this.fetchFormResults();
+      createCsvFromSimpleData() {
         let csvRows = [];
+        let rowToAdd;
 
         csvRows.push('Seção,Pergunta,Setor,Resposta');
-        let currentLine;
-        form_results.forEach((form_result) => {
-          currentLine =
-            form_result.sectionName + ',' + form_result.questionTitle + ',';
-          form_result.rows.forEach((row) => {
-            csvRows.push(currentLine.concat(row.sectorName + ',' + row.answer));
+
+        this.form.sections.forEach((section) => {
+          section.questions.forEach((question) => {
+            question.responses.forEach((response) => {
+              rowToAdd = [
+                section.name,
+                question.title,
+                response.sector.name,
+                response.answer,
+              ].join(',');
+              csvRows.push(rowToAdd);
+            });
           });
-          currentLine = '';
         });
 
         return csvRows;
@@ -289,9 +273,9 @@
       async downloadAll() {
         let csv_data;
         if (this.formSendSelected.subtitle != 'Todos') {
-          csv_data = await this.createCsvFromSimpleData();
+          csv_data = this.createCsvFromSimpleData();
         } else {
-          csv_data = await this.createCsvFromGroupedData();
+          csv_data = this.createCsvFromGroupedData();
         }
 
         const blob = new Blob([csv_data.join('\n')], { type: 'text/csv' });
