@@ -15,6 +15,7 @@
         type: String,
         required: true,
       },
+      formSendSelected: {},
       question: {
         type: Object,
         required: true,
@@ -42,20 +43,16 @@
     },
     created() {
       this.updateData();
-      this.updateFormResult();
     },
     watch: {
       question() {
         this.updateData();
-        this.updateFormResult();
       },
       sectors() {
         this.updateData();
-        this.updateFormResult();
       },
       responses() {
         this.updateData();
-        this.updateFormResult();
       },
 
       // props() {
@@ -120,9 +117,22 @@
       downloadTable() {
         let csvRows = [];
 
-        const headers = this.headers.map((header) => header.text);
-
+        // Ativar if-else abaixo após implementação da tabela com histórico
+        // de perguntas
+        //if ('Substituir por condição: o header não tenha mais de uma linha') {
+        let headers = this.headers.map((header) => header.text);
         csvRows.push(headers.join(','));
+        // Caso o header tenha mais de uma linha...
+        /*} else {
+          [
+            'Substituir esse array por array com as linhas do cabeçalho.
+            Cada elemento do array deve ser um array onde cada um  dos
+            itens é o valor de uma célula da linha',
+            Ex.: [['Total'],['Setor(es)', '2020', '2021']]
+          ].ForEach((headerRow) => {
+            csvRows.push(headerRow.join(','));
+          });
+        }*/
 
         this.rows.forEach((row) => {
           const values = Object.values(row).join(',');
