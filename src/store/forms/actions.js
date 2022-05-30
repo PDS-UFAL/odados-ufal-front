@@ -7,6 +7,9 @@ export default {
   async fetchForm(store, { id }) {
     return await formsApi.fetchForm(id);
   },
+  async fetchFormWithFormSends(store, { id }) {
+    return await formsApi.fetchFormWithFormSends(id);
+  },
   async createForm(store, { payload }) {
     return await formsApi.createForm(payload);
   },

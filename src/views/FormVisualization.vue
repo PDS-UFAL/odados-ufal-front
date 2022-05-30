@@ -34,7 +34,18 @@
           <v-row>
             <v-col cols="10" md="6">
               <v-select
-                label="Formulário Enviado"
+                label="Ano(s)"
+                v-model="yearsSelected"
+                :items="years"
+                item-text="value"
+                outlined
+                multiple
+                return-object
+              ></v-select>
+            </v-col>
+            <v-col cols="10" md="6">
+              <v-select
+                label="Formulário(s) Enviado(s)"
                 v-model="formSendSelected"
                 :items="formSends"
                 item-text="subtitle"
@@ -43,7 +54,10 @@
                 return-object
               ></v-select>
             </v-col>
-            <v-col cols="10" md="6">
+          </v-row>
+
+          <v-row>
+            <v-col cols="12" md="18">
               <v-select
                 label="Setor(es)"
                 v-model="sectorsSelected"
@@ -56,40 +70,29 @@
             </v-col>
           </v-row>
 
-          <div v-if="sectors.length === 1">Nenhuma Resposta Encontrada</div>
+          <div
+            v-if="
+              yearsSelected.length === 0 ||
+              formSendSelected.length === 0 ||
+              sectorsSelected.length === 0
+            "
+          >
+            Nenhuma Resposta Encontrada.
+            <span v-if="responsesCount > 0"
+              >Por favor selecione todos os filtros.</span
+            >
+          </div>
           <div v-else>
             <section-responses
               v-for="section in sections"
               :key="section.id"
               :section="section"
               :sectorsSelected="sectorsSelected"
-              :formSends="formSends"
+              :formSends="formSendSelected"
+              :years="yearsSelected"
             >
             </section-responses>
           </div>
-
-          <!-- <div v-for="section in sections" :key="section.id">
-            <v-card color="basil" style="margin: 16px 0" flat elevation="3">
-              <v-card-title class="align-middle">
-                <h3>{{ section.name }}</h3>
-              </v-card-title>
-              <v-card-text>
-                <v-checkbox
-                  v-model="checkbox"
-                  :label="`Agrupar dados da seção`"
-                ></v-checkbox>
-              </v-card-text>
-            </v-card>
-            <response-card
-              v-for="question in section.questions"
-              :key="question.id"
-              class="my-4"
-              :question="question"
-              :sectorsProps="sectorsSelected"
-              :disabled="true"
-              :formSends="formSends"
-            />
-          </div> -->
         </div>
       </v-tab-item>
     </v-tabs-items>
@@ -115,119 +118,230 @@
         questions: [],
         sections: [],
         responsesCount: 0,
-        sectorsSelected: {},
-        formSendSelected: {},
+        sectorsSelected: [],
+        formSendSelected: [],
+        yearsSelected: [],
         sectors: [],
         formSends: [],
+        years: new Set(),
       };
     },
     async mounted() {
       this.tab = 'tab-2';
       // await this.loadForm();
-      await this.loadFormSends();
+      await this.loadForm();
     },
     methods: {
-      ...mapActions(['fetchForm', 'fetchFormSends']),
+      ...mapActions(['fetchFormWithFormSends', 'fetchFormSends']),
       back() {
         this.$router.back();
       },
+      // async loadForm() {
+      //   const { data } = await this.fetchForm({ id: this.$route.params.id });
+      //   this.form = { ...data.form };
+
+      //   this.sections = this.form.sections;
+
+      // this.form.sections.forEach((section) => {
+      //   if (section.questions !== undefined) {
+      //     this.questions.push(...section.questions);
+      //   }
+      // });
+
+      //   this.questions.every((question) => {
+      //     if (question.responses !== undefined) {
+      //       this.responsesCount = question.responses.length;
+      //       return false;
+      //     }
+      //     return true;
+      //   });
+
+      //   // if (this.form.sectors !== undefined) {
+      //   //   this.sectors = this.form.sectors.filter((sector) => {
+      //   //     return sector.status === 'answered';
+      //   //   });
+
+      //   //   let sector = { name: 'Todos', allSectors: this.sectors };
+      //   //   this.sectors.push(sector);
+      //   //   this.sectorsSelected = sector;
+      //   // }
+      // },
       async loadForm() {
-        const { data } = await this.fetchForm({ id: this.$route.params.id });
+        const { data } = await this.fetchFormWithFormSends({
+          id: this.$route.params.id,
+        });
+
         this.form = { ...data.form };
 
+        this.formSends = this.form.form_sends;
+
+        this.years = this.formSends.map((formSend) => ({
+          value: formSend.year,
+          disabled: false,
+        }));
+
+        this.years.sort();
+
         this.sections = this.form.sections;
 
-        this.form.sections.forEach((section) => {
+        this.sections.forEach((section) => {
           if (section.questions !== undefined) {
             this.questions.push(...section.questions);
           }
         });
 
-        this.questions.every((question) => {
-          if (question.responses !== undefined) {
-            this.responsesCount = question.responses.length;
-            return false;
-          }
-          return true;
-        });
+        this.sectors = this.form.sectors;
 
-        // if (this.form.sectors !== undefined) {
-        //   this.sectors = this.form.sectors.filter((sector) => {
-        //     return sector.status === 'answered';
-        //   });
-
-        //   let sector = { name: 'Todos', allSectors: this.sectors };
-        //   this.sectors.push(sector);
-        //   this.sectorsSelected = sector;
+        if (this.sectors.length == 1) {
+          this.sectorsSelected = this.sectors;
+        }
+        // } else {
+        //   // let sector = { name: 'Todos', allSectors: this.sectors };
+        //   // this.sectors.push(sector);
+        //   // this.sectorsSelected = [sector];
         // }
-      },
-      async loadFormSends() {
-        const { data } = await this.fetchFormSends({
-          params: {
-            form_id: this.$route.params.id,
-          },
-        });
-
-        if (data.form_sends.length === 0) {
-          this.loadForm();
-          return;
-        }
-
-        this.formSends = [...data.form_sends];
-        this.formSendSelected = this.formSends[0];
-        this.updateFormSend();
-      },
-      updateFormSend() {
-        this.form = {};
-        this.sections = [];
-        this.questions = [];
-        this.sectors = [];
-        this.responsesCount = 0;
-
-        if (this.formSendSelected.sectors === undefined) {
-          return;
-        }
-
-        this.form = this.formSendSelected.form;
-
-        this.sections = this.form.sections;
-
-        this.form.sections.forEach((section) => {
-          if (section.questions !== undefined) {
-            this.questions.push(...section.questions);
-          }
-        });
-
-        this.sectors = this.formSendSelected.sectors;
 
         this.questions.every((question) => {
           if (question.responses !== undefined) {
             this.responsesCount = question.responses.length;
-
-            let sectorsIds = [];
-            question.responses.every((response) => {
-              sectorsIds.push(response.user.sector_id);
-              return true;
-            });
-
-            this.sectors = this.sectors.filter((sector) => {
-              return sectorsIds.includes(sector.id);
-            });
-
-            let sector = { name: 'Todos', allSectors: this.sectors };
-            this.sectors.push(sector);
-            this.sectorsSelected = sector;
-
-            return false;
           }
-          return true;
+
+          question.responses = question.responses.map((response) => ({
+            ...response,
+            title: question.title,
+            question_id: question.id,
+            sector_id: response.sector_id,
+            sector_name: this.getSectorNameById(response.sector_id),
+            form_send_name: this.getFormSendNameById(response.fsend),
+          }));
         });
+      },
+      // async loadFormSends() {
+      //   const { data } = await this.fetchFormSends({
+      //     params: {
+      //       form_id: this.$route.params.id,
+      //     },
+      //   });
+
+      //   if (data.form_sends.length === 0) {
+      //     this.loadForm();
+      //     return;
+      //   }
+
+      //   this.formSends = [...data.form_sends];
+      //   this.formSendSelected = [this.formSends[0]];
+      //   this.form = this.formSends[0].form;
+
+      //   this.updateFormSend();
+      // },
+      // updateFormSend() {
+      //   this.form = {};
+      //   this.sections = [];
+      //   this.questions = [];
+      //   this.sectors = [];
+      //   this.responsesCount = 0;
+
+      //   if (this.formSendSelected.sectors === undefined) {
+      //     return;
+      //   }
+
+      //   this.form = this.formSendSelected.form;
+
+      //   this.sections = this.form.sections;
+
+      //   this.form.sections.forEach((section) => {
+      //     if (section.questions !== undefined) {
+      //       this.questions.push(...section.questions);
+      //     }
+      //   });
+
+      //   this.sectors = this.formSendSelected.sectors;
+
+      //   this.questions.every((question) => {
+      //     if (question.responses !== undefined) {
+      //       this.responsesCount = question.responses.length;
+
+      //       let sectorsIds = [];
+      //       question.responses.every((response) => {
+      //         sectorsIds.push(response.user.sector_id);
+      //         return true;
+      //       });
+
+      //       this.sectors = this.sectors.filter((sector) => {
+      //         return sectorsIds.includes(sector.id);
+      //       });
+
+      //       let sector = { name: 'Todos', allSectors: this.sectors };
+      //       this.sectors.push(sector);
+      //       this.sectorsSelected = [sector];
+
+      //       return false;
+      //     }
+      //     return true;
+      //   });
+      // },
+      updateYearsSelected() {
+        this.formSendSelected = [];
+
+        this.formSendSelected = this.formSends.filter((formSend) => {
+          return this.yearsSelected.some((year) => {
+            return year.value === formSend.year;
+          });
+        });
+      },
+      updateformSendSelected() {},
+      getSectorNameById(sectorId) {
+        if (!Array.isArray(this.sectors)) {
+          console.log('ummm');
+          return this.sectors.name;
+        } else if (
+          Object.prototype.hasOwnProperty.call(this.sectors, 'name') &&
+          this.sectors.name == 'Todos'
+        ) {
+          console.log('dosss');
+          let sect = this.sectors.allSectors.filter((sector) => {
+            return sectorId == sector.id;
+          });
+
+          return sect[0].name;
+        } else {
+          console.log('tresss');
+          let sect = this.sectors.filter((sector) => {
+            return sectorId == sector.id;
+          });
+
+          console.log(sect);
+          if (sect.length === 0) {
+            return '';
+          } else {
+            return sect[0].name;
+          }
+        }
+      },
+
+      getFormSendNameById(formSendId) {
+        if (!Array.isArray(this.formSends)) {
+          return this.formSends.subtitle;
+        } else {
+          let fSend = this.formSends.filter((formSend) => {
+            return formSendId == formSend.id;
+          });
+
+          if (fSend.length === 0) {
+            return '';
+          } else {
+            return fSend[0].subtitle;
+          }
+        }
       },
     },
     watch: {
-      formSendSelected() {
-        this.updateFormSend();
+      yearsSelected() {
+        this.updateYearsSelected();
       },
+      // formSendSelected() {
+      //   this.updateFormSend();
+      // },
     },
   };
 </script>

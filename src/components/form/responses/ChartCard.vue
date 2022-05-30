@@ -54,14 +54,14 @@
       updateOptionsChart() {
         if (!Array.isArray(this.sectors)) {
           this.optionsChart = {
-            ...this.chartOptions,
+            ...this.optionsChart,
             ...{
               labels: [this.sectors.abbreviation],
             },
           };
         } else {
           this.optionsChart = {
-            ...this.chartOptions,
+            ...this.optionsChart,
             ...{
               labels: this.sectors.map((y) => y.abbreviation),
             },
@@ -74,7 +74,7 @@
       updateSeriesChart() {
         this.seriesChart = [];
         if (this.question.type === 'grouped') {
-          this.question.sectorColumns.forEach((column) => {
+          this.question.responseColumns.forEach((column) => {
             let serieColumn = {};
             serieColumn.name = column[0].title;
             serieColumn.data = [];

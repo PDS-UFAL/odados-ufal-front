@@ -77,12 +77,12 @@
       updateRows() {
         this.rows = [];
         if (this.question.type === 'grouped') {
-          this.question.sectorRows.forEach((sectorRow) => {
+          this.question.responseRows.forEach((responseRow) => {
             let row = {
-              sectorName: this.getSectorNameById(sectorRow[0].sector_id),
+              sectorName: this.getSectorNameById(responseRow[0].sector_id),
             };
 
-            sectorRow.forEach((item) => {
+            responseRow.forEach((item) => {
               row[item.title] = item.answer;
             });
             this.rows.push(row);

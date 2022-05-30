@@ -39,7 +39,7 @@
       </div>
       <div v-else v-for="response in responses" :key="response.id">
         <p style="background-color: #f8f9fa">
-          <b>{{ getSectorNameById(response.user.sector_id) }} :</b>
+          <b>{{ getSectorNameById(response.sector_id) }} :</b>
           {{ response.answer }}
         </p>
       </div>
@@ -128,14 +128,18 @@
           this.sortResponsesBySectorId();
         } else if (!Array.isArray(this.sectors)) {
           this.responses = this.question.responses.filter((response) => {
-            return response.user.sector_id === this.sectors.id;
+            return response.sector_id === this.sectors.id;
           });
         } else {
           //TODO consertar filtragem
           this.responses = this.question.responses.filter((response) => {
-            return this.sectors.find(
-              (sector) => sector.id === response.user.sector_id,
-            );
+            let inFormSends = this.formSends.some((formSend) => {
+              return formSend.id === response.fsend;
+            });
+            let inSectors = this.sectors.some((sector) => {
+              return sector.id === response.sector_id;
+            });
+            return inFormSends && inSectors;
           });
           this.sortResponsesBySectorId();
         }
@@ -145,10 +149,10 @@
 
       sortResponsesBySectorId() {
         this.responses.sort((a, b) => {
-          if (a.user.sector_id > b.user.sector_id) {
+          if (a.sector_id > b.sector_id) {
             return 1;
           }
-          if (a.user.sector_id < b.user.sector_id) {
+          if (a.sector_id < b.sector_id) {
             return -1;
           }
           return 0;
