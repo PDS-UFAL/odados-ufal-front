@@ -3,6 +3,7 @@
     <v-col>
       <span class="text-subtitle-1 font-weight-bold">
         {{ question.title }}
+        <span class="font-weight-regular text-body-2">{{ showMinMax }}</span>
         <span style="color: red">{{ question.required ? '*' : '' }}</span>
       </span>
       <div
@@ -86,6 +87,26 @@
     computed: {
       getCurrentYear() {
         return 'Sua Resposta (' + new Date().getFullYear() + ')';
+      },
+      showMinMax() {
+        console.log(this.question.min_value);
+        if (
+          this.question.min_value !== null &&
+          this.question.max_value !== null
+        )
+          return `(Mínimo: ${this.question.min_value}, Máximo: ${this.question.max_value})`;
+        else if (
+          this.question.min_value !== null &&
+          this.question.max_value === null
+        )
+          return `(Mínimo: ${this.question.min_value})`;
+        else if (
+          this.question.min_value === null &&
+          this.question.max_value !== null
+        )
+          return `(Máximo: ${this.question.max_value})`;
+
+        return '';
       },
     },
   };
