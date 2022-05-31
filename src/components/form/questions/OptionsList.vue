@@ -121,6 +121,7 @@
         this.question.options.push('');
       },
       removeOption(index) {
+        this.addNameRequired = false;
         this.question.options.splice(index, 1);
       },
     },
