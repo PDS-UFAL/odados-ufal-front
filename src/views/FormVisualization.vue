@@ -222,24 +222,26 @@
           return true;
         });
       },
-      createCsvFromGroupedData() {
+      createCSV() {
         let csvRows = [];
-        let rowToAdd;
+        let rowToAdd, formSendResponses;
 
-        csvRows.push('Envio,Seção,Pergunta,Setor,Resposta');
+        csvRows.push('Ano de envio,Seção,Pergunta,Setor,Resposta');
 
-        this.formSends.forEach((form) => {
-          form.form.sections.forEach((section) => {
+        this.formSendSelected.forEach((form_send) => {
+          this.form.sections.forEach((section) => {
             section.questions.forEach((question) => {
-              question.responses.forEach((response) => {
+              formSendResponses = question.responses.filter(
+                (response) => response.fsend === form_send.id,
+              );
+              formSendResponses.forEach((response) => {
                 rowToAdd = [
-                  form.subtitle,
+                  form_send.year,
                   section.name,
                   question.title,
-                  response.sector.name,
+                  response.sector_name,
                   response.answer,
                 ].join(',');
-                console.log(rowToAdd);
                 csvRows.push(rowToAdd);
               });
             });
@@ -248,35 +250,8 @@
 
         return csvRows;
       },
-      createCsvFromSimpleData() {
-        let csvRows = [];
-        let rowToAdd;
-
-        csvRows.push('Seção,Pergunta,Setor,Resposta');
-
-        this.form.sections.forEach((section) => {
-          section.questions.forEach((question) => {
-            question.responses.forEach((response) => {
-              rowToAdd = [
-                section.name,
-                question.title,
-                response.sector.name,
-                response.answer,
-              ].join(',');
-              csvRows.push(rowToAdd);
-            });
-          });
-        });
-
-        return csvRows;
-      },
       async downloadAll() {
-        let csv_data;
-        if (this.formSendSelected.subtitle != 'Todos') {
-          csv_data = this.createCsvFromSimpleData();
-        } else {
-          csv_data = this.createCsvFromGroupedData();
-        }
+        let csv_data = this.createCSV();
 
         const blob = new Blob([csv_data.join('\n')], { type: 'text/csv' });
 
