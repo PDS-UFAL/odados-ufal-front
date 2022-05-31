@@ -1,5 +1,19 @@
 <template>
   <v-container>
+    <confirmation-dialog
+      ref="showDeleteFormDialog"
+      width="400"
+      title="Apagar o modelo de formulário?"
+      description="Esta ação não pode ser desfeita."
+      confirmButton="Apagar"
+    />
+    <confirmation-dialog
+      ref="showDeleteFormSendDialog"
+      width="400"
+      title="Apagar o envio de formulário?"
+      description="Esta ação não pode ser desfeita."
+      confirmButton="Apagar"
+    />
     <v-row class="pa-0 align-center mt-md-4 mb-8">
       <h3>Formulários</h3>
     </v-row>
@@ -70,7 +84,7 @@
                     small
                     icon
                     v-if="isAdmin"
-                    @click="openDeleteFormDialog(item)"
+                    @click="openDeleteFormSendDialog(item)"
                   >
                     <v-icon> mdi-delete </v-icon>
                   </v-btn>
@@ -124,8 +138,12 @@
 <script>
   import { mapActions, mapGetters } from 'vuex';
   import { formatDate } from '@/utils/formatDate';
+  import ConfirmationDialog from '@/components/ConfirmationDialog';
 
   export default {
+    components: {
+      ConfirmationDialog,
+    },
     data: () => {
       return {
         tab: null,
@@ -174,7 +192,13 @@
       this.loadFormSends();
     },
     methods: {
-      ...mapActions(['fetchForms', 'fetchFormSends', 'deleteForm', 'setAlert']),
+      ...mapActions([
+        'fetchForms',
+        'fetchFormSends',
+        'deleteForm',
+        'deleteFormSend',
+        'setAlert',
+      ]),
       formatDate,
       async loadForms() {
         this.loading_templates = true;
@@ -226,6 +250,42 @@
           closed: 'Fechado',
           not_started: 'Não iniciado',
         }[status];
+      },
+      openDeleteFormDialog(form) {
+        this.$refs.showDeleteFormDialog.open(() => {
+          this.deleteFormHandler(form);
+        });
+      },
+      openDeleteFormSendDialog(form) {
+        this.$refs.showDeleteFormSendDialog.open(() => {
+          this.deleteFormSendHandler(form);
+        });
+      },
+      async deleteFormHandler(form) {
+        try {
+          await this.deleteForm({ id: form.id });
+          await this.loadForms();
+        } catch (err) {
+          this.setAlert({
+            alertMessage:
+              err.response?.data.error ||
+              'Ocorreu um erro ao deletar o modelo de formulário.',
+            alertColor: 'red',
+          });
+        }
+      },
+      async deleteFormSendHandler(form) {
+        try {
+          await this.deleteFormSend({ id: form.id });
+          await this.loadFormSends();
+        } catch (err) {
+          this.setAlert({
+            alertMessage:
+              err.response?.data.error ||
+              'Ocorreu um erro ao deletar o envio de formulário.',
+            alertColor: 'red',
+          });
+        }
       },
       filterStatus() {
         const temp_hash = {
