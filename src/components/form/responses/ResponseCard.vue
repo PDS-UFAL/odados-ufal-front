@@ -41,12 +41,19 @@
         ></table-card>
       </div>
       <div
-        v-show="['bar', 'pie', 'table'].includes(currentChart)"
+        v-show="!['bar', 'pie', 'table'].includes(currentChart.type)"
         v-for="response in responses"
         :key="response.id"
       >
         <p style="background-color: #f8f9fa">
-          <b>{{ response.sector_name }} :</b>
+          <b v-if="formSends.length > 1 && sectors.length > 1"
+            >{{ response.sector_name + ' - ' + response.form_send_name }} :</b
+          >
+          <b v-else-if="formSends.length > 1"
+            >{{ response.form_send_name }} :</b
+          >
+          <b v-else>{{ response.sector_name }} :</b>
+
           {{ response.answer }}
         </p>
       </div>

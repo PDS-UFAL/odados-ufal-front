@@ -69,7 +69,6 @@
               ></v-select>
             </v-col>
           </v-row>
-          <v-btn @click="downloadAll">Baixar respostas</v-btn>
 
           <div
             v-if="
@@ -78,6 +77,8 @@
               sectorsSelected.length === 0 ||
               responsesCount === 0
             "
+            class="alert alert-warning"
+            role="alert"
           >
             Nenhuma Resposta Encontrada.
             <span v-if="responsesCount > 0"
@@ -85,6 +86,7 @@
             >
           </div>
           <div v-else>
+            <v-btn @click="downloadAll">Baixar respostas</v-btn>
             <section-responses
               v-for="section in sections"
               :key="section.id"
@@ -138,36 +140,7 @@
       back() {
         this.$router.back();
       },
-      // async loadForm() {
-      //   const { data } = await this.fetchForm({ id: this.$route.params.id });
-      //   this.form = { ...data.form };
 
-      //   this.sections = this.form.sections;
-
-      // this.form.sections.forEach((section) => {
-      //   if (section.questions !== undefined) {
-      //     this.questions.push(...section.questions);
-      //   }
-      // });
-
-      //   this.questions.every((question) => {
-      //     if (question.responses !== undefined) {
-      //       this.responsesCount = question.responses.length;
-      //       return false;
-      //     }
-      //     return true;
-      //   });
-
-      //   // if (this.form.sectors !== undefined) {
-      //   //   this.sectors = this.form.sectors.filter((sector) => {
-      //   //     return sector.status === 'answered';
-      //   //   });
-
-      //   //   let sector = { name: 'Todos', allSectors: this.sectors };
-      //   //   this.sectors.push(sector);
-      //   //   this.sectorsSelected = sector;
-      //   // }
-      // },
       async loadForm() {
         const { data } = await this.fetchFormWithFormSends({
           id: this.$route.params.id,
@@ -197,11 +170,6 @@
         if (this.sectors.length == 1) {
           this.sectorsSelected = this.sectors;
         }
-        // } else {
-        //   // let sector = { name: 'Todos', allSectors: this.sectors };
-        //   // this.sectors.push(sector);
-        //   // this.sectorsSelected = [sector];
-        // }
 
         this.questions.forEach((question) => {
           if (question.responses !== undefined) {
@@ -218,70 +186,7 @@
           }));
         });
       },
-      // async loadFormSends() {
-      //   const { data } = await this.fetchFormSends({
-      //     params: {
-      //       form_id: this.$route.params.id,
-      //     },
-      //   });
 
-      //   if (data.form_sends.length === 0) {
-      //     this.loadForm();
-      //     return;
-      //   }
-
-      //   this.formSends = [...data.form_sends];
-      //   this.formSendSelected = [this.formSends[0]];
-      //   this.form = this.formSends[0].form;
-
-      //   this.updateFormSend();
-      // },
-      // updateFormSend() {
-      //   this.form = {};
-      //   this.sections = [];
-      //   this.questions = [];
-      //   this.sectors = [];
-      //   this.responsesCount = 0;
-
-      //   if (this.formSendSelected.sectors === undefined) {
-      //     return;
-      //   }
-
-      //   this.form = this.formSendSelected.form;
-
-      //   this.sections = this.form.sections;
-
-      //   this.form.sections.forEach((section) => {
-      //     if (section.questions !== undefined) {
-      //       this.questions.push(...section.questions);
-      //     }
-      //   });
-
-      //   this.sectors = this.formSendSelected.sectors;
-
-      //   this.questions.every((question) => {
-      //     if (question.responses !== undefined) {
-      //       this.responsesCount = question.responses.length;
-
-      //       let sectorsIds = [];
-      //       question.responses.every((response) => {
-      //         sectorsIds.push(response.user.sector_id);
-      //         return true;
-      //       });
-
-      //       this.sectors = this.sectors.filter((sector) => {
-      //         return sectorsIds.includes(sector.id);
-      //       });
-
-      //       let sector = { name: 'Todos', allSectors: this.sectors };
-      //       this.sectors.push(sector);
-      //       this.sectorsSelected = [sector];
-
-      //       return false;
-      //     }
-      //     return true;
-      //   });
-      // },
       updateYearsSelected() {
         this.formSendSelected = [];
 

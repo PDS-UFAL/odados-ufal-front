@@ -75,11 +75,18 @@
               ),
             },
           };
-        } else {
+        } else if (this.formSends.length > 1) {
           this.optionsChart = {
             ...this.optionsChart,
             ...{
               labels: this.responses.map((y) => y.form_send_name),
+            },
+          };
+        } else {
+          this.optionsChart = {
+            ...this.optionsChart,
+            ...{
+              labels: this.responses.map((y) => y.sector_name),
             },
           };
         }

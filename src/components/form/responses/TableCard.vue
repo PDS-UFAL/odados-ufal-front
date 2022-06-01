@@ -11,10 +11,6 @@
 <script>
   export default {
     props: {
-      section: {
-        type: String,
-        required: true,
-      },
       formSendSelected: {},
       question: {
         type: Object,
@@ -96,8 +92,8 @@
         if (this.question.type === 'grouped') {
           if (this.formSends.length > 1) {
             let head = this.formSends.map((formSend) => ({
-              text: formSend.subtitle,
-              value: formSend.subtitle,
+              text: formSend.year + ' - ' + formSend.subtitle,
+              value: formSend.year + ' - ' + formSend.subtitle,
             }));
             this.headers.push(...head);
           } else {
@@ -108,8 +104,8 @@
         } else {
           if (this.formSends.length > 1 && this.sectors.length > 1) {
             let head = this.formSends.map((formSend) => ({
-              text: formSend.subtitle,
-              value: formSend.subtitle,
+              text: formSend.year + ' - ' + formSend.subtitle,
+              value: formSend.year + ' - ' + formSend.subtitle,
             }));
             this.headers.push(...head);
           } else {
@@ -134,6 +130,8 @@
               responseRow.forEach((item) => {
                 row[item.form_send_name] = item.answer;
               });
+              console.log('sad');
+              console.log(row);
               this.rows.push(row);
             });
           } else {
@@ -176,15 +174,6 @@
             });
           }
         }
-      },
-      getSectorNameById(sectorId) {
-        if (!Array.isArray(this.sectors)) {
-          return this.sectors.name;
-        }
-        let sect = this.sectors.filter((sector) => {
-          return sectorId == sector.id;
-        });
-        return sect[0].name;
       },
       downloadTable() {
         let csvRows = [];
