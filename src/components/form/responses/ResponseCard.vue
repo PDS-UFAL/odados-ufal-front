@@ -32,7 +32,7 @@
           :responses="responses"
         ></chart-card>
       </div>
-      <div v-else-if="currentChart.type === 'table'">
+      <div v-show="currentChart.type === 'table'">
         <table-card
           :question="question"
           :sectors="sectors"
@@ -40,7 +40,11 @@
           :formSends="formSends"
         ></table-card>
       </div>
-      <div v-else v-for="response in responses" :key="response.id">
+      <div
+        v-show="['bar', 'pie', 'table'].includes(currentChart)"
+        v-for="response in responses"
+        :key="response.id"
+      >
         <p style="background-color: #f8f9fa">
           <b>{{ response.sector_name }} :</b>
           {{ response.answer }}
@@ -50,6 +54,7 @@
   </v-card>
 </template>
 <script>
+  //import { mapActions } from 'vuex';
   import ChartCard from './ChartCard.vue';
   import TableCard from './TableCard.vue';
 
@@ -81,8 +86,10 @@
     created() {
       this.setChartTypes();
       this.updateSectors();
+      // this.addFormResult();
     },
     methods: {
+      //...mapActions(['createFormResult']),
       setChartTypes() {
         if (this.chartQuestionTypes.includes(this.question.type)) {
           this.currentChart = { name: 'Barra', type: 'bar' };
@@ -232,14 +239,35 @@
           );
         }
       },
+      /*addFormResult() {
+        let form_result, results;
+        this.chartTypes.forEach((chartType) => {
+          if (chartType.type == 'table') {
+            results = this.responses;
+          } else {
+            results = this.answers;
+          }
+          form_result = {
+            id: chartType.type.concat(this.question.id),
+            type: chartType.type,
+            sectors: this.sectors,
+            question: this.question,
+            results: results,
+          };
+
+          this.createFormResult(form_result);
+        });
+      },*/
     },
     watch: {
       sectorsProps() {
         this.updateSectors();
+        //this.addFormResult();
       },
       sectors() {
         this.setChartTypes();
         this.getResponses();
+        // this.addFormResult();
       },
       formSends() {
         this.setChartTypes();

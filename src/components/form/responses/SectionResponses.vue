@@ -20,12 +20,14 @@
       :sectorsProps="sectorsSelected"
       :disabled="true"
       :formSends="formSends"
+      :section="section.name"
     />
   </div>
 </template>
 
 <script>
   import ResponseCard from '@/components/form/responses/ResponseCard';
+  import { mapActions } from 'vuex';
 
   export default {
     components: {
@@ -59,6 +61,7 @@
       await this.updateDisabledGroup();
     },
     methods: {
+      ...mapActions(['resetFormResults', 'deleteFormResult']),
       updateDisabledGroup() {
         if (this.sectorsSelected.length > 1 && this.formSends.length > 1) {
           this.disabledGroup = true;
@@ -82,6 +85,7 @@
               question.type === 'percent' ||
               question.type === 'money'
             ) {
+              //   this.deleteFormResult(question.id);
               this.groupedQuestion.titles.add(question.title);
 
               let responses = question.responses.filter((response) => {
@@ -190,6 +194,7 @@
     },
     watch: {
       groupData() {
+        //this.resetFormResults();
         this.updateQuestions();
       },
       section() {
@@ -198,6 +203,7 @@
       sectorsSelected() {
         this.updateDisabledGroup();
         this.updateQuestions();
+        //this.resetFormResults();
       },
       formSends() {
         this.updateDisabledGroup();

@@ -69,6 +69,7 @@
               ></v-select>
             </v-col>
           </v-row>
+          <v-btn @click="downloadAll">Baixar respostas</v-btn>
 
           <div
             v-if="
@@ -313,6 +314,49 @@
         } else {
           return fSend[0].year + ' - ' + fSend[0].subtitle;
         }
+      },
+      createCSV() {
+        let csvRows = [];
+        let rowToAdd, formSendResponses;
+
+        csvRows.push('Ano de envio,Seção,Pergunta,Setor,Resposta');
+
+        this.formSendSelected.forEach((form_send) => {
+          this.form.sections.forEach((section) => {
+            section.questions.forEach((question) => {
+              formSendResponses = question.responses.filter(
+                (response) => response.fsend === form_send.id,
+              );
+              formSendResponses.forEach((response) => {
+                rowToAdd = [
+                  form_send.year,
+                  section.name,
+                  question.title,
+                  response.sector_name,
+                  response.answer,
+                ].join(',');
+                csvRows.push(rowToAdd);
+              });
+            });
+          });
+        });
+
+        return csvRows;
+      },
+      async downloadAll() {
+        let csv_data = this.createCSV();
+
+        const blob = new Blob([csv_data.join('\n')], { type: 'text/csv' });
+
+        const url = window.URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+
+        a.setAttribute('href', url);
+
+        a.setAttribute('download', this.form.title.concat('.csv'));
+
+        a.click();
       },
     },
     watch: {

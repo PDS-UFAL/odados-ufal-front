@@ -1,13 +1,18 @@
 <template>
-  <apexchart
-    :type="chartType"
-    :options="optionsChart"
-    :series="seriesChart"
-  ></apexchart>
+  <div>
+    <v-btn color="secondary" @click="downloadChart">Baixar gráfico</v-btn>
+    <apexchart
+      ref="chart"
+      :type="chartType"
+      :options="optionsChart"
+      :series="seriesChart"
+    ></apexchart>
+  </div>
 </template>
 
 <script>
   import VueApexCharts from 'vue-apexcharts';
+  import { mapActions } from 'vuex';
 
   export default {
     components: {
@@ -56,7 +61,9 @@
       this.updateOptionsChart();
       this.updateSeriesChart();
     },
+
     methods: {
+      ...mapActions(['createFormResult', 'resetFormResult']),
       updateOptionsChart() {
         if (this.formSends.length > 1 && this.sectors.length > 1) {
           // this.question.responseColumns
@@ -119,6 +126,17 @@
             this.seriesChart = values.map(Number);
           }
         }
+      },
+
+      downloadChart() {
+        this.$refs.chart.chart.dataURI().then((uri) => {
+          var hiddenElement = document.createElement('a');
+
+          hiddenElement.href = uri.imgURI;
+          hiddenElement.target = '_blank';
+          hiddenElement.download = this.question.title.concat('.png');
+          hiddenElement.click();
+        });
       },
     },
     watch: {
