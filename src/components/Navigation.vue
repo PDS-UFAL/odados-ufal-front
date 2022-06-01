@@ -37,6 +37,12 @@
             path: '/enviar-formulario',
             roles: ['admin'],
           },
+          {
+            title: 'Inserir histórico',
+            icon: 'mdi-clipboard-text-clock',
+            path: '/inserir-historico',
+            roles: ['admin'],
+          },
           // {
           //   title: 'Notificações',
           //   icon: 'mdi-bell',
