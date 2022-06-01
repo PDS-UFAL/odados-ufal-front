@@ -3,9 +3,13 @@
     <v-col>
       <span class="text-subtitle-1 font-weight-bold">
         {{ question.title }}
+        <span class="font-weight-regular text-body-2">{{ showMinMax }}</span>
         <span style="color: red">{{ question.required ? '*' : '' }}</span>
       </span>
-      <div style="display: flex; justify-content: start">
+      <div
+        style="display: flex; justify-content: start"
+        v-if="headers.length && items.length"
+      >
         <v-data-table
           :headers="headers"
           :items="items"
@@ -21,7 +25,7 @@
         :min="question.min_value"
         :max="question.max_value"
         :rules="[rules.required, ...rules.number]"
-        label="Sua Resposta (2022)"
+        :label="getCurrentYear"
         class="mt-2"
         type="number"
         dense
@@ -37,6 +41,12 @@
 
   export default {
     name: 'Number',
+    data: () => {
+      return {
+        headers: [],
+        items: [],
+      };
+    },
     props: {
       question: {
         type: Object,
@@ -46,14 +56,59 @@
         type: Boolean,
         default: true,
       },
-      headers: {
-        type: Array,
-      },
-      items: {
+      responses: {
         type: Array,
       },
     },
     mixins: [rules],
+    methods: {
+      generateTable() {
+        if (this.responses) {
+          let historicalNumbers = {};
+          this.responses.forEach((response) => {
+            this.headers.push({
+              text: response.year,
+              sortable: false,
+              value: String(response.form_send_id),
+              width: '6rem',
+              class: 'grey--text darken-3',
+            });
+            historicalNumbers[response.form_send_id] = response.answer;
+          });
+          this.items.push({ ...historicalNumbers });
+        }
+      },
+    },
+    watch: {
+      responses: function () {
+        this.generateTable();
+      },
+    },
+    computed: {
+      getCurrentYear() {
+        return 'Sua Resposta (' + new Date().getFullYear() + ')';
+      },
+      showMinMax() {
+        console.log(this.question.min_value);
+        if (
+          this.question.min_value !== null &&
+          this.question.max_value !== null
+        )
+          return `(Mínimo: ${this.question.min_value}, Máximo: ${this.question.max_value})`;
+        else if (
+          this.question.min_value !== null &&
+          this.question.max_value === null
+        )
+          return `(Mínimo: ${this.question.min_value})`;
+        else if (
+          this.question.min_value === null &&
+          this.question.max_value !== null
+        )
+          return `(Máximo: ${this.question.max_value})`;
+
+        return '';
+      },
+    },
   };
 </script>
 

@@ -4,16 +4,53 @@
       <v-btn @click="back" text fab small class="mr-2">
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
-      <h3>{{ form.subtitle }}</h3>
-
-      <v-spacer />
-
-      <span class="font-weight-light">{{ relativeTime }}</span>
+      <h3>Inserir histórico</h3>
     </v-row>
 
-    <v-form v-model="valid" ref="form">
+    <v-form v-model="valid" ref="form" style="margin-bottom: 4rem">
+      <v-row style="padding-top: 20px">
+        <v-select
+          :items="this.forms"
+          v-on:change="this.changeSelectedForm"
+          :rules="requiredRule"
+          :menu-props="{ 'offset-y': true }"
+          label="Selecionar Fomulário"
+          dense
+          outlined
+          item-text="title"
+          return-object
+          no-data-text="Nenhuma opção disponível"
+          :readonly="loading"
+        />
+        <v-select
+          :items="this.sectors"
+          v-on:change="this.changeSelectedSector"
+          :rules="requiredRule"
+          :menu-props="{ 'offset-y': true }"
+          label="Selecionar Setor"
+          dense
+          outlined
+          item-text="name"
+          return-object
+          no-data-text="Nenhuma opção disponível"
+          :readonly="loading"
+          style="margin-left: 4rem"
+        />
+        <v-text-field
+          v-model="date"
+          :rules="requiredRule"
+          label="Data"
+          type="number"
+          dense
+          outlined
+          style="margin-left: 4rem"
+        />
+      </v-row>
+    </v-form>
+
+    <v-form v-model="valid" ref="selectedForm" v-if="selectedForm">
       <v-card
-        v-for="(section, i) in form.form.sections"
+        v-for="(section, i) in selectedForm.sections"
         :key="section.id"
         class="mb-3"
       >
@@ -27,9 +64,9 @@
             :is="questionType(question)"
             :question="question"
             :key="question.id"
-            :canEdit="canEdit"
+            :canEdit="true"
             :responses="
-              sectionsTable[i]
+              sectionsTable && sectionsTable[i] && sectionsTable[i].questions[j]
                 ? sectionsTable[i].questions[j].responses[0]
                 : sectionsTable
             "
@@ -38,7 +75,7 @@
       </v-card>
     </v-form>
 
-    <div class="save-btn mb-8 mb-md-0" v-if="canEdit">
+    <div class="save-btn mb-8 mb-md-0" v-if="selectedForm">
       <v-tooltip left>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
@@ -59,8 +96,7 @@
 </template>
 
 <script>
-  import { mapActions, mapGetters } from 'vuex';
-  import getRelativeTime from '@/utils/time.js';
+  import { mapActions } from 'vuex';
 
   import ShortText from '@/components/form/answers/ShortText';
   import LargeText from '@/components/form/answers/LargeText';
@@ -73,30 +109,34 @@
   import Radio from '@/components/form/answers/Radio';
 
   export default {
-    name: 'AnswerForm',
+    name: 'FormHistoric',
     data: () => {
       return {
-        form: {},
         loading: false,
+        date: null,
+        forms: [],
+        form: null,
         valid: false,
-        hasResponse: false,
+        sectors: [],
+        selectedForm: null,
+        selectedSector: '',
         sectionsTable: [],
+        requiredRule: [(v) => !!v || 'Esse campo é obrigatório'],
       };
     },
     async mounted() {
-      if (this.$route.params.id) {
-        await this.loadForm();
-        await this.loadSends();
-      }
+      await this.loadForms();
     },
     methods: {
       ...mapActions([
+        'fetchForm',
+        'fetchForms',
         'fetchFormSend',
+        'fetchFormShowSends',
         'fetchAnswersBySector',
         'setAlert',
         'setQuestions',
-        'createAnswers',
-        'fetchFormShowSends',
+        'createResponseHistory',
       ]),
       back() {
         this.$router.back();
@@ -114,31 +154,37 @@
           radio: Radio,
         }[question.type];
       },
-      async loadSends() {
+      async loadSends(id) {
         const { data } = await this.fetchFormShowSends({
-          id: this.form.form.id,
+          id: id,
         });
         this.sectionsTable = data.form.sections;
       },
+      async loadForms() {
+        this.fetchForms({ params: this.params }).then((value) => {
+          this.forms = value.data.forms;
+        });
+        this.forms = ['Carregando...'];
+      },
+      async loadSectors(id) {
+        this.sectors = ['Carregando...'];
+        const { data } = await this.fetchForm({ id: id });
+        this.sectors = data.form.sectors;
+      },
+      changeSelectedForm(item) {
+        this.selectedForm = item;
+        this.loadSectors(item.id);
+        this.loadForm();
+        this.loadSends(item.id);
+      },
+      changeSelectedSector(item) {
+        this.selectedSector = item;
+      },
       async loadForm() {
         try {
-          let response;
-          if (this.$route.params.sectorId || this.getUser?.sector_id) {
-            const sectorId =
-              this.$route.params.sectorId != undefined
-                ? this.$route.params.sectorId
-                : this.getUser?.sector_id;
-
-            // this.hasResponse = true;
-            response = await this.fetchAnswersBySector({
-              formId: this.$route.params.id,
-              sector: sectorId,
-            });
-          } else {
-            response = await this.fetchFormSend({ id: this.$route.params.id });
-          }
-
-          const { data } = response;
+          const { data } = await this.fetchFormSend({
+            id: this.selectedForm.id,
+          });
           this.form = { ...data.form_send };
 
           // TODO: Refactor when sections are working
@@ -154,7 +200,7 @@
           }
           const questions = all_questions.map((question) => {
             if (question.responses?.length > 0) {
-              this.hasResponse = true;
+              //this.hasResponse = true;
               return {
                 ...question,
                 response: question.responses[0].answer,
@@ -191,7 +237,7 @@
 
           //TODO: Refactor question acquisition
           let all_questions = [];
-          let sections_questions = this.form.form.sections.map((section) => {
+          let sections_questions = this.selectedForm.sections.map((section) => {
             return section.questions;
           });
 
@@ -203,10 +249,12 @@
             responses: all_questions.map((question) => {
               return { answer: question.response, question_id: question.id };
             }),
-            form_send_id: this.$route.params.id,
+            sector_id: this.selectedSector.id,
+            year: parseInt(this.date),
+            form_id: this.selectedForm.id,
           };
 
-          await this.createAnswers({ payload });
+          await this.createResponseHistory({ payload });
 
           this.setAlert({
             alertMessage: 'Resposta enviada com sucesso.',
@@ -223,33 +271,6 @@
         } finally {
           this.loading = false;
         }
-      },
-    },
-    computed: {
-      ...mapGetters(['getQuestions', 'getUser']),
-      relativeTime() {
-        if (!this.form.end_date) return null;
-
-        const info =
-          new Date(this.form.end_date) >= new Date() ? 'Fechará' : 'Finalizado';
-
-        return `${info} ${getRelativeTime(
-          new Date(this.form.end_date).getTime(),
-          'pt-BR',
-        )}`;
-      },
-      isAdmin() {
-        return this.getUser?.role === 'admin';
-      },
-      canEdit() {
-        const today = new Date();
-
-        return (
-          !this.isAdmin &&
-          new Date(this.form.start_date) <= today &&
-          new Date(this.form.end_date) >= today &&
-          !this.hasResponse
-        );
       },
     },
   };

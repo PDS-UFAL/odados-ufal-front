@@ -12,13 +12,15 @@ const rules = {
 
         number: [
           (v) =>
-            !this.question.min_value ||
+            this.question.min_value === null ||
             (v && v >= parseFloat(this.question.min_value)) ||
-            'Valor inserido é menor que o mínimo permitido',
+            'Valor inserido é menor que o mínimo permitido ' +
+              this.question.min_value,
           (v) =>
-            !this.question.max_value ||
+            this.question.max_value === null ||
             (v && v <= parseFloat(this.question.max_value)) ||
-            'Valor inserido é maior que o máximo permitido',
+            'Valor inserido é maior que o máximo permitido ' +
+              this.question.max_value,
         ],
       };
     },
