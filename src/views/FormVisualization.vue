@@ -74,7 +74,8 @@
             v-if="
               yearsSelected.length === 0 ||
               formSendSelected.length === 0 ||
-              sectorsSelected.length === 0
+              sectorsSelected.length === 0 ||
+              responsesCount === 0
             "
           >
             Nenhuma Resposta Encontrada.
@@ -201,7 +202,7 @@
         //   // this.sectorsSelected = [sector];
         // }
 
-        this.questions.every((question) => {
+        this.questions.forEach((question) => {
           if (question.responses !== undefined) {
             this.responsesCount = question.responses.length;
           }
@@ -291,47 +292,26 @@
       },
       updateformSendSelected() {},
       getSectorNameById(sectorId) {
-        if (!Array.isArray(this.sectors)) {
-          console.log('ummm');
-          return this.sectors.name;
-        } else if (
-          Object.prototype.hasOwnProperty.call(this.sectors, 'name') &&
-          this.sectors.name == 'Todos'
-        ) {
-          console.log('dosss');
-          let sect = this.sectors.allSectors.filter((sector) => {
-            return sectorId == sector.id;
-          });
+        let sect = this.sectors.filter((sector) => {
+          return sectorId == sector.id;
+        });
 
-          return sect[0].name;
+        if (sect.length === 0) {
+          return '';
         } else {
-          console.log('tresss');
-          let sect = this.sectors.filter((sector) => {
-            return sectorId == sector.id;
-          });
-
-          console.log(sect);
-          if (sect.length === 0) {
-            return '';
-          } else {
-            return sect[0].name;
-          }
+          return sect[0].abbreviation;
         }
       },
 
       getFormSendNameById(formSendId) {
-        if (!Array.isArray(this.formSends)) {
-          return this.formSends.subtitle;
-        } else {
-          let fSend = this.formSends.filter((formSend) => {
-            return formSendId == formSend.id;
-          });
+        let fSend = this.formSends.filter((formSend) => {
+          return formSendId == formSend.id;
+        });
 
-          if (fSend.length === 0) {
-            return '';
-          } else {
-            return fSend[0].subtitle;
-          }
+        if (fSend.length === 0) {
+          return '';
+        } else {
+          return fSend[0].year + ' - ' + fSend[0].subtitle;
         }
       },
     },

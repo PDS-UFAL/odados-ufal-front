@@ -28,6 +28,8 @@
           :sectors="sectors"
           :answers="answers"
           :question="question"
+          :formSends="formSends"
+          :responses="responses"
         ></chart-card>
       </div>
       <div v-else-if="currentChart.type === 'table'">
@@ -35,11 +37,12 @@
           :question="question"
           :sectors="sectors"
           :responses="responses"
+          :formSends="formSends"
         ></table-card>
       </div>
       <div v-else v-for="response in responses" :key="response.id">
         <p style="background-color: #f8f9fa">
-          <b>{{ getSectorNameById(response.sector_id) }} :</b>
+          <b>{{ response.sector_name }} :</b>
           {{ response.answer }}
         </p>
       </div>
@@ -90,7 +93,10 @@
             { name: 'Tabela', type: 'table' },
             { name: 'Resposta Escrita', type: 'none' },
           ];
-          if (this.question.type !== 'grouped') {
+          if (
+            this.question.type !== 'grouped' &&
+            (this.sectors.length === 1 || this.formSends.length === 1)
+          ) {
             this.chartTypes.push({ name: 'Pizza', type: 'pie' });
           }
         } else {
@@ -110,75 +116,121 @@
             return sector.name !== 'Todos';
           });
 
-          this.sortSectorsById();
+          // this.sortSectorsById();
         } else {
           this.sectors = this.sectorsProps;
 
-          if (Array.isArray(this.sectors)) {
-            this.sortSectorsById();
-          }
+          // if (Array.isArray(this.sectors)) {
+          //   this.sortSectorsById();
+          // }
         }
       },
       getResponses() {
-        if (
-          Object.prototype.hasOwnProperty.call(this.sectorsProps, 'name') &&
-          this.sectorsProps.name == 'Todos'
-        ) {
-          this.responses = this.question.responses;
-          this.sortResponsesBySectorId();
-        } else if (!Array.isArray(this.sectors)) {
-          this.responses = this.question.responses.filter((response) => {
-            return response.sector_id === this.sectors.id;
+        this.responses = this.question.responses.filter((response) => {
+          let inFormSends = this.formSends.some((formSend) => {
+            return formSend.id === response.fsend;
           });
-        } else {
-          //TODO consertar filtragem
-          this.responses = this.question.responses.filter((response) => {
-            let inFormSends = this.formSends.some((formSend) => {
-              return formSend.id === response.fsend;
-            });
-            let inSectors = this.sectors.some((sector) => {
-              return sector.id === response.sector_id;
-            });
-            return inFormSends && inSectors;
+          let inSectors = this.sectors.some((sector) => {
+            return sector.id === response.sector_id;
           });
-          this.sortResponsesBySectorId();
+          return inFormSends && inSectors;
+        });
+
+        if (this.sectors.length > 1 && this.formSends.length > 1) {
+          this.updateResponsesRowColumn('sector_form_send');
         }
+
+        // this.sortResponsesBySectorId();
 
         this.answers = this.responses.map((response) => response.answer);
       },
 
-      sortResponsesBySectorId() {
-        this.responses.sort((a, b) => {
-          if (a.sector_id > b.sector_id) {
-            return 1;
-          }
-          if (a.sector_id < b.sector_id) {
-            return -1;
-          }
-          return 0;
-        });
-      },
+      updateResponsesRowColumn(type) {
+        if (type === 'sector_form_send') {
+          this.question.responseRows = this.responses.reduce(
+            (function (hash) {
+              return function (r, o) {
+                if (!hash[o.sector_id]) {
+                  hash[o.sector_id] = [];
+                  r.push(hash[o.sector_id]);
+                }
+                hash[o.sector_id].push(o);
+                return r;
+              };
+            })(Object.create(null)),
+            [],
+          );
 
-      sortSectorsById() {
-        this.sectors.sort((a, b) => {
-          if (a.id > b.id) {
-            return 1;
-          }
-          if (a.id < b.id) {
-            return -1;
-          }
-          return 0;
-        });
-      },
+          this.question.responseColumns = this.responses.reduce(
+            (function (hash) {
+              return function (r, o) {
+                if (!hash[o.sector_name]) {
+                  hash[o.sector_name] = [];
+                  r.push(hash[o.sector_name]);
+                }
+                hash[o.sector_name].push(o);
+                return r;
+              };
+            })(Object.create(null)),
+            [],
+          );
+        } else if (type === 'sector') {
+          this.question.responseRows = this.question.responses.reduce(
+            (function (hash) {
+              return function (r, o) {
+                if (!hash[o.sector_id]) {
+                  hash[o.sector_id] = [];
+                  r.push(hash[o.sector_id]);
+                }
+                hash[o.sector_id].push(o);
+                return r;
+              };
+            })(Object.create(null)),
+            [],
+          );
 
-      getSectorNameById(sectorId) {
-        if (!Array.isArray(this.sectors)) {
-          return this.sectors.name;
+          this.question.responseColumns = this.question.responses.reduce(
+            (function (hash) {
+              return function (r, o) {
+                if (!hash[o.title]) {
+                  hash[o.title] = [];
+                  r.push(hash[o.title]);
+                }
+                hash[o.title].push(o);
+                return r;
+              };
+            })(Object.create(null)),
+            [],
+          );
+        } else if (type === 'form_send') {
+          this.question.responseRows = this.question.responses.reduce(
+            (function (hash) {
+              return function (r, o) {
+                if (!hash[o.fsend]) {
+                  hash[o.fsend] = [];
+                  r.push(hash[o.fsend]);
+                }
+                hash[o.fsend].push(o);
+                return r;
+              };
+            })(Object.create(null)),
+            [],
+          );
+
+          this.question.responseColumns = this.question.responses.reduce(
+            (function (hash) {
+              return function (r, o) {
+                if (!hash[o.title]) {
+                  hash[o.title] = [];
+                  r.push(hash[o.title]);
+                }
+                hash[o.title].push(o);
+                return r;
+              };
+            })(Object.create(null)),
+            [],
+          );
         }
-        let sect = this.sectors.filter((sector) => {
-          return sectorId == sector.id;
-        });
-        return sect[0].name;
       },
     },
     watch: {
@@ -186,6 +238,11 @@
         this.updateSectors();
       },
       sectors() {
+        this.setChartTypes();
+        this.getResponses();
+      },
+      formSends() {
+        this.setChartTypes();
         this.getResponses();
       },
     },
