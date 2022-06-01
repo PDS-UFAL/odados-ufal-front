@@ -37,7 +37,7 @@
                 icon
                 class="ml-sm-8"
                 v-on="on"
-                @click="duplicateQuestion(question)"
+                @click="duplicateQuestion({ question, section })"
               >
                 <v-icon>mdi-content-copy</v-icon>
               </v-btn>
@@ -132,7 +132,7 @@
   import Select from '@/components/form/answers/Select';
   import Checkbox from '@/components/form/answers/Checkbox';
   import Radio from '@/components/form/answers/Radio';
-  import Table from '@/components/form/answers/Table';
+  // import Table from '@/components/form/answers/Table';
 
   export default {
     name: 'QuestionCard',
@@ -144,6 +144,9 @@
       disabled: {
         type: Boolean,
         default: false,
+      },
+      section: {
+        required: true,
       },
     },
     components: {
@@ -160,10 +163,20 @@
           { text: 'Dinheiro', value: 'money' },
           { text: 'Porcentagem', value: 'percent' },
           // { text: 'Arquivo', value: 'file' },
-          { text: 'Lista de opções', value: 'select' },
-          { text: 'Caixa de seleção', value: 'checkbox' },
-          { text: 'Múltipla escolha', value: 'radio' },
-          { text: 'Tabela', value: 'table' },
+          {
+            text: 'Lista de opções (apenas 1 opção)',
+            value: 'select',
+          },
+          {
+            text: 'Múltipla escolha (apenas 1 opção)',
+            value: 'radio',
+          },
+          {
+            text: 'Caixa de seleção (1 ou mais opções)',
+            value: 'checkbox',
+          },
+
+          // { text: 'Tabela', value: 'table' },
         ],
       };
     },
@@ -171,7 +184,10 @@
       ...mapActions(['removeQuestion', 'duplicateQuestion']),
       openRemoveQuestionDialog() {
         this.$refs.showRemoveQuestionDialog.open(() => {
-          this.removeQuestion(this.question);
+          this.removeQuestion({
+            question: this.question,
+            section: this.section,
+          });
         });
       },
     },
@@ -187,7 +203,7 @@
           select: Select,
           checkbox: Checkbox,
           radio: Radio,
-          table: Table,
+          // table: Table,
         }[this.question.type];
       },
       isShortText() {
@@ -218,9 +234,9 @@
         return this.question.type === 'radio';
       },
 
-      isTable() {
-        return this.question.type === 'table';
-      },
+      // isTable() {
+      //   return this.question.type === 'table';
+      // },
 
       hasMaxChar() {
         return this.isShortText || this.isLargeText;

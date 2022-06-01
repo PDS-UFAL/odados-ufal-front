@@ -7,4 +7,7 @@ export default {
   async fetchAnswersBySector(store, { formId, sector }) {
     return await answersApi.fetchAnswersBySector(formId, sector);
   },
+  async createResponseHistory(store, { payload }) {
+    return await answersApi.createResponseHistory(payload);
+  },
 };

@@ -27,6 +27,11 @@ const routes = [
         component: () => import('@/views/SendForm.vue'),
       },
       {
+        path: '/inserir-historico',
+        name: 'CreateHistory',
+        component: () => import('@/views/FormHistoric.vue'),
+      },
+      {
         path: '/formulario/:id',
         name: 'VisualizationForm',
         component: () => import('@/views/FormVisualization.vue'),
@@ -61,7 +66,7 @@ router.beforeEach((to, from, next) => {
     to.name !== 'Login' &&
     (!store.getters.authenticated || isJwtExpired(store.getters.authToken))
   ) {
-    next({ name: 'Login' });
+    next({ name: 'Login', path: '/login', query: { redirect: to.fullPath } });
   } else {
     next();
   }

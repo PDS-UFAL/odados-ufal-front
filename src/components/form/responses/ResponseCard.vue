@@ -22,23 +22,38 @@
     </v-card-title>
     <v-divider />
     <v-card-text>
-      <div v-if="['bar', 'pie', 'line'].includes(currentChart.type)">
+      <div v-if="['bar', 'pie'].includes(currentChart.type)">
         <chart-card
           :chartType="currentChart.type"
           :sectors="sectors"
           :answers="answers"
+          :question="question"
+          :formSends="formSends"
+          :responses="responses"
         ></chart-card>
       </div>
-      <div v-else-if="currentChart.type === 'table'">
+      <div v-show="currentChart.type === 'table'">
         <table-card
           :question="question"
           :sectors="sectors"
           :responses="responses"
+          :formSends="formSends"
         ></table-card>
       </div>
-      <div v-else v-for="response in responses" :key="response.id">
+      <div
+        v-show="!['bar', 'pie', 'table'].includes(currentChart.type)"
+        v-for="response in responses"
+        :key="response.id"
+      >
         <p style="background-color: #f8f9fa">
-          <b>{{ getSectorNameById(response.user.sector_id) }} :</b>
+          <b v-if="formSends.length > 1 && sectors.length > 1"
+            >{{ response.sector_name + ' - ' + response.form_send_name }} :</b
+          >
+          <b v-else-if="formSends.length > 1"
+            >{{ response.form_send_name }} :</b
+          >
+          <b v-else>{{ response.sector_name }} :</b>
+
           {{ response.answer }}
         </p>
       </div>
@@ -46,6 +61,7 @@
   </v-card>
 </template>
 <script>
+  //import { mapActions } from 'vuex';
   import ChartCard from './ChartCard.vue';
   import TableCard from './TableCard.vue';
 
@@ -71,26 +87,34 @@
         currentChart: { name: 'Resposta Escrita', type: 'none' },
         chartTypes: [],
         sectors: [],
-        chartQuestionTypes: ['number', 'money', 'percent'],
+        chartQuestionTypes: ['number', 'money', 'percent', 'grouped'],
       };
     },
     created() {
       this.setChartTypes();
       this.updateSectors();
+      // this.addFormResult();
     },
     methods: {
+      //...mapActions(['createFormResult']),
       setChartTypes() {
         if (this.chartQuestionTypes.includes(this.question.type)) {
           this.currentChart = { name: 'Barra', type: 'bar' };
           this.chartTypes = [
             { name: 'Barra', type: 'bar' },
-            { name: 'Pizza', type: 'pie' },
-            { name: 'Linha', type: 'line' },
+            // { name: 'Pizza', type: 'pie' },
+            // { name: 'Linha', type: 'line' },
             { name: 'Tabela', type: 'table' },
             { name: 'Resposta Escrita', type: 'none' },
           ];
+          if (
+            this.question.type !== 'grouped' &&
+            (this.sectors.length === 1 || this.formSends.length === 1)
+          ) {
+            this.chartTypes.push({ name: 'Pizza', type: 'pie' });
+          }
         } else {
-          this.currentChart = { name: 'Resposta Escrita', type: '' };
+          this.currentChart = { name: 'Tabela', type: 'table' };
           this.chartTypes = [
             { name: 'Resposta Escrita', type: 'none' },
             { name: 'Tabela', type: 'table' },
@@ -106,75 +130,154 @@
             return sector.name !== 'Todos';
           });
 
-          this.sortSectorsById();
+          // this.sortSectorsById();
         } else {
           this.sectors = this.sectorsProps;
 
-          if (Array.isArray(this.sectors)) {
-            this.sortSectorsById();
-          }
+          // if (Array.isArray(this.sectors)) {
+          //   this.sortSectorsById();
+          // }
         }
       },
       getResponses() {
-        if (
-          Object.prototype.hasOwnProperty.call(this.sectorsProps, 'name') &&
-          this.sectorsProps.name == 'Todos'
-        ) {
-          this.responses = this.question.responses;
-          this.sortResponsesBySectorId();
-        } else if (!Array.isArray(this.sectors)) {
-          this.responses = this.question.responses.filter((response) => {
-            return response.user.sector_id === this.sectors.id;
+        this.responses = this.question.responses.filter((response) => {
+          let inFormSends = this.formSends.some((formSend) => {
+            return formSend.id === response.fsend;
           });
-        } else {
-          //TODO consertar filtragem
-          this.responses = this.question.responses.filter((response) => {
-            return this.sectors.find(
-              (sector) => sector.id === response.user.sector_id,
-            );
+          let inSectors = this.sectors.some((sector) => {
+            return sector.id === response.sector_id;
           });
-          this.sortResponsesBySectorId();
+          return inFormSends && inSectors;
+        });
+
+        if (this.sectors.length > 1 && this.formSends.length > 1) {
+          this.updateResponsesRowColumn('sector_form_send');
         }
+
+        // this.sortResponsesBySectorId();
 
         this.answers = this.responses.map((response) => response.answer);
       },
 
-      sortResponsesBySectorId() {
-        this.responses.sort((a, b) => {
-          if (a.user.sector_id > b.user.sector_id) {
-            return 1;
-          }
-          if (a.user.sector_id < b.user.sector_id) {
-            return -1;
-          }
-          return 0;
-        });
-      },
+      updateResponsesRowColumn(type) {
+        if (type === 'sector_form_send') {
+          this.question.responseRows = this.responses.reduce(
+            (function (hash) {
+              return function (r, o) {
+                if (!hash[o.sector_id]) {
+                  hash[o.sector_id] = [];
+                  r.push(hash[o.sector_id]);
+                }
+                hash[o.sector_id].push(o);
+                return r;
+              };
+            })(Object.create(null)),
+            [],
+          );
 
-      sortSectorsById() {
-        this.sectors.sort((a, b) => {
-          if (a.id > b.id) {
-            return 1;
-          }
-          if (a.id < b.id) {
-            return -1;
-          }
-          return 0;
-        });
-      },
+          this.question.responseColumns = this.responses.reduce(
+            (function (hash) {
+              return function (r, o) {
+                if (!hash[o.sector_name]) {
+                  hash[o.sector_name] = [];
+                  r.push(hash[o.sector_name]);
+                }
+                hash[o.sector_name].push(o);
+                return r;
+              };
+            })(Object.create(null)),
+            [],
+          );
+        } else if (type === 'sector') {
+          this.question.responseRows = this.question.responses.reduce(
+            (function (hash) {
+              return function (r, o) {
+                if (!hash[o.sector_id]) {
+                  hash[o.sector_id] = [];
+                  r.push(hash[o.sector_id]);
+                }
+                hash[o.sector_id].push(o);
+                return r;
+              };
+            })(Object.create(null)),
+            [],
+          );
 
-      getSectorNameById(sectorId) {
-        let sect = this.sectors.filter((sector) => {
-          return sectorId == sector.id;
-        });
-        return sect[0].name;
+          this.question.responseColumns = this.question.responses.reduce(
+            (function (hash) {
+              return function (r, o) {
+                if (!hash[o.title]) {
+                  hash[o.title] = [];
+                  r.push(hash[o.title]);
+                }
+                hash[o.title].push(o);
+                return r;
+              };
+            })(Object.create(null)),
+            [],
+          );
+        } else if (type === 'form_send') {
+          this.question.responseRows = this.question.responses.reduce(
+            (function (hash) {
+              return function (r, o) {
+                if (!hash[o.fsend]) {
+                  hash[o.fsend] = [];
+                  r.push(hash[o.fsend]);
+                }
+                hash[o.fsend].push(o);
+                return r;
+              };
+            })(Object.create(null)),
+            [],
+          );
+
+          this.question.responseColumns = this.question.responses.reduce(
+            (function (hash) {
+              return function (r, o) {
+                if (!hash[o.title]) {
+                  hash[o.title] = [];
+                  r.push(hash[o.title]);
+                }
+                hash[o.title].push(o);
+                return r;
+              };
+            })(Object.create(null)),
+            [],
+          );
+        }
       },
+      /*addFormResult() {
+        let form_result, results;
+        this.chartTypes.forEach((chartType) => {
+          if (chartType.type == 'table') {
+            results = this.responses;
+          } else {
+            results = this.answers;
+          }
+          form_result = {
+            id: chartType.type.concat(this.question.id),
+            type: chartType.type,
+            sectors: this.sectors,
+            question: this.question,
+            results: results,
+          };
+
+          this.createFormResult(form_result);
+        });
+      },*/
     },
     watch: {
       sectorsProps() {
         this.updateSectors();
+        //this.addFormResult();
       },
       sectors() {
+        this.setChartTypes();
+        this.getResponses();
+        // this.addFormResult();
+      },
+      formSends() {
+        this.setChartTypes();
         this.getResponses();
       },
     },
