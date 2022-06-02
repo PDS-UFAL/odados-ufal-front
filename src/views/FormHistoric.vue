@@ -131,7 +131,6 @@
       ...mapActions([
         'fetchForm',
         'fetchForms',
-        'fetchFormSend',
         'fetchFormShowSends',
         'fetchAnswersBySector',
         'setAlert',
@@ -182,7 +181,7 @@
       },
       async loadForm() {
         try {
-          const { data } = await this.fetchFormSend({
+          const { data } = await this.fetchForm({
             id: this.selectedForm.id,
           });
           this.form = { ...data.form_send };
