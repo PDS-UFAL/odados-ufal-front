@@ -440,6 +440,13 @@
       },
       async saveForm() {
         //todo: refactor here
+        if (!this.selectedSectors.length) {
+          this.setAlert({
+            alertMessage: 'Nenhum setor selecionado.',
+            alertColor: 'red',
+          });
+          return;
+        }
         try {
           this.loading = true;
 
