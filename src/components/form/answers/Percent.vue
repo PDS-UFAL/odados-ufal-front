@@ -58,6 +58,9 @@
       responses: {
         type: Array,
       },
+      showCurrentYear: {
+        default: false,
+      },
     },
     mixins: [rules],
     methods: {
@@ -85,10 +88,11 @@
     },
     computed: {
       getCurrentYear() {
-        return 'Sua Resposta (' + new Date().getFullYear() + ')';
+        if (this.showCurrentYear)
+          return 'Sua Resposta (' + new Date().getFullYear() + ')';
+        else return 'Sua Resposta';
       },
       showMinMax() {
-        console.log(this.question.min_value);
         if (
           this.question.min_value !== null &&
           this.question.max_value !== null
