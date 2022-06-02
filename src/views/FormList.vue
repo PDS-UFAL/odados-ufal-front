@@ -222,8 +222,8 @@
           const { data } = await this.fetchFormSends({
             params: this.params,
           });
-          this.form_sends = data.form_sends;
-          this.form_sends_backup = data.form_sends;
+          this.form_sends = data.form_sends.filter((item) => !item.is_history);
+          this.form_sends_backup = this.form_sends;
         } catch (err) {
           this.setAlert({
             alertMessage:
