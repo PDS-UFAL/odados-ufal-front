@@ -290,7 +290,7 @@
       filterStatus() {
         const temp_hash = {
           Abertos: 'open',
-          Fechados: 'closed',
+          Finalizados: 'closed',
           'Não iniciados': 'not_started',
         };
         if (this.select !== 'Todos')
