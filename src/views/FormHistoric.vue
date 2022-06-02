@@ -22,6 +22,8 @@
           no-data-text="Nenhuma opção disponível"
           :readonly="loading"
         />
+      </v-row>
+      <v-row>
         <v-select
           :items="this.sectors"
           v-on:change="this.changeSelectedSector"
@@ -34,16 +36,15 @@
           return-object
           no-data-text="Nenhuma opção disponível"
           :readonly="loading"
-          style="margin-left: 4rem"
         />
         <v-text-field
           v-model="date"
           :rules="requiredRule"
-          label="Data"
+          label="Ano"
+          style="margin-left: 4rem"
           type="number"
           dense
           outlined
-          style="margin-left: 4rem"
         />
       </v-row>
     </v-form>
