@@ -26,6 +26,7 @@
           <component
             :is="questionType(question)"
             :question="question"
+            :showCurrentYear="true"
             :key="question.id"
             :canEdit="canEdit"
             :responses="
