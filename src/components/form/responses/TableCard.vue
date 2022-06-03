@@ -92,8 +92,14 @@
         if (this.question.type === 'grouped') {
           if (this.formSends.length > 1) {
             let head = this.formSends.map((formSend) => ({
-              text: formSend.year + ' - ' + formSend.subtitle,
-              value: formSend.year + ' - ' + formSend.subtitle,
+              text:
+                formSend.year.toString() === formSend.subtitle
+                  ? formSend.year
+                  : formSend.year + ' - ' + formSend.subtitle,
+              value:
+                formSend.year.toString() === formSend.subtitle
+                  ? formSend.year
+                  : formSend.year + ' - ' + formSend.subtitle,
             }));
             this.headers.push(...head);
           } else {
@@ -104,8 +110,14 @@
         } else {
           if (this.formSends.length > 1 && this.sectors.length > 1) {
             let head = this.formSends.map((formSend) => ({
-              text: formSend.year + ' - ' + formSend.subtitle,
-              value: formSend.year + ' - ' + formSend.subtitle,
+              text:
+                formSend.year.toString() === formSend.subtitle
+                  ? formSend.year
+                  : formSend.year + ' - ' + formSend.subtitle,
+              value:
+                formSend.year.toString() === formSend.subtitle
+                  ? formSend.year
+                  : formSend.year + ' - ' + formSend.subtitle,
             }));
             this.headers.push(...head);
           } else {

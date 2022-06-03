@@ -217,7 +217,9 @@
         if (fSend.length === 0) {
           return '';
         } else {
-          return fSend[0].year + ' - ' + fSend[0].subtitle;
+          return fSend[0].year.toString() === fSend[0].subtitle
+            ? fSend[0].year
+            : fSend[0].year + ' - ' + fSend[0].subtitle;
         }
       },
       createCSV() {
