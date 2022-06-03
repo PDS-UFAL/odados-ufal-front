@@ -1,5 +1,12 @@
 <template>
   <v-container class="px-sm-12">
+    <confirmation-dialog
+      ref="showSendFormDialog"
+      width="300"
+      title="Salvar resposta?"
+      description="Deseja enviar sua resposta?"
+      confirmButton="Enviar"
+    />
     <v-row class="pa-0 align-center mt-md-4 mb-8">
       <v-btn @click="back" text fab small class="mr-2">
         <v-icon>mdi-arrow-left</v-icon>
@@ -48,7 +55,7 @@
             v-bind="attrs"
             v-on="on"
             :loading="loading"
-            @click="saveResponse"
+            @click="showSaveAnswerDialog"
           >
             <v-icon>mdi-check</v-icon>
           </v-btn>
@@ -72,9 +79,13 @@
   import Select from '@/components/form/answers/Select';
   import Checkbox from '@/components/form/answers/Checkbox';
   import Radio from '@/components/form/answers/Radio';
+  import ConfirmationDialog from '@/components/ConfirmationDialog';
 
   export default {
     name: 'AnswerForm',
+    components: {
+      ConfirmationDialog,
+    },
     data: () => {
       return {
         form: {},
@@ -184,6 +195,11 @@
             },
           };
         }
+      },
+      showSaveAnswerDialog() {
+        this.$refs.showSaveAnswerDialog.open(() => {
+          this.saveResponse();
+        });
       },
       async saveResponse() {
         try {

@@ -87,6 +87,9 @@
         </v-row>
       </v-col>
     </v-row>
+    <p v-if="addNameRequired" class="option-name-warning">
+      É necessário adicionar um nome para a opção
+    </p>
   </v-flex>
 </template>
 
@@ -102,17 +105,31 @@
         type: Boolean,
         default: false,
       },
+      addNameRequired: {
+        type: Boolean,
+        default: false,
+      },
     },
     methods: {
       addOption() {
         this.question.checkboxExample = [];
+        if (this.question.options[this.question.options.length - 1] === '') {
+          this.addNameRequired = true;
+          return;
+        }
+        this.addNameRequired = false;
         this.question.options.push('');
       },
       removeOption(index) {
+        this.addNameRequired = false;
         this.question.options.splice(index, 1);
       },
     },
   };
 </script>
 
-<style></style>
+<style>
+  .option-name-warning {
+    color: red;
+  }
+</style>
