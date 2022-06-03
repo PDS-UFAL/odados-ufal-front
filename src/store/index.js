@@ -8,6 +8,7 @@ import FormSends from './form_sends';
 import Answers from './answers';
 import Sectors from './sectors';
 import Questions from './questions';
+import Users from './users';
 
 Vue.use(Vuex);
 
@@ -19,6 +20,7 @@ const store = new Vuex.Store({
     FormSends,
     Answers,
     Sectors,
+    Users,
     Questions,
   },
 });
