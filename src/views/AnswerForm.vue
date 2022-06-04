@@ -1,7 +1,7 @@
 <template>
   <v-container class="px-sm-12">
     <confirmation-dialog
-      ref="showSendFormDialog"
+      ref="showSaveAnswerDialog"
       width="300"
       title="Salvar resposta?"
       description="Deseja enviar sua resposta?"
