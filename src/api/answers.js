@@ -8,4 +8,7 @@ export default {
   fetchAnswersBySector(formId, sector) {
     return request.$http.get(`${resource}/forms/${formId}?sector_id=${sector}`);
   },
+  createResponseHistory(payload) {
+    return request.$http.post(`/api/forms/response_history`, payload);
+  },
 };

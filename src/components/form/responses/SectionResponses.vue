@@ -8,6 +8,7 @@
         <v-checkbox
           v-model="groupData"
           :label="`Agrupar dados da seção`"
+          :disabled="disabledGroup"
         ></v-checkbox>
       </v-card-text>
     </v-card>
@@ -19,12 +20,14 @@
       :sectorsProps="sectorsSelected"
       :disabled="true"
       :formSends="formSends"
+      :section="section.name"
     />
   </div>
 </template>
 
 <script>
   import ResponseCard from '@/components/form/responses/ResponseCard';
+  import { mapActions } from 'vuex';
 
   export default {
     components: {
@@ -41,19 +44,33 @@
       formSends: {
         required: true,
       },
+      years: {
+        required: true,
+      },
     },
     data: () => {
       return {
         groupData: false,
         questions: [],
         groupedQuestion: {},
+        disabledGroup: false,
       };
     },
     async mounted() {
-      // await this.loadForm();
       await this.updateQuestions();
+      await this.updateDisabledGroup();
     },
     methods: {
+      ...mapActions(['resetFormResults', 'deleteFormResult']),
+      updateDisabledGroup() {
+        if (this.sectorsSelected.length > 1 && this.formSends.length > 1) {
+          this.disabledGroup = true;
+          this.groupData = false;
+          this.updateQuestions();
+        } else {
+          this.disabledGroup = false;
+        }
+      },
       updateQuestions() {
         this.questions = [];
 
@@ -68,24 +85,18 @@
               question.type === 'percent' ||
               question.type === 'money'
             ) {
+              //   this.deleteFormResult(question.id);
               this.groupedQuestion.titles.add(question.title);
 
-              let responses = question.responses.map((response) => ({
-                ...response,
-                title: question.title,
-                question_id: question.id,
-                sector_id: response.user.sector_id,
-                sector_name: this.getSectorNameById(response.user.sector_id),
-              }));
-
-              if (
-                !Array.isArray(this.sectorsSelected) &&
-                this.sectorsSelected.name !== 'Todos'
-              ) {
-                responses = responses.filter((response) => {
-                  return response.user.sector_id === this.sectorsSelected.id;
+              let responses = question.responses.filter((response) => {
+                let inFormSends = this.formSends.some((formSend) => {
+                  return formSend.id === response.fsend;
                 });
-              }
+                let inSectors = this.sectorsSelected.some((sector) => {
+                  return sector.id === response.sector_id;
+                });
+                return inFormSends && inSectors;
+              });
 
               this.groupedQuestion.responses =
                 this.groupedQuestion.responses.concat(responses);
@@ -94,7 +105,21 @@
             }
           });
 
-          this.groupedQuestion.sectorRows =
+          if (this.formSends.length > 1) {
+            this.groupedQuestion.dataType = 'form_send';
+          } else {
+            this.groupedQuestion.dataType = 'sector';
+          }
+          this.updateResponsesRowColumn(this.groupedQuestion.dataType);
+
+          this.questions.unshift(this.groupedQuestion);
+        } else {
+          this.questions = this.section.questions.slice();
+        }
+      },
+      updateResponsesRowColumn(type) {
+        if (type === 'sector') {
+          this.groupedQuestion.responseRows =
             this.groupedQuestion.responses.reduce(
               (function (hash) {
                 return function (r, o) {
@@ -109,7 +134,7 @@
               [],
             );
 
-          this.groupedQuestion.sectorColumns =
+          this.groupedQuestion.responseColumns =
             this.groupedQuestion.responses.reduce(
               (function (hash) {
                 return function (r, o) {
@@ -123,10 +148,36 @@
               })(Object.create(null)),
               [],
             );
+        } else if (type === 'form_send') {
+          this.groupedQuestion.responseRows =
+            this.groupedQuestion.responses.reduce(
+              (function (hash) {
+                return function (r, o) {
+                  if (!hash[o.fsend]) {
+                    hash[o.fsend] = [];
+                    r.push(hash[o.fsend]);
+                  }
+                  hash[o.fsend].push(o);
+                  return r;
+                };
+              })(Object.create(null)),
+              [],
+            );
 
-          this.questions.unshift(this.groupedQuestion);
-        } else {
-          this.questions = this.section.questions.slice();
+          this.groupedQuestion.responseColumns =
+            this.groupedQuestion.responses.reduce(
+              (function (hash) {
+                return function (r, o) {
+                  if (!hash[o.title]) {
+                    hash[o.title] = [];
+                    r.push(hash[o.title]);
+                  }
+                  hash[o.title].push(o);
+                  return r;
+                };
+              })(Object.create(null)),
+              [],
+            );
         }
       },
       initGroupedQuestion() {
@@ -140,36 +191,22 @@
           min_value: null,
         };
       },
-      getSectorNameById(sectorId) {
-        if (!Array.isArray(this.sectorsSelected)) {
-          return this.sectorsSelected.name;
-        } else if (
-          Object.prototype.hasOwnProperty.call(this.sectorsSelected, 'name') &&
-          this.sectorsSelected.name == 'Todos'
-        ) {
-          let sect = this.sectorsSelected.allSectors.filter((sector) => {
-            return sectorId == sector.id;
-          });
-
-          return sect[0].name;
-        } else {
-          let sect = this.sectorsSelected.filter((sector) => {
-            return sectorId == sector.id;
-          });
-
-          return sect[0].name;
-        }
-      },
     },
     watch: {
       groupData() {
+        //this.resetFormResults();
         this.updateQuestions();
       },
       section() {
         this.updateQuestions();
       },
       sectorsSelected() {
+        this.updateDisabledGroup();
         this.updateQuestions();
+        //this.resetFormResults();
+      },
+      formSends() {
+        this.updateDisabledGroup();
       },
     },
   };

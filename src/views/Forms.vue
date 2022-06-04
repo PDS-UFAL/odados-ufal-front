@@ -37,6 +37,151 @@
       <!-- <v-spacer /> -->
     </v-row>
 
+    <!-- <v-col cols="12" md="3" class="pa-0">
+        <v-menu
+          v-model="showStartDatepicker"
+          :close-on-content-click="false"
+          :nudge-right="0"
+          transition="scale-transition"
+          offset-y
+          max-width="290px"
+          min-width="290px"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+              v-on="on"
+              v-bind="attrs"
+              label="Abre em"
+              :value="formatedDate(startDate)"
+              prepend-inner-icon="mdi-calendar"
+              dense
+              readonly
+              outlined
+              clearable
+              @click:clear="startDate = ''"
+              @click:prepend-inner="showStartDatepicker = true"
+              :disabled="viewMode"
+            />
+          </template>
+          <v-date-picker
+            color="primary"
+            v-model="startDate"
+            locale="pt-br"
+            :min="today"
+            scrollable
+            @input="showStartDatepicker = false"
+          />
+        </v-menu>
+      </v-col>
+
+      <v-spacer />
+
+      <v-col cols="12" md="3" class="pa-0">
+        <v-menu
+          v-model="showEndDatepicker"
+          :close-on-content-click="false"
+          :nudge-right="0"
+          transition="scale-transition"
+          offset-y
+          max-width="290px"
+          min-width="290px"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+              v-on="on"
+              v-bind="attrs"
+              label="Fecha em"
+              :value="formatedDate(endDate)"
+              prepend-inner-icon="mdi-calendar"
+              dense
+              readonly
+              outlined
+              clearable
+              @click:clear="dates = []"
+              @click:prepend-inner="showEndDatepicker = true"
+              :disabled="viewMode"
+            />
+          </template>
+          <v-date-picker
+            color="primary"
+            v-model="endDate"
+            locale="pt-br"
+            :min="startDate || today"
+            scrollable
+            @input="showEndDatepicker = false"
+          />
+        </v-menu>
+      </v-col>
+    </v-row>
+ -->
+    <v-row class="pt-8 mb-4">
+      <h3>Quem vai responder?</h3>
+    </v-row>
+
+    <v-row>
+      <v-card elevation="3" class="px-4" width="100%">
+        <v-card-title v-if="!viewMode" class="px-0 d-flex justify-end">
+          <v-btn
+            @click="checkAll"
+            :disabled="selectedSectors.length == sectors.length"
+            text
+            small
+          >
+            Marcar todos
+          </v-btn>
+          <v-btn
+            :disabled="selectedSectors.length == 0"
+            text
+            small
+            @click="uncheckAll"
+          >
+            Desmarcar todos
+          </v-btn>
+        </v-card-title>
+
+        <v-card-text class="overflow my-4">
+          <v-row class="pa-0">
+            <v-col class="pa-0">
+              <div class="px-2" v-for="sector in sectors" :key="sector.name">
+                <v-checkbox
+                  v-model="selectedSectors"
+                  :value="sector.id"
+                  :label="sector.name"
+                  :disabled="viewMode"
+                  dense
+                />
+              </div>
+            </v-col>
+          </v-row>
+        </v-card-text>
+      </v-card>
+    </v-row>
+
+    <!-- <template v-if="viewMode && formSectors.length > 0">
+      <v-row class="pt-8 mb-4">
+        <h3>Respostas</h3>
+      </v-row>
+
+      <v-row>
+        <v-card elevation="3" class="px-2" width="100%">
+          <v-card-text>
+            <v-layout column>
+              <div
+                class="px-5 px-md-4"
+                v-for="sector in formSectors"
+                :key="sector.name"
+              >
+                <v-btn icon @click="getFormAnswerBySector(sector.id)">
+                  <v-icon>mdi-eye</v-icon>
+                </v-btn>
+                {{ sector.name }}
+              </div>
+            </v-layout>
+          </v-card-text>
+        </v-card>
+      </v-row>
+    </template> -->
+
     <v-row class="pt-8">
       <h3>Perguntas</h3>
       <v-spacer />
@@ -184,8 +329,8 @@
             action: 'deleteSection',
           },
         ],
-        // sectors: [],
-        // selectedSectors: [],
+        sectors: [],
+        selectedSectors: [],
         // startDate: '',
         // endDate: '',
         title: null,
@@ -203,7 +348,7 @@
     async mounted() {
       // this.resetQuestions();
       this.resetSections();
-      // await this.loadSectors();
+      await this.loadSectors();
 
       if (this.$route.params.id) {
         await this.loadForm();
@@ -215,7 +360,7 @@
     },
     methods: {
       ...mapActions([
-        // 'fetchSectors',
+        'fetchSectors',
         'fetchForm',
         'addQuestion',
         'addSection',
@@ -307,6 +452,13 @@
       },
       async saveForm() {
         //todo: refactor here
+        if (!this.selectedSectors.length) {
+          this.setAlert({
+            alertMessage: 'Nenhum setor selecionado.',
+            alertColor: 'red',
+          });
+          return;
+        }
         try {
           this.loading = true;
 
@@ -315,7 +467,7 @@
               title: this.title,
               // start_date: this.startDate,
               // end_date: this.endDate,
-              // sector_ids: this.selectedSectors,
+              sector_ids: this.selectedSectors,
               sections_attributes: this.sections,
             },
           };
@@ -334,12 +486,12 @@
       back() {
         this.$router.back();
       },
-      // checkAll() {
-      //   this.selectedSectors = [...this.sectors.map((sector) => sector.id)];
-      // },
-      // uncheckAll() {
-      //   this.selectedSectors = [];
-      // },
+      checkAll() {
+        this.selectedSectors = [...this.sectors.map((sector) => sector.id)];
+      },
+      uncheckAll() {
+        this.selectedSectors = [];
+      },
       errorFunction(err) {
         console.log(err);
         if (err.response?.data.title) {
@@ -376,29 +528,29 @@
           alertColor: 'green',
         });
       },
-      // async loadSectors() {
-      //   try {
-      //     const { data } = await this.fetchSectors();
-      //     this.sectors = [...data.sectors];
-      //   } catch (err) {
-      //     this.errorFunction(err);
-      //   }
-      // },
+      async loadSectors() {
+        try {
+          const { data } = await this.fetchSectors();
+          this.sectors = [...data.sectors];
+        } catch (err) {
+          this.errorFunction(err);
+        }
+      },
       async loadForm() {
         try {
           const { data } = await this.fetchForm({ id: this.$route.params.id });
           this.form = { ...data.form };
 
-          // this.selectedSectors = [
-          //   ...this.form.sectors.map((sector) => sector.id),
-          // ];
+          this.selectedSectors = [
+            ...this.form.sectors.map((sector) => sector.id),
+          ];
 
           this.title = this.form.title;
           this.dates = [this.form.start_date, this.form.end_date];
           this.startDate = this.form.start_date;
           this.endDate = this.form.end_date;
           // TODO: Refactor when sections are working
-          this.setQuestions(this.form.sections[0].questions);
+          this.setQuestions(this.form.sections[0].questions_attributes);
         } catch (err) {
           if (err.response?.status === 404) {
             this.$router.push({ name: 'CreateForms' });
@@ -406,7 +558,7 @@
         }
       },
       updateQuestions() {
-        this.setQuestions(this.sections[0].questions);
+        this.setQuestions(this.sections[0].questions_attributes);
       },
     },
     computed: {
