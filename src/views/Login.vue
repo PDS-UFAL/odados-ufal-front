@@ -41,7 +41,7 @@
 
           <!-- <a class="mt-n6 v-btn__content justify-end">Esqueceu a senha?</a> -->
 
-          <v-card-actions class="pa-0 mt-8">
+          <v-card-actions class="pa-0 mt-2">
             <v-btn
               light
               block
@@ -54,6 +54,10 @@
               Entrar
             </v-btn>
           </v-card-actions>
+
+          <a align="right" class="pa-0 mt-2" @click="forgotPassword"
+            >Esqueci minha senha</a
+          >
         </v-card>
       </v-layout>
     </v-row>
@@ -117,6 +121,9 @@
 
         this.passwordTypeIcon =
           this.passwordType === 'password' ? 'mdi-eye' : 'mdi-eye-off';
+      },
+      forgotPassword() {
+        this.$router.push({ name: 'ForgotPassword' });
       },
     },
   };
