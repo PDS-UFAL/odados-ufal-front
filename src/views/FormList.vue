@@ -17,7 +17,13 @@
     <v-row class="pa-0 align-center mt-md-4 mb-8">
       <h3>Formulários</h3>
     </v-row>
-    <v-card style="margin: 64px 0" elevation="2" color="basil" flat>
+    <v-card
+      v-if="isAdmin"
+      style="margin: 64px 0"
+      elevation="2"
+      color="basil"
+      flat
+    >
       <v-tabs centered v-model="tab">
         <v-tab href="#tab-1">ENVIOS</v-tab>
         <v-tab href="#tab-2">MODELOS</v-tab>
@@ -147,7 +153,7 @@
     },
     data: () => {
       return {
-        tab: null,
+        tab: 'tab-1',
         select: 'Todos',
         items: ['Todos', 'Abertos', 'Finalizados', 'Não iniciados'],
         loading_sends: true,
