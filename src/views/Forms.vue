@@ -345,6 +345,9 @@
         lastSelectableSection: 'Seção 1',
       };
     },
+    beforeMount() {
+      if (!this.isAdmin()) this.$router.push({ name: 'Home' });
+    },
     async mounted() {
       // this.resetQuestions();
       this.resetSections();
@@ -370,6 +373,9 @@
         'resetQuestions',
         'resetSections',
       ]),
+      isAdmin() {
+        return this.getUser.role === 'admin';
+      },
       // addNewQuestion(question, section) {
       //   this.lastSelectableSection = section.name;
       //   this.addQuestion(question);
@@ -562,7 +568,7 @@
       },
     },
     computed: {
-      ...mapGetters(['getQuestions', 'getSections']),
+      ...mapGetters(['getQuestions', 'getSections', 'getUser']),
       // formSectors() {
       //   return (
       //     this.form?.sectors.filter((sector) => sector.status === 'answered') ||

@@ -104,7 +104,7 @@
 </template>
 
 <script>
-  import { mapActions } from 'vuex';
+  import { mapActions, mapGetters } from 'vuex';
   import QuestionCard from '@/components/form/questions/QuestionCard';
   // import ResponseCard from '@/components/form/responses/ResponseCard';
   import SectionResponses from '@/components/form/responses/SectionResponses';
@@ -130,6 +130,9 @@
         years: new Set(),
       };
     },
+    beforeMount() {
+      if (!this.isAdmin()) this.$router.push({ name: 'Home' });
+    },
     async mounted() {
       this.tab = 'tab-2';
       // await this.loadForm();
@@ -137,6 +140,9 @@
     },
     methods: {
       ...mapActions(['fetchFormWithFormSends', 'fetchFormSends']),
+      isAdmin() {
+        return this.getUser.role === 'admin';
+      },
       back() {
         this.$router.back();
       },
@@ -265,6 +271,9 @@
 
         a.click();
       },
+    },
+    computed: {
+      ...mapGetters(['getUser']),
     },
     watch: {
       yearsSelected() {

@@ -97,7 +97,7 @@
 </template>
 
 <script>
-  import { mapActions } from 'vuex';
+  import { mapActions, mapGetters } from 'vuex';
 
   import ShortText from '@/components/form/answers/ShortText';
   import LargeText from '@/components/form/answers/LargeText';
@@ -125,6 +125,9 @@
         requiredRule: [(v) => !!v || 'Esse campo é obrigatório'],
       };
     },
+    beforeMount() {
+      if (!this.isAdmin()) this.$router.push({ name: 'Home' });
+    },
     async mounted() {
       await this.loadForms();
     },
@@ -138,6 +141,9 @@
         'setQuestions',
         'createResponseHistory',
       ]),
+      isAdmin() {
+        return this.getUser?.role === 'admin';
+      },
       back() {
         this.$router.back();
       },
@@ -276,6 +282,9 @@
           this.loading = false;
         }
       },
+    },
+    computed: {
+      ...mapGetters(['getUser']),
     },
   };
 </script>
