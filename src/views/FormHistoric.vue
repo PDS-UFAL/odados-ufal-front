@@ -157,6 +157,9 @@
       async loadSends(id) {
         const { data } = await this.fetchFormShowSends({
           id: id,
+          options: this.selectedSector
+            ? { sector_id: this.selectedSector.id }
+            : {},
         });
         this.sectionsTable = data.form.sections;
       },
@@ -179,6 +182,7 @@
       },
       changeSelectedSector(item) {
         this.selectedSector = item;
+        this.loadSends(this.selectedForm.id);
       },
       async loadForm() {
         try {
