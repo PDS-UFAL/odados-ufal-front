@@ -8,7 +8,6 @@
       <v-toolbar-title style="font-size: 1.17em">{{
         sector.abbreviation + ' - ' + sector.name
       }}</v-toolbar-title>
-      <!-- {{ sector.abbreviation + ' - ' + sector.name }} -->
     </v-expansion-panel-header>
     <v-expansion-panel-content>
       <v-data-table
@@ -93,6 +92,8 @@
 </template>
 
 <script>
+  import { mapActions } from 'vuex';
+  import errorMessages from '../../mixins/errorMessages';
   export default {
     name: 'UsersSectorAccordion',
 
@@ -106,6 +107,8 @@
         required: true,
       },
     },
+
+    mixins: [errorMessages],
 
     data: () => ({
       dialog: false,
@@ -153,6 +156,33 @@
     },
 
     methods: {
+      ...mapActions(['createUser', 'setAlert']),
+      back() {
+        this.$router.back();
+      },
+
+      // async requestPasswordChange() {
+      //   this.loading = true;
+      //   const payload = {
+      //     email: this.email,
+      //   };
+
+      //   try {
+      //     this.forgotPassword({ payload }).then(() => {
+      //       this.sucess = true;
+      //     });
+      //   } catch (err) {
+      //     this.error = true;
+      //     this.setAlert({
+      //       alertMessage:
+      //         err.response?.data.error ||
+      //         'Ocorreu um erro ao realizar a solicitação. Por favor, verifique o endereço de email.',
+      //       alertColor: 'red',
+      //     });
+      //   }
+      //   this.loading = false;
+      // },
+
       initialize() {
         this.userRows = this.users.map((user) => ({
           id: user.id,
@@ -194,75 +224,55 @@
         });
       },
 
-      save() {
-        if (this.editedIndex > -1) {
-          Object.assign(this.userRows[this.editedIndex], this.editedItem);
-        } else {
-          this.userRows.push(this.editedItem);
-        }
-        this.close();
+      async save() {
+        this.loading = true;
+        const payload = {
+          user: {
+            email: this.editedItem.email,
+            password: 'odadosufal',
+            password_confirmation: 'odadosufal',
+            sector_id: this.sector.id,
+            role: 2,
+          },
+        };
+
+        this.createUser({ payload })
+          .then(() => {
+            this.sucess = true;
+            if (this.editedIndex > -1) {
+              Object.assign(this.userRows[this.editedIndex], this.editedItem);
+            } else {
+              this.userRows.push(this.editedItem);
+            }
+            this.close();
+            this.setAlert({
+              alertMessage: 'Usuário cadastrado com sucesso!',
+              alertColor: 'green',
+            });
+          })
+          .catch((err) => {
+            console.log('error catch');
+            console.log(err);
+            console.log(err.response);
+            this.error = true;
+
+            for (const [key, value] of Object.entries(err.response?.data)) {
+              console.log(key, value);
+              if (this.errorMessages[value] !== undefined) {
+                this.setAlert({
+                  alertMessage: this.errorMessages[value],
+                  alertColor: 'red',
+                });
+              } else {
+                this.setAlert({
+                  alertMessage: 'Ocorreu um erro no sistema.',
+                  alertColor: 'red',
+                });
+              }
+            }
+          });
+        this.loading = false;
       },
     },
   };
 </script>
-
-<!-- 
-<script>
-  import { mapActions } from 'vuex';
-
-  export default {
-    name: 'UsersSectorAccordion',
-
-    props: {
-      sector: {
-        type: Object,
-        required: true,
-      },
-      users: {
-        type: Array,
-        required: true,
-      },
-    },
-
-    data: () => {
-      return {
-        headers: [
-          {
-            text: 'Nome',
-            value: 'name',
-          },
-          {
-            text: 'E-mail',
-            value: 'email',
-          },
-        ],
-        usersRows: [],
-      };
-    },
-    async mounted() {
-      await this.updateTable();
-    },
-    methods: {
-      ...mapActions(['fetchSectors']),
-      back() {
-        this.$router.back();
-      },
-
-      async updateTable() {
-        this.usersRows = this.users.map((user) => ({
-          id: user.id,
-          name: 'teste',
-          email: user.email,
-        }));
-      },
-    },
-  };
-</script>
-
-<style scoped lang="scss">
-  .save-btn {
-    position: fixed;
-    bottom: 32px;
-    right: 32px;
-  }
-</style> -->

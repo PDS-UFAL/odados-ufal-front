@@ -8,4 +8,7 @@ export default {
   resetPassword(payload) {
     return request.$http.put(`${'/api/users/reset_password'}`, payload);
   },
+  createUser(payload) {
+    return request.$http.post(`${'/api/users'}`, payload);
+  },
 };
