@@ -52,9 +52,11 @@
 
 <script>
   import { mapActions } from 'vuex';
+  import errorMessages from '../mixins/errorMessages';
 
   export default {
     name: 'ResetPassword',
+    mixins: [errorMessages],
     data: () => {
       return {
         error: false,
@@ -71,19 +73,30 @@
           email: this.email,
         };
 
-        try {
-          this.forgotPassword({ payload }).then(() => {
+        this.forgotPassword({ payload })
+          .then(() => {
             this.sucess = true;
+          })
+          .catch((err) => {
+            console.log('error catched:');
+            console.log(err);
+            console.log(err.response);
+            this.error = true;
+            for (const [key, value] of Object.entries(err.response?.data)) {
+              console.log(key, value);
+              if (this.errorMessages[value] !== undefined) {
+                this.setAlert({
+                  alertMessage: this.errorMessages[value],
+                  alertColor: 'red',
+                });
+              } else {
+                this.setAlert({
+                  alertMessage: 'Ocorreu um erro no sistema.',
+                  alertColor: 'red',
+                });
+              }
+            }
           });
-        } catch (err) {
-          this.error = true;
-          this.setAlert({
-            alertMessage:
-              err.response?.data.error ||
-              'Ocorreu um erro ao realizar a solicitação. Por favor, verifique o endereço de email.',
-            alertColor: 'red',
-          });
-        }
         this.loading = false;
       },
     },

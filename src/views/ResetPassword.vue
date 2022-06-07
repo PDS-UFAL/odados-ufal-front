@@ -63,9 +63,11 @@
 
 <script>
   import { mapActions } from 'vuex';
+  import errorMessages from '../mixins/errorMessages';
 
   export default {
     name: 'ResetPassword',
+    mixins: [errorMessages],
     data: () => {
       return {
         error: false,
@@ -76,18 +78,11 @@
         passwordType: 'password',
         email: null,
         loading: false,
-        errorMessages: {
-          "Couldn't find User": 'Usuário não encontrado',
-          'is too short (minimum is 6 characters)':
-            'A senha precisa ter pelo menos 6 caracteres.',
-          invalid: 'Token inválido',
-          "doesn't match Password": 'As senhas infomadas não correspondem.',
-        },
       };
     },
     created() {
-      if (new URLSearchParams(window.location.search).get('token') == null){
-        this.$router.push({name: "NotFound"});
+      if (new URLSearchParams(window.location.search).get('token') == null) {
+        this.$router.push({ name: 'NotFound' });
       }
     },
     methods: {
@@ -107,13 +102,24 @@
             this.changeIsDone = true;
           })
           .catch((err) => {
+            console.log('error catched:');
+            console.log(err);
+            console.log(err.response);
             this.error = true;
-            Object.values(err.response?.data.message).forEach((msg) => {
-              this.setAlert({
-                alertMessage: this.errorMessages[msg[0]],
-                alertColor: 'red',
-              });
-            });
+            for (const [key, value] of Object.entries(err.response?.data)) {
+              console.log(key, value);
+              if (this.errorMessages[value] !== undefined) {
+                this.setAlert({
+                  alertMessage: this.errorMessages[value],
+                  alertColor: 'red',
+                });
+              } else {
+                this.setAlert({
+                  alertMessage: 'Ocorreu um erro no sistema.',
+                  alertColor: 'red',
+                });
+              }
+            }
           });
 
         this.loading = false;
