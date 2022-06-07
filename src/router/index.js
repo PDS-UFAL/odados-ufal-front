@@ -46,6 +46,11 @@ const routes = [
         name: 'Notifications',
         component: () => import('@/views/Notifications.vue'),
       },
+      {
+        path: '/usuario/setor',
+        name: 'UsersSectors',
+        component: () => import('@/views/UsersSectors.vue'),
+      },
     ],
   },
   {

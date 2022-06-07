@@ -1,8 +1,8 @@
 import sectorsApi from '@/api/sectors';
 
 export default {
-  async fetchSectors() {
-    return await sectorsApi.fetchSectors();
+  async fetchSectors(store, options = {}) {
+    return await sectorsApi.fetchSectors(options);
   },
   async fetchSector(store, { id }) {
     return await sectorsApi.fetchSector(id);

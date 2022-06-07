@@ -43,6 +43,12 @@
             path: '/inserir-historico',
             roles: ['admin'],
           },
+          {
+            title: 'Setores e Usuários',
+            icon: 'mdi-domain',
+            path: '/usuario/setor',
+            roles: ['admin'],
+          },
           // {
           //   title: 'Notificações',
           //   icon: 'mdi-bell',
