@@ -85,6 +85,11 @@
         },
       };
     },
+    created() {
+      if (new URLSearchParams(window.location.search).get('token') == null){
+        this.$router.push({name: "NotFound"});
+      }
+    },
     methods: {
       ...mapActions(['resetPassword', 'setAlert', 'getPasswordToken']),
       async requestPasswordChange() {
