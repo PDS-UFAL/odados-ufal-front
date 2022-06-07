@@ -70,12 +70,19 @@
       return {
         error: false,
         changeIsDone: false,
-        password: null,
-        password_confirmation: null,
+        password: '',
+        password_confirmation: '',
         passwordTypeIcon: 'mdi-eye',
         passwordType: 'password',
         email: null,
         loading: false,
+        errorMessages: {
+          "Couldn't find User": 'Usuário não encontrado',
+          'is too short (minimum is 6 characters)':
+            'A senha precisa ter pelo menos 6 caracteres.',
+          invalid: 'Token inválido',
+          "doesn't match Password": 'As senhas infomadas não correspondem.',
+        },
       };
     },
     methods: {
@@ -90,19 +97,20 @@
           token: await this.getPasswordToken(),
         };
 
-        try {
-          this.resetPassword({ payload }).then(() => {
+        this.resetPassword({ payload })
+          .then(() => {
             this.changeIsDone = true;
+          })
+          .catch((err) => {
+            this.error = true;
+            Object.values(err.response?.data.message).forEach((msg) => {
+              this.setAlert({
+                alertMessage: this.errorMessages[msg[0]],
+                alertColor: 'red',
+              });
+            });
           });
-        } catch (err) {
-          this.error = true;
-          this.setAlert({
-            alertMessage:
-              err.response?.data.error ||
-              'Ocorreu um erro ao realizar a solicitação. Por favor, verifique se as senhas correspondem.',
-            alertColor: 'red',
-          });
-        }
+
         this.loading = false;
       },
       togglePassword() {
@@ -114,7 +122,7 @@
       },
     },
     watch: {
-      async changeIsDone() {
+      changeIsDone() {
         if (this.changeIsDone == true) {
           setTimeout(() => {
             this.$router.push({ name: 'Login' });
