@@ -60,6 +60,11 @@
     created() {
       this.updateOptionsChart();
       this.updateSeriesChart();
+      this.optionsChart.title = {
+        text: this.question.title,
+        align: 'center',
+        offsetX: 0,
+      };
     },
 
     methods: {
