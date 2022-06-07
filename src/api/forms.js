@@ -5,8 +5,10 @@ export default {
   fetchForms(options) {
     return request.$http.get(`${resource}`, options);
   },
-  fetchFormShowSends(id) {
-    return request.$http.get(`${resource}/${id}/table`);
+  fetchFormShowSends(id, options) {
+    return request.$http.get(`${resource}/${id}/table`, {
+      params: options,
+    });
   },
   fetchForm(id) {
     return request.$http.get(`${resource}/${id}`);
