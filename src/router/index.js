@@ -46,6 +46,10 @@ const routes = [
         name: 'Notifications',
         component: () => import('@/views/Notifications.vue'),
       },
+      {
+        path: '*',
+        component: () => import('@/views/NotFound.vue'),
+      },
     ],
   },
   {
@@ -62,6 +66,10 @@ const routes = [
     path: '/redefinir-senha',
     name: 'ResetPassword',
     component: () => import('@/views/ResetPassword.vue'),
+  },
+  {
+    path: '*',
+    component: () => import('@/views/NotFound.vue'),
   },
 ];
 
