@@ -1,11 +1,27 @@
 <template>
   <div>
-    <v-btn color="secondary" @click="downloadChart">Baixar gráfico</v-btn>
+    <v-row>
+      <v-col>
+        <v-text-field
+          v-model="newTitle"
+          label="Alterar título do gráfico"
+          dense
+          outlined
+          justify="start"
+        ></v-text-field>
+      </v-col>
+      <v-col justify="end">
+        <div align="right">
+          <v-btn color="secondary" @click="downloadChart">Baixar gráfico</v-btn>
+        </div>
+      </v-col>
+    </v-row>
     <apexchart
       ref="chart"
       :type="chartType"
       :options="optionsChart"
       :series="seriesChart"
+      class="mt-3"
     ></apexchart>
   </div>
 </template>
@@ -55,11 +71,18 @@
           },
         },
         seriesChart: [],
+        newTitle: null,
+        currentlyChangingTitle: false,
       };
     },
     created() {
       this.updateOptionsChart();
       this.updateSeriesChart();
+      this.optionsChart.title = {
+        text: this.question.title,
+        align: 'center',
+        offsetX: 0,
+      };
     },
 
     methods: {
@@ -145,6 +168,9 @@
           hiddenElement.click();
         });
       },
+      goChangeTitle() {
+        this.currentlyChangingTitle = true;
+      },
     },
     watch: {
       sectors() {
@@ -167,6 +193,14 @@
       },
       question() {
         this.updateSeriesChart();
+      },
+      newTitle() {
+        this.optionsChart.title = {
+          text: this.newTitle,
+          align: 'center',
+          offsetX: 0,
+        };
+        this.updateOptionsChart();
       },
     },
   };
