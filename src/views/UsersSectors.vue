@@ -7,14 +7,25 @@
       <h3>Setores e Usuários</h3>
     </v-row>
 
-    <v-expansion-panels v-model="panel" multiple>
-      <users-sector-accordion
-        v-for="sector in sectors"
-        :key="sector.id"
-        :sector="sector"
-        :users="sector.users"
-      ></users-sector-accordion>
-    </v-expansion-panels>
+    <v-row>
+      <v-col cols="12" class="py-2">
+        <v-btn-toggle v-model="text" tile color="primary accent-3" group>
+          <v-btn light value="expand"> Expandir tudo </v-btn>
+          <v-btn light value="collapse"> Recolher tudo </v-btn>
+        </v-btn-toggle>
+      </v-col>
+    </v-row>
+
+    <v-row>
+      <v-expansion-panels v-model="panel" multiple>
+        <users-sector-accordion
+          v-for="(sector, i) in sectors"
+          :key="i"
+          :sector="sector"
+          :users="sector.users"
+        ></users-sector-accordion>
+      </v-expansion-panels>
+    </v-row>
   </v-container>
 </template>
 
@@ -32,6 +43,8 @@
     data: () => {
       return {
         sectors: [],
+        panel: [],
+        text: '',
       };
     },
     async mounted() {
@@ -50,6 +63,24 @@
           },
         });
         this.sectors = data.sectors;
+      },
+
+      updatePanel() {
+        if (this.text === 'expand') {
+          // this.panel = this.sectors.map((k, i) => k);
+          console.log([...Array(this.items).keys()].map((k, i) => i));
+          console.log(Object.keys(this.sectors));
+
+          this.panel = Object.keys(this.sectors).map(Number);
+          console.log(this.panel);
+        } else if (this.text === 'collapse') {
+          this.panel = [];
+        }
+      },
+    },
+    watch: {
+      text() {
+        this.updatePanel();
       },
     },
   };

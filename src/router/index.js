@@ -102,7 +102,6 @@ router.beforeEach((to, from, next) => {
   ) {
     next({ name: 'Login', path: '/login', query: { redirect: to.fullPath } });
   } else {
-
     if (store.getters.authenticated) {
       if (
         (onlyAdmin.includes(to.name) &&

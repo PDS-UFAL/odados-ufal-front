@@ -54,7 +54,7 @@
 
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="close">
+                  <v-btn color="red darken-1" text @click="close">
                     Cancelar
                   </v-btn>
                   <v-btn color="blue darken-1" text @click="save">
@@ -71,8 +71,8 @@
                 >
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" text @click="closeDelete"
-                    >Cancel</v-btn
+                  <v-btn color="red darken-1" text @click="closeDelete"
+                    >Cancelar</v-btn
                   >
                   <v-btn color="blue darken-1" text @click="deleteItemConfirm"
                     >OK</v-btn
@@ -156,37 +156,15 @@
     },
 
     methods: {
-      ...mapActions(['createUser', 'setAlert']),
+      ...mapActions(['createUser', 'deleteUser', 'setAlert']),
       back() {
         this.$router.back();
       },
 
-      // async requestPasswordChange() {
-      //   this.loading = true;
-      //   const payload = {
-      //     email: this.email,
-      //   };
-
-      //   try {
-      //     this.forgotPassword({ payload }).then(() => {
-      //       this.sucess = true;
-      //     });
-      //   } catch (err) {
-      //     this.error = true;
-      //     this.setAlert({
-      //       alertMessage:
-      //         err.response?.data.error ||
-      //         'Ocorreu um erro ao realizar a solicitação. Por favor, verifique o endereço de email.',
-      //       alertColor: 'red',
-      //     });
-      //   }
-      //   this.loading = false;
-      // },
-
       initialize() {
         this.userRows = this.users.map((user) => ({
           id: user.id,
-          name: 'teste',
+          name: user.name ? user.name : '',
           email: user.email,
         }));
       },
@@ -204,8 +182,37 @@
       },
 
       deleteItemConfirm() {
-        this.userRows.splice(this.editedIndex, 1);
-        this.closeDelete();
+        let userId = this.editedItem.id;
+        this.deleteUser({ id: userId })
+          .then(() => {
+            this.sucess = true;
+            this.userRows.splice(this.editedIndex, 1);
+            this.closeDelete();
+            this.setAlert({
+              alertMessage: 'Usuário excluído com sucesso!',
+              alertColor: 'green',
+            });
+          })
+          .catch((err) => {
+            console.log(err.response);
+            this.error = true;
+
+            for (const [key, value] of Object.entries(err.response?.data)) {
+              console.log(key, value);
+              if (this.errorMessages[value] !== undefined) {
+                this.setAlert({
+                  alertMessage: this.errorMessages[value],
+                  alertColor: 'red',
+                });
+              } else {
+                this.setAlert({
+                  alertMessage: 'Ocorreu um erro no sistema.',
+                  alertColor: 'red',
+                });
+              }
+            }
+          });
+        this.loading = false;
       },
 
       close() {
@@ -229,6 +236,7 @@
         const payload = {
           user: {
             email: this.editedItem.email,
+            name: this.editedItem.name,
             password: 'odadosufal',
             password_confirmation: 'odadosufal',
             sector_id: this.sector.id,
@@ -237,7 +245,8 @@
         };
 
         this.createUser({ payload })
-          .then(() => {
+          .then((data) => {
+            this.editedItem.id = data.data.user.id;
             this.sucess = true;
             if (this.editedIndex > -1) {
               Object.assign(this.userRows[this.editedIndex], this.editedItem);
@@ -251,9 +260,6 @@
             });
           })
           .catch((err) => {
-            console.log('error catch');
-            console.log(err);
-            console.log(err.response);
             this.error = true;
 
             for (const [key, value] of Object.entries(err.response?.data)) {
