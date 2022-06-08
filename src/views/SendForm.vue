@@ -127,7 +127,7 @@
 <script>
   import { formatDate } from '@/utils/formatDate';
   import rules from '@/mixins/questionRules';
-  import { mapActions } from 'vuex';
+  import { mapActions, mapGetters } from 'vuex';
   import ConfirmationDialog from '@/components/ConfirmationDialog';
 
   export default {
@@ -151,12 +151,16 @@
         selectedForm: {},
       };
     },
+    beforeMount() {
+      if (!this.isAdmin()) this.$router.push({ name: 'Home' });
+    },
     async mounted() {
       await this.loadSectors();
       await this.loadForms();
     },
 
     computed: {
+      ...mapGetters(['getUser']),
       today() {
         let date = new Date();
         return date.toISOString();
@@ -172,6 +176,9 @@
         'createFormSend',
         'setAlert',
       ]),
+      isAdmin() {
+        return this.getUser.role === 'admin';
+      },
       formatedDate(date) {
         return formatDate(date);
       },

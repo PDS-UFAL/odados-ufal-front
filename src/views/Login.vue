@@ -99,7 +99,6 @@
           await this.setUser({ user: res.data.user });
 
           if (this.$route.query.redirect) {
-            console.log(this.$route.query.redirect);
             this.$router.push(this.$route.query.redirect);
           } else {
             this.$router.push('/');

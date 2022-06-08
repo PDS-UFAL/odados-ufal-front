@@ -1,7 +1,7 @@
 <template>
   <v-container class="px-sm-12">
     <confirmation-dialog
-      ref="showSendFormDialog"
+      ref="showSaveAnswerDialog"
       width="300"
       title="Salvar resposta?"
       description="Deseja enviar sua resposta?"
@@ -17,7 +17,9 @@
 
       <span class="font-weight-light">{{ relativeTime }}</span>
     </v-row>
-
+    <h4 style="color: #34d399; margin-bottom: 1rem" v-if="hasResponse">
+      Você já respondeu este formulário
+    </h4>
     <v-form v-model="valid" ref="form">
       <v-card
         v-for="(section, i) in form.form.sections"
@@ -174,6 +176,14 @@
             }
 
             return { ...question };
+          });
+
+          let count = 0;
+          this.form.form.sections.forEach((section, i) => {
+            section.questions.forEach((question, j) => {
+              this.form.form.sections[i].questions[j] = questions[count];
+              count++;
+            });
           });
           this.setQuestions(questions);
         } catch (err) {
