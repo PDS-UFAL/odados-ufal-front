@@ -272,7 +272,7 @@
       translatedStatus(status) {
         return {
           open: 'Aberto',
-          closed: 'Prazo de resposta expirado',
+          closed: 'Fechado',
           not_started: 'Não iniciado',
           sectorHasAnswered: 'Respondido',
         }[status];
