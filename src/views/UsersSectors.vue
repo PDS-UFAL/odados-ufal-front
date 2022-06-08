@@ -67,12 +67,7 @@
 
       updatePanel() {
         if (this.text === 'expand') {
-          // this.panel = this.sectors.map((k, i) => k);
-          console.log([...Array(this.items).keys()].map((k, i) => i));
-          console.log(Object.keys(this.sectors));
-
           this.panel = Object.keys(this.sectors).map(Number);
-          console.log(this.panel);
         } else if (this.text === 'collapse') {
           this.panel = [];
         }
