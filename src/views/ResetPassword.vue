@@ -63,20 +63,27 @@
 
 <script>
   import { mapActions } from 'vuex';
+  import errorMessages from '../mixins/errorMessages';
 
   export default {
     name: 'ResetPassword',
+    mixins: [errorMessages],
     data: () => {
       return {
         error: false,
         changeIsDone: false,
-        password: null,
-        password_confirmation: null,
+        password: '',
+        password_confirmation: '',
         passwordTypeIcon: 'mdi-eye',
         passwordType: 'password',
         email: null,
         loading: false,
       };
+    },
+    created() {
+      if (new URLSearchParams(window.location.search).get('token') == null) {
+        this.$router.push({ name: 'NotFound' });
+      }
     },
     methods: {
       ...mapActions(['resetPassword', 'setAlert', 'getPasswordToken']),
@@ -90,19 +97,31 @@
           token: await this.getPasswordToken(),
         };
 
-        try {
-          this.resetPassword({ payload }).then(() => {
+        this.resetPassword({ payload })
+          .then(() => {
             this.changeIsDone = true;
+          })
+          .catch((err) => {
+            console.log('error catched:');
+            console.log(err);
+            console.log(err.response);
+            this.error = true;
+            for (const [key, value] of Object.entries(err.response?.data)) {
+              console.log(key, value);
+              if (this.errorMessages[value] !== undefined) {
+                this.setAlert({
+                  alertMessage: this.errorMessages[value],
+                  alertColor: 'red',
+                });
+              } else {
+                this.setAlert({
+                  alertMessage: 'Ocorreu um erro no sistema.',
+                  alertColor: 'red',
+                });
+              }
+            }
           });
-        } catch (err) {
-          this.error = true;
-          this.setAlert({
-            alertMessage:
-              err.response?.data.error ||
-              'Ocorreu um erro ao realizar a solicitação. Por favor, verifique se as senhas correspondem.',
-            alertColor: 'red',
-          });
-        }
+
         this.loading = false;
       },
       togglePassword() {
@@ -114,7 +133,7 @@
       },
     },
     watch: {
-      async changeIsDone() {
+      changeIsDone() {
         if (this.changeIsDone == true) {
           setTimeout(() => {
             this.$router.push({ name: 'Login' });

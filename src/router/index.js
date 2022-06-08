@@ -97,7 +97,7 @@ const onlySector = ['AnswerForm'];
 
 router.beforeEach((to, from, next) => {
   if (
-    !['Login', 'ResetPassword', 'ForgotPassword'].includes(to.name) &&
+    !['Login', 'ResetPassword', 'ForgotPassword', 'NotFound'].includes(to.name) &&
     (!store.getters.authenticated || isJwtExpired(store.getters.authToken))
   ) {
     next({ name: 'Login', path: '/login', query: { redirect: to.fullPath } });
