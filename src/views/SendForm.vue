@@ -14,7 +14,6 @@
       <v-select
         :items="this.forms"
         v-on:change="this.changeSelectedForm"
-        :rules="[rules.required]"
         :menu-props="{ 'offset-y': true }"
         label="Selecionar Fomulário"
         dense
@@ -139,8 +138,8 @@
         loading: false,
         sectors: [],
         selectedSectors: [],
-        startDate: '',
-        endDate: '',
+        startDate: null,
+        endDate: null,
         title: null,
         showStartDatepicker: false,
         showEndDatepicker: false,
@@ -148,7 +147,7 @@
         questions: [],
         subtitle: '',
         forms: [],
-        selectedForm: {},
+        selectedForm: null,
       };
     },
     beforeMount() {
@@ -191,7 +190,7 @@
         });
       },
       sendForm() {
-        try {
+        if (this.hasAllParams()) {
           let payload = {
             form_send: {
               subtitle: this.subtitle,
@@ -201,19 +200,21 @@
               year: new Date(this.startDate).getFullYear(),
             },
           };
-          this.createFormSend({ payload }).then(() => {
-            this.setAlert({
-              alertMessage: 'Formulario enviado com sucesso!',
-              alertColor: 'green',
+          this.createFormSend({ payload })
+            .then(() => {
+              this.setAlert({
+                alertMessage: 'Formulario enviado com sucesso!',
+                alertColor: 'green',
+              });
+            })
+            .catch((e) => {
+              this.setAlert({
+                alertMessage:
+                  e.response?.data.error ||
+                  'Ocorreu um erro ao carregar formulários.',
+                alertColor: 'red',
+              });
             });
-          });
-        } catch (e) {
-          this.setAlert({
-            alertMessage:
-              e.response?.data.error ||
-              'Ocorreu um erro ao carregar formulários.',
-            alertColor: 'red',
-          });
         }
       },
       loadForms() {
@@ -227,6 +228,34 @@
       },
       uncheckAll() {
         this.selectedSectors = [];
+      },
+      hasAllParams() {
+        if (
+          this.selectedForm &&
+          this.startDate &&
+          this.endDate &&
+          this.subtitle
+        ) {
+          return true;
+        }
+        let error = 'O formulário não pôde ser enviado.\n\n';
+        if (!this.startDate || !this.endDate) {
+          error +=
+            'Os campos data de abertura e data de fechamento são obrigatórios.\n\n';
+        }
+        if (!this.subtitle) {
+          error += 'O campo "Subtítulo" é obrigatório.\n';
+        }
+        if (!this.selectedForm) {
+          error += 'O campo "Formulário" é obrigatório.\n';
+        }
+
+        this.setAlert({
+          alertMessage: error,
+          alertColor: 'red',
+        });
+
+        return false;
       },
       async loadSectors() {
         try {
