@@ -4,8 +4,8 @@ export default {
   async fetchForms(store, options = {}) {
     return await formsApi.fetchForms(options);
   },
-  async fetchFormShowSends(store, { id }) {
-    return await formsApi.fetchFormShowSends(id);
+  async fetchFormShowSends(store, { id, options }) {
+    return await formsApi.fetchFormShowSends(id, options);
   },
   async fetchForm(store, { id }) {
     return await formsApi.fetchForm(id);

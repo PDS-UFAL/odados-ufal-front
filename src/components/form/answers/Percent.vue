@@ -65,6 +65,8 @@
     mixins: [rules],
     methods: {
       generateTable() {
+        this.items = [];
+        this.headers = [];
         if (this.responses) {
           let historicalNumbers = {};
           this.responses.forEach((response) => {

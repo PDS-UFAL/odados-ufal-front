@@ -142,8 +142,6 @@
               responseRow.forEach((item) => {
                 row[item.form_send_name] = item.answer;
               });
-              console.log('sad');
-              console.log(row);
               this.rows.push(row);
             });
           } else {
