@@ -14,7 +14,6 @@ export default {
     return await usersApi.createUser(payload);
   },
   async deleteUser(store, { id }) {
-    console.log('action', id);
     return await usersApi.deleteUser(id);
   },
 };

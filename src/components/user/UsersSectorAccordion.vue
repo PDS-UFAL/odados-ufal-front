@@ -194,11 +194,9 @@
             });
           })
           .catch((err) => {
-            console.log(err.response);
             this.error = true;
 
             for (const [key, value] of Object.entries(err.response?.data)) {
-              console.log(key, value);
               if (this.errorMessages[value] !== undefined) {
                 this.setAlert({
                   alertMessage: this.errorMessages[value],
@@ -263,7 +261,6 @@
             this.error = true;
 
             for (const [key, value] of Object.entries(err.response?.data)) {
-              console.log(key, value);
               if (this.errorMessages[value] !== undefined) {
                 this.setAlert({
                   alertMessage: this.errorMessages[value],

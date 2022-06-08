@@ -12,7 +12,6 @@ export default {
     return request.$http.post(`${'/api/users'}`, payload);
   },
   deleteUser(id) {
-    console.log('request', id);
     return request.$http.delete(`${'/api/users'}/${id}`);
   },
 };
