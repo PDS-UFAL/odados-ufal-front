@@ -57,6 +57,13 @@
                   <div class="">Nenhum formulário encontrado</div>
                 </template>
 
+                <template v-slot:item.subtitle="{ item }">
+                  <a v-if="isAdmin" @click="viewForm(item.form.id)">{{
+                    item.subtitle
+                  }}</a>
+                  <a v-else @click="viewForm(item.id)">{{ item.subtitle }}</a>
+                </template>
+
                 <template v-slot:item.start_date="{ item }">
                   {{ formatDate(item.start_date) }}
                 </template>
@@ -113,6 +120,10 @@
               >
                 <template slot="no-data">
                   <div class="">Nenhum formulário encontrado</div>
+                </template>
+
+                <template v-slot:item.title="{ item }">
+                  <a @click="viewForm(item.id)">{{ item.title }}</a>
                 </template>
 
                 <template v-slot:item.created_at="{ item }">
