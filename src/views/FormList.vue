@@ -171,7 +171,7 @@
             value: 'subtitle',
             sortable: true,
             align: 'start',
-            width: '25%',
+            width: '20%',
           },
           {
             text: 'Modelo',
@@ -183,7 +183,13 @@
           { text: 'Status', value: 'status', sortable: false, width: '20%' },
           { text: 'Data inicial', value: 'start_date', sortable: true },
           { text: 'Data final', value: 'end_date', sortable: true },
-          { text: 'Ações', value: 'actions', sortable: false, align: 'end' },
+          {
+            text: 'Ações',
+            value: 'actions',
+            sortable: false,
+            width: '15%',
+            align: 'end',
+          },
         ],
         headers_2: [
           {
