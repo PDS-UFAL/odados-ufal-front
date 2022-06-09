@@ -22,6 +22,11 @@ const routes = [
         component: () => import('@/views/Forms.vue'),
       },
       {
+        path: '/enviar-formulario/:id',
+        name: 'SendForms',
+        component: () => import('@/views/SendForm.vue'),
+      },
+      {
         path: '/enviar-formulario',
         name: 'SendForms',
         component: () => import('@/views/SendForm.vue'),

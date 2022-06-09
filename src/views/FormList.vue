@@ -124,6 +124,10 @@
                     <v-icon> mdi-eye </v-icon>
                   </v-btn>
 
+                  <v-btn small icon @click="sendForm(item.id)">
+                    <v-icon> mdi-file-send </v-icon>
+                  </v-btn>
+
                   <v-btn
                     small
                     icon
@@ -310,6 +314,9 @@
         const routeName =
           this.getUser?.role === 'admin' ? 'VisualizationForm' : 'AnswerForm';
         this.$router.push({ name: routeName, params: { id } });
+      },
+      sendForm(id) {
+        this.$router.push({ name: 'SendForms', params: { id } });
       },
     },
     computed: {

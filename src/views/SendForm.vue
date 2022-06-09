@@ -14,6 +14,7 @@
       <v-select
         :items="this.forms"
         v-on:change="this.changeSelectedForm"
+        v-model="selectedForm"
         :rules="[rules.required]"
         :menu-props="{ 'offset-y': true }"
         label="Selecionar Fomulário"
@@ -55,7 +56,6 @@
             clearable
             @click:clear="startDate = ''"
             @click:prepend-inner="showStartDatepicker = true"
-            :disabled="viewMode"
           />
         </template>
         <v-date-picker
@@ -93,7 +93,6 @@
             clearable
             @click:clear="dates = []"
             @click:prepend-inner="showEndDatepicker = true"
-            :disabled="viewMode"
           />
         </template>
         <v-date-picker
@@ -165,9 +164,6 @@
         let date = new Date();
         return date.toISOString();
       },
-      viewMode() {
-        return !!this.$route.params.id;
-      },
     },
     methods: {
       ...mapActions([
@@ -219,6 +215,15 @@
       loadForms() {
         this.fetchForms({ params: this.params }).then((value) => {
           this.forms = value.data.forms;
+          if (this.$route.params.id) {
+            this.forms.forEach((form) => {
+              if (parseInt(this.$route.params.id) === form.id) {
+                this.selectedForm = form;
+                return;
+              }
+            });
+          }
+          //v-on:change="this.changeSelectedForm"
         });
         this.forms = ['Carregando...'];
       },
