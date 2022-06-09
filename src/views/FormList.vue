@@ -243,6 +243,23 @@
             alertColor: 'red',
           });
         } finally {
+          this.form_sends.forEach((fsend) => {
+            let all_questions = [];
+
+            let sections_questions = fsend.form.sections.map((section) => {
+              return section.questions;
+            });
+
+            for (let i = 0; i < sections_questions.length; i++) {
+              all_questions = all_questions.concat(sections_questions[i]);
+            }
+            all_questions.map((question) => {
+              if (question.responses?.length > 0) {
+                fsend.status = 'sectorHasAnswered';
+                return;
+              }
+            });
+          });
           this.loading_sends = false;
         }
       },
@@ -250,8 +267,9 @@
         return (
           {
             open: 'yellow',
-            closed: 'green',
+            closed: 'red',
             not_started: 'red',
+            sectorHasAnswered: 'green',
           }[status] || 'primary'
         );
       },
@@ -260,6 +278,7 @@
           open: 'Aberto',
           closed: 'Fechado',
           not_started: 'Não iniciado',
+          sectorHasAnswered: 'Respondido',
         }[status];
       },
       openDeleteFormDialog(form) {
