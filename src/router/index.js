@@ -14,6 +14,7 @@ const routes = [
       {
         path: '/',
         name: 'Home',
+
         component: () => import('@/views/FormList.vue'),
       },
       {
@@ -46,10 +47,15 @@ const routes = [
         name: 'AnswerForm',
         component: () => import('@/views/AnswerForm.vue'),
       },
+      // {
+      //   path: '/notificacoes',
+      //   name: 'Notifications',
+      //   component: () => import('@/views/Notifications.vue'),
+      // },
       {
-        path: '/notificacoes',
-        name: 'Notifications',
-        component: () => import('@/views/Notifications.vue'),
+        path: '/usuario/setor',
+        name: 'UsersSectors',
+        component: () => import('@/views/UsersSectors.vue'),
       },
       {
         path: '*',
@@ -74,6 +80,7 @@ const routes = [
   },
   {
     path: '*',
+    name: '404',
     component: () => import('@/views/NotFound.vue'),
   },
 ];
@@ -84,13 +91,35 @@ const router = new VueRouter({
   routes,
 });
 
+const onlyAdmin = [
+  'CreateForms',
+  'SendForms',
+  'CreateHistory',
+  'VisualizationForm',
+  'UsersSectors',
+];
+const onlySector = ['AnswerForm'];
+
 router.beforeEach((to, from, next) => {
   if (
-    !['Login', 'ResetPassword', 'ForgotPassword'].includes(to.name) &&
+    !['Login', 'ResetPassword', 'ForgotPassword', 'NotFound'].includes(
+      to.name,
+    ) &&
     (!store.getters.authenticated || isJwtExpired(store.getters.authToken))
   ) {
     next({ name: 'Login', path: '/login', query: { redirect: to.fullPath } });
   } else {
+    if (store.getters.authenticated) {
+      if (
+        (onlyAdmin.includes(to.name) &&
+          store.getters.getUser.role !== 'admin') ||
+        (onlySector.includes(to.name) &&
+          store.getters.getUser.role !== 'employee')
+      ) {
+        next({ name: '404' });
+      }
+    }
+
     next();
   }
 });

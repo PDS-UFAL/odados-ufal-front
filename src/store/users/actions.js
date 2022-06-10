@@ -10,4 +10,10 @@ export default {
   async getPasswordToken() {
     return await new URLSearchParams(window.location.search).get('token');
   },
+  async createUser(store, { payload }) {
+    return await usersApi.createUser(payload);
+  },
+  async deleteUser(store, { id }) {
+    return await usersApi.deleteUser(id);
+  },
 };

@@ -499,7 +499,6 @@
         this.selectedSectors = [];
       },
       errorFunction(err) {
-        console.log(err);
         if (err.response?.data.title) {
           this.setAlert({
             alertMessage: 'Título do formuário em branco.',
