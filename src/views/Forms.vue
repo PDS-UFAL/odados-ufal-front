@@ -36,6 +36,17 @@
 
       <!-- <v-spacer /> -->
     </v-row>
+    <v-row>
+      <v-textarea
+        v-model="description"
+        name="description"
+        label="Descrição do formulário (opcional)"
+        dense
+        outlined
+        clearable
+        :disabled="viewMode"
+      ></v-textarea>
+    </v-row>
 
     <!-- <v-col cols="12" md="3" class="pa-0">
         <v-menu
@@ -334,6 +345,7 @@
         // startDate: '',
         // endDate: '',
         title: null,
+        description: null,
         // showStartDatepicker: false,
         // showEndDatepicker: false,
         form: null,
@@ -471,6 +483,7 @@
           const payload = {
             form: {
               title: this.title,
+              description: this.description,
               // start_date: this.startDate,
               // end_date: this.endDate,
               sector_ids: this.selectedSectors,
