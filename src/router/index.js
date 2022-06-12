@@ -53,7 +53,7 @@ const routes = [
         component: () => import('@/views/UsersSectors.vue'),
       },
       {
-        path: '*',
+        path: '404',
         component: () => import('@/views/NotFound.vue'),
       },
     ],
@@ -74,7 +74,7 @@ const routes = [
     component: () => import('@/views/ResetPassword.vue'),
   },
   {
-    path: '*',
+    path: '404',
     name: '404',
     component: () => import('@/views/NotFound.vue'),
   },
@@ -97,9 +97,7 @@ const onlySector = ['AnswerForm'];
 
 router.beforeEach((to, from, next) => {
   if (
-    !['Login', 'ResetPassword', 'ForgotPassword', 'NotFound'].includes(
-      to.name,
-    ) &&
+    !['Login', 'ResetPassword', 'ForgotPassword', '404'].includes(to.name) &&
     (!store.getters.authenticated || isJwtExpired(store.getters.authToken))
   ) {
     next({ name: 'Login', path: '/login', query: { redirect: to.fullPath } });

@@ -81,8 +81,8 @@
       };
     },
     created() {
-      if (new URLSearchParams(window.location.search).get('token') == null) {
-        this.$router.push({ name: 'NotFound' });
+      if (!this.$router.query.token) {
+        this.$router.push({ name: '404' });
       }
     },
     methods: {
