@@ -57,6 +57,13 @@
                   <div class="">Nenhum formulário encontrado</div>
                 </template>
 
+                <template v-slot:item.subtitle="{ item }">
+                  <a v-if="isAdmin" @click="viewForm(item.form.id)">{{
+                    item.subtitle
+                  }}</a>
+                  <a v-else @click="viewForm(item.id)">{{ item.subtitle }}</a>
+                </template>
+
                 <template v-slot:item.start_date="{ item }">
                   {{ formatDate(item.start_date) }}
                 </template>
@@ -70,6 +77,10 @@
                     mdi-checkbox-blank-circle
                   </v-icon>
                   {{ translatedStatus(item.status) }}
+                </template>
+
+                <template v-if="isAdmin" v-slot:item.totalResponses="{ item }">
+                  {{ item.totalResponses }}
                 </template>
 
                 <template v-slot:item.actions="{ item }">
@@ -115,6 +126,10 @@
                   <div class="">Nenhum formulário encontrado</div>
                 </template>
 
+                <template v-slot:item.title="{ item }">
+                  <a @click="viewForm(item.id)">{{ item.title }}</a>
+                </template>
+
                 <template v-slot:item.created_at="{ item }">
                   {{ formatDate(item.created_at) }}
                 </template>
@@ -122,6 +137,10 @@
                 <template v-slot:item.actions="{ item }">
                   <v-btn small icon @click="viewForm(item.id)">
                     <v-icon> mdi-eye </v-icon>
+                  </v-btn>
+
+                  <v-btn small icon @click="sendForm(item.id)">
+                    <v-icon> mdi-file-send </v-icon>
                   </v-btn>
 
                   <v-btn
@@ -167,7 +186,7 @@
             value: 'subtitle',
             sortable: true,
             align: 'start',
-            width: '25%',
+            width: '20%',
           },
           {
             text: 'Modelo',
@@ -177,9 +196,21 @@
             width: '25%',
           },
           { text: 'Status', value: 'status', sortable: false, width: '20%' },
+          {
+            text: 'Respostas',
+            value: 'totalResponses',
+            sortable: false,
+            width: '20%',
+          },
           { text: 'Data inicial', value: 'start_date', sortable: true },
           { text: 'Data final', value: 'end_date', sortable: true },
-          { text: 'Ações', value: 'actions', sortable: false, align: 'end' },
+          {
+            text: 'Ações',
+            value: 'actions',
+            sortable: false,
+            width: '15%',
+            align: 'end',
+          },
         ],
         headers_2: [
           {
@@ -195,7 +226,13 @@
       };
     },
     mounted() {
-      if (this.isAdmin) this.loadForms();
+      if (this.isAdmin) {
+        this.loadForms();
+      } else {
+        this.headers_1 = this.headers_1.filter(
+          (header) => header.value != 'totalResponses',
+        );
+      }
       this.loadFormSends();
     },
     methods: {
@@ -239,6 +276,35 @@
             alertColor: 'red',
           });
         } finally {
+          //      this.forms.forEach((form) => {
+          this.form_sends.forEach((fsend) => {
+            let all_questions = [];
+
+            let sections_questions = fsend.form.sections.map((section) => {
+              return section.questions;
+            });
+
+            for (let i = 0; i < sections_questions.length; i++) {
+              all_questions = all_questions.concat(sections_questions[i]);
+            }
+            all_questions.map((question) => {
+              if (question.responses?.length > 0) {
+                if (!this.isAdmin) {
+                  fsend.status = 'sectorHasAnswered';
+                } else {
+                  fsend.totalResponses =
+                    question.responses.map((response) => response.sector)
+                      .length +
+                    '/' +
+                    fsend.sectors?.length;
+                }
+
+                return;
+              }
+              fsend.totalResponses = '0/' + fsend.sectors.length;
+            });
+          });
+          //   });
           this.loading_sends = false;
         }
       },
@@ -246,8 +312,9 @@
         return (
           {
             open: 'yellow',
-            closed: 'green',
+            closed: 'red',
             not_started: 'red',
+            sectorHasAnswered: 'green',
           }[status] || 'primary'
         );
       },
@@ -256,6 +323,7 @@
           open: 'Aberto',
           closed: 'Fechado',
           not_started: 'Não iniciado',
+          sectorHasAnswered: 'Respondido',
         }[status];
       },
       openDeleteFormDialog(form) {
@@ -310,6 +378,9 @@
         const routeName =
           this.getUser?.role === 'admin' ? 'VisualizationForm' : 'AnswerForm';
         this.$router.push({ name: routeName, params: { id } });
+      },
+      sendForm(id) {
+        this.$router.push({ name: 'SendForms', params: { id } });
       },
     },
     computed: {

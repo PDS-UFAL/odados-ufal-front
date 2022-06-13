@@ -18,6 +18,7 @@
     <v-row class="pt-4" v-if="range">
       <v-col cols="12" md="6">
         <v-text-field
+          @wheel="$event.target.blur()"
           v-model="question.min_value"
           label="Valor mínimo (opcional)"
           type="number"
@@ -30,6 +31,7 @@
 
       <v-col cols="12" md="6">
         <v-text-field
+          @wheel="$event.target.blur()"
           v-model="question.max_value"
           label="Valor máximo (opcional)"
           type="number"

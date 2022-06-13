@@ -6,6 +6,12 @@
       </v-btn>
       <h3 v-if="form">{{ form.title }}</h3>
     </v-row>
+
+    <div style="margin-bottom: 3rem" v-if="form.description">
+      <h5 style="color: #9ca3af">Descrição</h5>
+      <p style="color: #64748b">{{ form.description }}</p>
+    </div>
+
     <v-tabs centered v-model="tab">
       <v-tab href="#tab-1">PERGUNTAS</v-tab>
       <v-tab href="#tab-2">RESPOSTAS ({{ responsesCount }})</v-tab>

@@ -11,12 +11,22 @@
       <v-btn @click="back" text fab small class="mr-2">
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
-      <h3>{{ form.subtitle }}</h3>
+      <h3>{{ form.form.title }}</h3>
 
       <v-spacer />
 
       <span class="font-weight-light">{{ relativeTime }}</span>
     </v-row>
+
+    <h4 style="margin-top: -2rem; margin-bottom: 2rem; color: #6b7280">
+      {{ form.subtitle }}
+    </h4>
+
+    <div style="margin-bottom: 3rem" v-if="form.form.description">
+      <h5 style="color: #9ca3af">Descrição</h5>
+      <p style="color: #64748b">{{ form.form.description }}</p>
+    </div>
+
     <h4 style="color: #34d399; margin-bottom: 1rem" v-if="hasResponse">
       Você já respondeu este formulário
     </h4>

@@ -21,6 +21,7 @@
         ></v-data-table>
       </div>
       <v-text-field
+        @wheel="$event.target.blur()"
         v-model="question.response"
         :rules="[rules.required, ...rules.number]"
         :label="getCurrentYear"
