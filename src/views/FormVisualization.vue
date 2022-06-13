@@ -204,7 +204,7 @@
       if (!this.isAdmin()) this.$router.push({ name: 'Home' });
     },
     async mounted() {
-      this.tab = 'tab-2';
+      this.tab = 'tab-4';
       // await this.loadForm();
       await this.loadForm();
     },
