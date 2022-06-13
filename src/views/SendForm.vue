@@ -13,7 +13,7 @@
     <v-row style="padding-top: 20px">
       <v-select
         :items="this.forms"
-        v-on:change="this.changeSelectedForm"
+        v-model="selectedForm"
         :rules="[rules.required]"
         :menu-props="{ 'offset-y': true }"
         label="Selecionar Fomulário"
@@ -55,7 +55,6 @@
             clearable
             @click:clear="startDate = ''"
             @click:prepend-inner="showStartDatepicker = true"
-            :disabled="viewMode"
           />
         </template>
         <v-date-picker
@@ -93,7 +92,6 @@
             clearable
             @click:clear="dates = []"
             @click:prepend-inner="showEndDatepicker = true"
-            :disabled="viewMode"
           />
         </template>
         <v-date-picker
@@ -139,8 +137,8 @@
         loading: false,
         sectors: [],
         selectedSectors: [],
-        startDate: '',
-        endDate: '',
+        startDate: null,
+        endDate: null,
         title: null,
         showStartDatepicker: false,
         showEndDatepicker: false,
@@ -148,7 +146,7 @@
         questions: [],
         subtitle: '',
         forms: [],
-        selectedForm: {},
+        selectedForm: null,
       };
     },
     beforeMount() {
@@ -165,9 +163,6 @@
         let date = new Date();
         return date.toISOString();
       },
-      viewMode() {
-        return !!this.$route.params.id;
-      },
     },
     methods: {
       ...mapActions([
@@ -182,16 +177,13 @@
       formatedDate(date) {
         return formatDate(date);
       },
-      changeSelectedForm(item) {
-        this.selectedForm = item;
-      },
       sendFormDialog() {
         this.$refs.showSendFormDialog.open(() => {
           this.sendForm();
         });
       },
       sendForm() {
-        try {
+        if (this.hasAllParams()) {
           let payload = {
             form_send: {
               subtitle: this.subtitle,
@@ -201,24 +193,34 @@
               year: new Date(this.startDate).getFullYear(),
             },
           };
-          this.createFormSend({ payload }).then(() => {
-            this.setAlert({
-              alertMessage: 'Formulario enviado com sucesso!',
-              alertColor: 'green',
+          this.createFormSend({ payload })
+            .then(() => {
+              this.setAlert({
+                alertMessage: 'Formulario enviado com sucesso!',
+                alertColor: 'green',
+              });
+            })
+            .catch((e) => {
+              this.setAlert({
+                alertMessage:
+                  e.response?.data.error ||
+                  'Ocorreu um erro ao carregar formulários.',
+                alertColor: 'red',
+              });
             });
-          });
-        } catch (e) {
-          this.setAlert({
-            alertMessage:
-              e.response?.data.error ||
-              'Ocorreu um erro ao carregar formulários.',
-            alertColor: 'red',
-          });
         }
       },
       loadForms() {
         this.fetchForms({ params: this.params }).then((value) => {
           this.forms = value.data.forms;
+          if (this.$route.params.id) {
+            this.forms.forEach((form) => {
+              if (parseInt(this.$route.params.id) === form.id) {
+                this.selectedForm = form;
+                return;
+              }
+            });
+          }
         });
         this.forms = ['Carregando...'];
       },
@@ -227,6 +229,34 @@
       },
       uncheckAll() {
         this.selectedSectors = [];
+      },
+      hasAllParams() {
+        if (
+          this.selectedForm &&
+          this.startDate &&
+          this.endDate &&
+          this.subtitle
+        ) {
+          return true;
+        }
+        let error = 'O formulário não pôde ser enviado.\n\n';
+        if (!this.startDate || !this.endDate) {
+          error +=
+            'Os campos data de abertura e data de fechamento são obrigatórios.\n\n';
+        }
+        if (!this.subtitle) {
+          error += 'O campo "Subtítulo" é obrigatório.\n';
+        }
+        if (!this.selectedForm) {
+          error += 'O campo "Formulário" é obrigatório.\n';
+        }
+
+        this.setAlert({
+          alertMessage: error,
+          alertColor: 'red',
+        });
+
+        return false;
       },
       async loadSectors() {
         try {

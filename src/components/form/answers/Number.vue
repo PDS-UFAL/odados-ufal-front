@@ -21,6 +21,7 @@
         ></v-data-table>
       </div>
       <v-text-field
+        @wheel="$event.target.blur()"
         v-model="question.response"
         :min="question.min_value"
         :max="question.max_value"

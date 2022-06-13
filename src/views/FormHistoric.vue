@@ -270,7 +270,6 @@
             alertMessage: 'Resposta enviada com sucesso.',
             alertColor: 'green',
           });
-          this.$router.push({ name: 'Home' });
         } catch (err) {
           this.setAlert({
             alertMessage:
