@@ -52,10 +52,10 @@ const routes = [
         name: 'UsersSectors',
         component: () => import('@/views/UsersSectors.vue'),
       },
-      {
+      /* {
         path: '404',
         component: () => import('@/views/NotFound.vue'),
-      },
+      },*/
     ],
   },
   {
@@ -74,7 +74,7 @@ const routes = [
     component: () => import('@/views/ResetPassword.vue'),
   },
   {
-    path: '404',
+    path: '*',
     name: '404',
     component: () => import('@/views/NotFound.vue'),
   },

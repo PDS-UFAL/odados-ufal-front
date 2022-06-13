@@ -81,7 +81,7 @@
       };
     },
     created() {
-      if (!this.$router.query.token) {
+      if (!this.$route.query?.token) {
         this.$router.push({ name: '404' });
       }
     },
