@@ -47,6 +47,7 @@
               <v-data-table
                 :headers="headers_1"
                 :items="form_sends"
+                :item-class="itemRowBackground"
                 class="elevation-2"
                 disable-pagination
                 hide-default-footer
@@ -243,6 +244,10 @@
         'deleteFormSend',
         'setAlert',
       ]),
+      itemRowBackground(item) {
+        if (this.isAdmin) return '';
+        else return item.status === 'open' ? 'bg-gray' : '';
+      },
       formatDate,
       async loadForms() {
         this.loading_templates = true;
@@ -392,4 +397,8 @@
   };
 </script>
 
-<style scoped></style>
+<style>
+  .bg-gray {
+    background-color: #ebebeb;
+  }
+</style>
