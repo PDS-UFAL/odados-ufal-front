@@ -79,6 +79,10 @@
                   {{ translatedStatus(item.status) }}
                 </template>
 
+                <template v-if="isAdmin" v-slot:item.totalResponses="{ item }">
+                  {{ item.totalResponses }}
+                </template>
+
                 <template v-slot:item.actions="{ item }">
                   <v-btn
                     small
@@ -192,6 +196,12 @@
             width: '25%',
           },
           { text: 'Status', value: 'status', sortable: false, width: '20%' },
+          {
+            text: 'Respostas',
+            value: 'totalResponses',
+            sortable: false,
+            width: '20%',
+          },
           { text: 'Data inicial', value: 'start_date', sortable: true },
           { text: 'Data final', value: 'end_date', sortable: true },
           {
@@ -216,7 +226,13 @@
       };
     },
     mounted() {
-      if (this.isAdmin) this.loadForms();
+      if (this.isAdmin) {
+        this.loadForms();
+      } else {
+        this.headers_1 = this.headers_1.filter(
+          (header) => header.value != 'totalResponses',
+        );
+      }
       this.loadFormSends();
     },
     methods: {
@@ -260,6 +276,7 @@
             alertColor: 'red',
           });
         } finally {
+          //      this.forms.forEach((form) => {
           this.form_sends.forEach((fsend) => {
             let all_questions = [];
 
@@ -272,11 +289,22 @@
             }
             all_questions.map((question) => {
               if (question.responses?.length > 0) {
-                fsend.status = 'sectorHasAnswered';
+                if (!this.isAdmin) {
+                  fsend.status = 'sectorHasAnswered';
+                } else {
+                  fsend.totalResponses =
+                    question.responses.map((response) => response.sector)
+                      .length +
+                    '/' +
+                    fsend.sectors?.length;
+                }
+
                 return;
               }
+              fsend.totalResponses = '0/' + fsend.sectors.length;
             });
           });
+          //   });
           this.loading_sends = false;
         }
       },
