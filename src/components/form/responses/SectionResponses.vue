@@ -207,6 +207,7 @@
       },
       formSends() {
         this.updateDisabledGroup();
+        this.updateQuestions();
       },
     },
   };

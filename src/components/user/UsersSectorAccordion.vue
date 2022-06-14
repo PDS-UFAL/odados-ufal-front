@@ -237,8 +237,6 @@
           user: {
             email: this.editedItem.email,
             name: this.editedItem.name,
-            password: 'odadosufal',
-            password_confirmation: 'odadosufal',
             sector_id: this.sector.id,
             role: 2,
           },

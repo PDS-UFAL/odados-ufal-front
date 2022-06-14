@@ -47,6 +47,7 @@
               <v-data-table
                 :headers="headers_1"
                 :items="form_sends"
+                :item-class="itemRowBackground"
                 class="elevation-2"
                 disable-pagination
                 hide-default-footer
@@ -164,6 +165,7 @@
 <script>
   import { mapActions, mapGetters } from 'vuex';
   import { formatDate } from '@/utils/formatDate';
+  import { chipStatusColor, translatedStatus } from '@/utils/statusUtils';
   import ConfirmationDialog from '@/components/ConfirmationDialog';
 
   export default {
@@ -243,7 +245,13 @@
         'deleteFormSend',
         'setAlert',
       ]),
+      itemRowBackground(item) {
+        if (this.isAdmin) return '';
+        else return item.status === 'open' ? 'bg-gray' : '';
+      },
       formatDate,
+      chipStatusColor,
+      translatedStatus,
       async loadForms() {
         this.loading_templates = true;
         try {
@@ -308,24 +316,7 @@
           this.loading_sends = false;
         }
       },
-      chipStatusColor(status) {
-        return (
-          {
-            open: 'yellow',
-            closed: 'red',
-            not_started: 'red',
-            sectorHasAnswered: 'green',
-          }[status] || 'primary'
-        );
-      },
-      translatedStatus(status) {
-        return {
-          open: 'Aberto',
-          closed: 'Fechado',
-          not_started: 'Não iniciado',
-          sectorHasAnswered: 'Respondido',
-        }[status];
-      },
+
       openDeleteFormDialog(form) {
         this.$refs.showDeleteFormDialog.open(() => {
           this.deleteFormHandler(form);
@@ -392,4 +383,8 @@
   };
 </script>
 
-<style scoped></style>
+<style>
+  .bg-gray {
+    background-color: #ebebeb;
+  }
+</style>

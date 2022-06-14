@@ -53,6 +53,9 @@
       responses() {
         this.updateData();
       },
+      formSends() {
+        this.updateData();
+      },
 
       // props() {
       //   this.updateData();
@@ -94,11 +97,11 @@
             let head = this.formSends.map((formSend) => ({
               text:
                 formSend.year.toString() === formSend.subtitle
-                  ? formSend.year
+                  ? formSend.year.toString()
                   : formSend.year + ' - ' + formSend.subtitle,
               value:
                 formSend.year.toString() === formSend.subtitle
-                  ? formSend.year
+                  ? formSend.year.toString()
                   : formSend.year + ' - ' + formSend.subtitle,
             }));
             this.headers.push(...head);
@@ -112,11 +115,11 @@
             let head = this.formSends.map((formSend) => ({
               text:
                 formSend.year.toString() === formSend.subtitle
-                  ? formSend.year
+                  ? formSend.year.toString()
                   : formSend.year + ' - ' + formSend.subtitle,
               value:
                 formSend.year.toString() === formSend.subtitle
-                  ? formSend.year
+                  ? formSend.year.toString()
                   : formSend.year + ' - ' + formSend.subtitle,
             }));
             this.headers.push(...head);

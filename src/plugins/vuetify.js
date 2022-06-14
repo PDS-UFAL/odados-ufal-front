@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
+import pt from 'vuetify/lib/locale/pt';
 
 Vue.use(Vuetify);
 
@@ -22,6 +23,10 @@ const opts = {
         'muddy-grey': '#666666',
       },
     },
+  },
+  lang: {
+    locales: { pt },
+    current: 'pt',
   },
 };
 

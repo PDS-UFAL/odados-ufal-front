@@ -13,13 +13,75 @@
     </div>
 
     <v-tabs centered v-model="tab">
-      <v-tab href="#tab-1">PERGUNTAS</v-tab>
-      <v-tab href="#tab-2">RESPOSTAS ({{ responsesCount }})</v-tab>
+      <v-tab href="#tab-1">SETORES</v-tab>
+      <v-tab href="#tab-2">ENVIOS</v-tab>
+      <v-tab href="#tab-3">PERGUNTAS</v-tab>
+      <v-tab href="#tab-4">RESPOSTAS ({{ responsesCount }})</v-tab>
     </v-tabs>
     <v-tabs-items v-model="tab">
       <v-tab-item style="padding: 8px" :value="'tab-1'">
         <v-card color="basil" flat>
-          <h3>Perguntas</h3>
+          <h2>Setores</h2>
+          <div>
+            <v-card v-for="item in sectors" :key="item">
+              <v-card-title
+                >{{ item.abbreviation }} — {{ item.name }}
+              </v-card-title>
+              <v-row>
+                <v-col>
+                  <v-card-text>
+                    <b> Responsável:</b> {{ item.responsible }}</v-card-text
+                  >
+                </v-col>
+                <v-col>
+                  <v-card-text>
+                    <b>e-mail: </b> <a>{{ item.email }}</a>
+                  </v-card-text>
+                </v-col>
+              </v-row>
+            </v-card>
+          </div>
+        </v-card>
+      </v-tab-item>
+      <v-tab-item style="padding: 8px" :value="'tab-2'">
+        <v-card color="basil" flat>
+          <h2>Envios</h2>
+          <div>
+            <v-card v-for="item in formSends" :key="item">
+              <v-card-title>{{ item.subtitle }} </v-card-title>
+              <v-card-subtitle>
+                <v-icon size="10" :color="chipStatusColor(item.status)">
+                  mdi-checkbox-blank-circle
+                </v-icon>
+                <span style="height: 10px">
+                  {{ translatedStatus(item.status) }}</span
+                >
+              </v-card-subtitle>
+              <v-row>
+                <v-col>
+                  <v-card-text>
+                    <b>Data de abertura:</b>
+                    {{ formatDate(item.start_date) }}</v-card-text
+                  >
+                </v-col>
+                <v-col>
+                  <v-card-text>
+                    <b>Data de fechamento:</b>
+                    {{ formatDate(item.end_date) }}</v-card-text
+                  >
+                </v-col>
+
+                <v-col>
+                  <v-card-text> <b>Ano:</b> {{ item.year }}</v-card-text>
+                </v-col>
+              </v-row>
+            </v-card>
+          </div>
+        </v-card>
+      </v-tab-item>
+      <v-tab-item style="padding: 8px" :value="'tab-3'">
+        <v-card color="basil" flat>
+          <h2>Perguntas</h2>
           <div>
             <question-card
               v-for="question in questions"
@@ -31,9 +93,9 @@
           </div>
         </v-card>
       </v-tab-item>
-      <v-tab-item style="padding: 8px" :value="'tab-2'">
+      <v-tab-item style="padding: 8px" :value="'tab-4'">
         <v-card color="basil" flat>
-          <h3>Respostas</h3>
+          <h2>Respostas</h2>
           <br />
         </v-card>
         <div style="padding: 8px">
@@ -113,6 +175,8 @@
   import { mapActions, mapGetters } from 'vuex';
   import QuestionCard from '@/components/form/questions/QuestionCard';
   // import ResponseCard from '@/components/form/responses/ResponseCard';
+  import { chipStatusColor, translatedStatus } from '@/utils/statusUtils';
+  import { formatDate } from '@/utils/formatDate';
   import SectionResponses from '@/components/form/responses/SectionResponses';
 
   export default {
@@ -140,12 +204,15 @@
       if (!this.isAdmin()) this.$router.push({ name: 'Home' });
     },
     async mounted() {
-      this.tab = 'tab-2';
+      this.tab = 'tab-4';
       // await this.loadForm();
       await this.loadForm();
     },
     methods: {
       ...mapActions(['fetchFormWithFormSends', 'fetchFormSends']),
+      formatDate,
+      chipStatusColor,
+      translatedStatus,
       isAdmin() {
         return this.getUser.role === 'admin';
       },
