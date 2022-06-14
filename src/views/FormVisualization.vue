@@ -23,7 +23,13 @@
         <v-card color="basil" flat>
           <h2>Setores</h2>
           <div>
-            <v-card v-for="item in sectors" :key="item">
+            <v-card
+              v-for="item in sectors"
+              :key="item"
+              style="margin: 16px 0"
+              flat
+              elevation="3"
+            >
               <v-card-title
                 >{{ item.abbreviation }} — {{ item.name }}
               </v-card-title>
@@ -47,7 +53,13 @@
         <v-card color="basil" flat>
           <h2>Envios</h2>
           <div>
-            <v-card v-for="item in formSends" :key="item">
+            <v-card
+              v-for="item in formSends"
+              :key="item"
+              style="margin: 16px 0"
+              flat
+              elevation="3"
+            >
               <v-card-title>{{ item.subtitle }} </v-card-title>
               <v-card-subtitle>
                 <v-icon size="10" :color="chipStatusColor(item.status)">
@@ -204,7 +216,7 @@
       if (!this.isAdmin()) this.$router.push({ name: 'Home' });
     },
     async mounted() {
-      this.tab = 'tab-2';
+      this.tab = 'tab-4';
       // await this.loadForm();
       await this.loadForm();
     },
