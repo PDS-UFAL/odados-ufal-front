@@ -121,8 +121,6 @@
         color="primary"
         @click="this.sendForm"
         light
-        block
-        large
         :loading="loading"
         :disabled="loading"
         >Enviar</v-btn

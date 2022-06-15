@@ -48,139 +48,143 @@
       </v-card>
 
       <v-row class="mx-0">
-        <v-col class="pa-0">
-          <v-tabs-items v-model="tab">
-            <v-tab-item style="padding: 8px" :value="'tab-1'">
-              <v-select
-                style="width: 256px; margin: 32px 0"
-                :items="items"
-                v-model="select"
-                label="Status do formulário"
-                dense
-                outlined
-                hide-details
-                @change="filterStatus"
-              />
-              <v-col class="pa-0">
-                <v-data-table
-                  :headers="headers_1"
-                  :items="form_sends"
-                  :item-class="itemRowBackground"
-                  class="elevation-2"
-                  disable-pagination
-                  hide-default-footer
-                  :loading="loading_sends"
-                  loading-text="Carregando... Por favor aguarde"
-                >
-                  <template slot="no-data">
-                    <div class="">Nenhum formulário encontrado</div>
-                  </template>
-
-                  <template v-slot:item.subtitle="{ item }">
-                    <a v-if="isAdmin" @click="viewForm(item.form.id)">{{
-                      item.subtitle
-                    }}</a>
-                    <a v-else @click="viewForm(item.id)">{{ item.subtitle }}</a>
-                  </template>
-
-                  <template v-slot:item.start_date="{ item }">
-                    {{ formatDate(item.start_date) }}
-                  </template>
-
-                  <template v-slot:item.end_date="{ item }">
-                    {{ formatDate(item.end_date) }}
-                  </template>
-
-                  <template v-slot:item.status="{ item }">
-                    <v-icon size="17" :color="chipStatusColor(item.status)">
-                      mdi-checkbox-blank-circle
-                    </v-icon>
-                    {{ translatedStatus(item.status) }}
-                  </template>
-
-                  <template
-                    v-if="isAdmin"
-                    v-slot:item.totalResponses="{ item }"
+        <v-card elevation="3" color="basil" flat outilined>
+          <v-col class="pa-0">
+            <v-tabs-items v-model="tab">
+              <v-tab-item style="padding: 8px" :value="'tab-1'">
+                <v-select
+                  style="width: 256px; margin: 32px 0"
+                  :items="items"
+                  v-model="select"
+                  label="Status do formulário"
+                  dense
+                  outlined
+                  hide-details
+                  @change="filterStatus"
+                />
+                <v-col class="pa-0">
+                  <v-data-table
+                    :headers="headers_1"
+                    :items="form_sends"
+                    :item-class="itemRowBackground"
+                    class="elevation-2"
+                    disable-pagination
+                    hide-default-footer
+                    :loading="loading_sends"
+                    loading-text="Carregando... Por favor aguarde"
                   >
-                    {{ item.totalResponses }}
-                  </template>
+                    <template slot="no-data">
+                      <div class="">Nenhum formulário encontrado</div>
+                    </template>
 
-                  <template v-slot:item.actions="{ item }">
-                    <v-btn
-                      small
-                      icon
-                      v-if="isAdmin"
-                      @click="viewForm(item.form.id)"
-                    >
-                      <v-icon> mdi-eye </v-icon>
-                    </v-btn>
+                    <template v-slot:item.subtitle="{ item }">
+                      <a v-if="isAdmin" @click="viewForm(item.form.id)">{{
+                        item.subtitle
+                      }}</a>
+                      <a v-else @click="viewForm(item.id)">{{
+                        item.subtitle
+                      }}</a>
+                    </template>
 
-                    <v-btn small icon v-else @click="viewForm(item.id)">
-                      <v-icon v-if="item.status === 'open'">
-                        mdi-pencil
+                    <template v-slot:item.start_date="{ item }">
+                      {{ formatDate(item.start_date) }}
+                    </template>
+
+                    <template v-slot:item.end_date="{ item }">
+                      {{ formatDate(item.end_date) }}
+                    </template>
+
+                    <template v-slot:item.status="{ item }">
+                      <v-icon size="17" :color="chipStatusColor(item.status)">
+                        mdi-checkbox-blank-circle
                       </v-icon>
-                      <v-icon v-else> mdi-eye </v-icon>
-                    </v-btn>
+                      {{ translatedStatus(item.status) }}
+                    </template>
 
-                    <v-btn
-                      small
-                      icon
+                    <template
                       v-if="isAdmin"
-                      @click="openDeleteFormSendDialog(item)"
+                      v-slot:item.totalResponses="{ item }"
                     >
-                      <v-icon> mdi-delete </v-icon>
-                    </v-btn>
-                  </template>
-                </v-data-table>
-              </v-col>
-            </v-tab-item>
-            <v-tab-item style="padding: 8px" :value="'tab-2'">
-              <v-col class="pa-0">
-                <v-data-table
-                  :headers="headers_2"
-                  :items="forms"
-                  class="elevation-2"
-                  disable-pagination
-                  hide-default-footer
-                  :loading="loading_templates"
-                  loading-text="Carregando... Por favor aguarde"
-                  v-if="isAdmin"
-                >
-                  <template slot="no-data">
-                    <div class="">Nenhum formulário encontrado</div>
-                  </template>
+                      {{ item.totalResponses }}
+                    </template>
 
-                  <template v-slot:item.title="{ item }">
-                    <a @click="viewForm(item.id)">{{ item.title }}</a>
-                  </template>
+                    <template v-slot:item.actions="{ item }">
+                      <v-btn
+                        small
+                        icon
+                        v-if="isAdmin"
+                        @click="viewForm(item.form.id)"
+                      >
+                        <v-icon> mdi-eye </v-icon>
+                      </v-btn>
 
-                  <template v-slot:item.created_at="{ item }">
-                    {{ formatDate(item.created_at) }}
-                  </template>
+                      <v-btn small icon v-else @click="viewForm(item.id)">
+                        <v-icon v-if="item.status === 'open'">
+                          mdi-pencil
+                        </v-icon>
+                        <v-icon v-else> mdi-eye </v-icon>
+                      </v-btn>
 
-                  <template v-slot:item.actions="{ item }">
-                    <v-btn small icon @click="viewForm(item.id)">
-                      <v-icon> mdi-eye </v-icon>
-                    </v-btn>
+                      <v-btn
+                        small
+                        icon
+                        v-if="isAdmin"
+                        @click="openDeleteFormSendDialog(item)"
+                      >
+                        <v-icon> mdi-delete </v-icon>
+                      </v-btn>
+                    </template>
+                  </v-data-table>
+                </v-col>
+              </v-tab-item>
+              <v-tab-item style="padding: 8px" :value="'tab-2'">
+                <v-col class="pa-0">
+                  <v-data-table
+                    :headers="headers_2"
+                    :items="forms"
+                    class="elevation-2"
+                    disable-pagination
+                    hide-default-footer
+                    :loading="loading_templates"
+                    loading-text="Carregando... Por favor aguarde"
+                    v-if="isAdmin"
+                  >
+                    <template slot="no-data">
+                      <div class="">Nenhum formulário encontrado</div>
+                    </template>
 
-                    <v-btn small icon @click="sendForm(item.id)">
-                      <v-icon> mdi-file-send </v-icon>
-                    </v-btn>
+                    <template v-slot:item.title="{ item }">
+                      <a @click="viewForm(item.id)">{{ item.title }}</a>
+                    </template>
 
-                    <v-btn
-                      small
-                      icon
-                      v-if="isAdmin"
-                      @click="openDeleteFormDialog(item)"
-                    >
-                      <v-icon> mdi-delete </v-icon>
-                    </v-btn>
-                  </template>
-                </v-data-table>
-              </v-col>
-            </v-tab-item>
-          </v-tabs-items>
-        </v-col>
+                    <template v-slot:item.created_at="{ item }">
+                      {{ formatDate(item.created_at) }}
+                    </template>
+
+                    <template v-slot:item.actions="{ item }">
+                      <v-btn small icon @click="viewForm(item.id)">
+                        <v-icon> mdi-eye </v-icon>
+                      </v-btn>
+
+                      <v-btn small icon @click="sendForm(item.id)">
+                        <v-icon> mdi-file-send </v-icon>
+                      </v-btn>
+
+                      <v-btn
+                        small
+                        icon
+                        v-if="isAdmin"
+                        @click="openDeleteFormDialog(item)"
+                      >
+                        <v-icon> mdi-delete </v-icon>
+                      </v-btn>
+                    </template>
+                  </v-data-table>
+                </v-col>
+              </v-tab-item>
+            </v-tabs-items>
+          </v-col>
+        </v-card>
       </v-row>
     </div>
   </v-container>
