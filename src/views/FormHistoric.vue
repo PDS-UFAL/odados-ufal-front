@@ -85,6 +85,7 @@
             v-bind="attrs"
             v-on="on"
             :loading="loading"
+            :disabled="loading"
             @click="saveResponse"
           >
             <v-icon>mdi-check</v-icon>

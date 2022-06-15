@@ -117,7 +117,16 @@
     </v-row>
 
     <v-row style="margin-top: 10px">
-      <v-btn color="primary" @click="this.sendForm">Enviar</v-btn>
+      <v-btn
+        color="primary"
+        @click="this.sendForm"
+        light
+        block
+        large
+        :loading="loading"
+        :disabled="loading"
+        >Enviar</v-btn
+      >
     </v-row>
   </v-container>
 </template>

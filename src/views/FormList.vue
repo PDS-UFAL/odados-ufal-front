@@ -25,7 +25,7 @@
       class="spinner"
     >
       <circle-spinner
-        :animation-duration="500"
+        :animation-duration="1000"
         :size="60"
         color="#0098DA"
         style="margin: auto"
