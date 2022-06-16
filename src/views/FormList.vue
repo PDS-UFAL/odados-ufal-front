@@ -420,6 +420,6 @@
   .spinner {
     margin: auto;
     text-align: center;
-    padding: 70px 0;
+    padding: 140px 0;
   }
 </style>
