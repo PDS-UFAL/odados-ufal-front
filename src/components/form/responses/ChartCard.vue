@@ -60,13 +60,28 @@
         optionsChart: {
           chart: {
             type: 'bar',
-            height: 350,
             // stacked: true,
+            height: 350,
             toolbar: {
               show: true,
             },
             zoom: {
               enabled: true,
+            },
+          },
+          plotOptions: {
+            bar: {
+              dataLabels: {
+                position: 'top',
+              },
+            },
+          },
+          dataLabels: {
+            enabled: true,
+            offsetY: -20,
+            style: {
+              fontSize: '12px',
+              colors: ['#00000099'],
             },
           },
         },
