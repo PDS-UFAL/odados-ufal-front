@@ -24,6 +24,7 @@
     <v-row>
       <v-col cols="12" class="pa-0">
         <v-text-field
+          background-color="white"
           v-model="title"
           name="title"
           label="Título do formulário"
@@ -38,6 +39,7 @@
     </v-row>
     <v-row>
       <v-textarea
+        background-color="white"
         v-model="description"
         name="description"
         label="Descrição do formulário (opcional)"

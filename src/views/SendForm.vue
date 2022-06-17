@@ -12,6 +12,7 @@
     </v-row>
     <v-row style="padding-top: 20px">
       <v-select
+        background-color="white"
         :items="this.forms"
         v-model="selectedForm"
         :rules="[rules.required]"
@@ -44,6 +45,7 @@
       >
         <template v-slot:activator="{ on, attrs }">
           <v-text-field
+            background-color="white"
             v-on="on"
             v-bind="attrs"
             label="Abre em"
@@ -81,6 +83,7 @@
       >
         <template v-slot:activator="{ on, attrs }">
           <v-text-field
+            background-color="white"
             v-on="on"
             v-bind="attrs"
             label="Fecha em"
@@ -106,6 +109,7 @@
     </v-row>
     <v-row>
       <v-text-field
+        background-color="white"
         v-model="subtitle"
         name="title"
         label="Subtítulo do Formulário"

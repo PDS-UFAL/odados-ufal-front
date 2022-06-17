@@ -115,14 +115,28 @@
                         v-if="isAdmin"
                         @click="viewForm(item.form.id)"
                       >
-                        <v-icon> mdi-eye </v-icon>
+                        <v-tooltip bottom>
+                          <template v-slot:activator="{ on }">
+                            <v-icon v-on="on"> mdi-eye </v-icon>
+                          </template>
+                          <span>Visualizar</span>
+                        </v-tooltip>
                       </v-btn>
 
                       <v-btn small icon v-else @click="viewForm(item.id)">
-                        <v-icon v-if="item.status === 'open'">
-                          mdi-pencil
-                        </v-icon>
-                        <v-icon v-else> mdi-eye </v-icon>
+                        <v-tooltip bottom v-if="item.status === 'open'">
+                          <template v-slot:activator="{ on }">
+                            <v-icon v-on="on"> mdi-pencil </v-icon>
+                          </template>
+                          <span>Responder</span>
+                        </v-tooltip>
+
+                        <v-tooltip bottom v-else>
+                          <template v-slot:activator="{ on }">
+                            <v-icon v-on="on"> mdi-eye </v-icon>
+                          </template>
+                          <span>Visualizar</span>
+                        </v-tooltip>
                       </v-btn>
 
                       <v-btn
@@ -131,7 +145,12 @@
                         v-if="isAdmin"
                         @click="openDeleteFormSendDialog(item)"
                       >
-                        <v-icon> mdi-delete </v-icon>
+                        <v-tooltip bottom>
+                          <template v-slot:activator="{ on }">
+                            <v-icon v-on="on"> mdi-delete </v-icon>
+                          </template>
+                          <span>Excluir</span>
+                        </v-tooltip>
                       </v-btn>
                     </template>
                   </v-data-table>
@@ -162,13 +181,23 @@
                     </template>
 
                     <template v-slot:item.actions="{ item }">
-                      <v-btn small icon @click="viewForm(item.id)">
-                        <v-icon> mdi-eye </v-icon>
-                      </v-btn>
+                      <v-tooltip bottom>
+                        <template v-slot:activator="{ on }">
+                          <v-btn small icon @click="viewForm(item.id)">
+                            <v-icon v-on="on"> mdi-eye </v-icon>
+                          </v-btn>
+                        </template>
+                        <span>Visualizar</span>
+                      </v-tooltip>
 
-                      <v-btn small icon @click="sendForm(item.id)">
-                        <v-icon> mdi-file-send </v-icon>
-                      </v-btn>
+                      <v-tooltip bottom>
+                        <template v-slot:activator="{ on }">
+                          <v-btn small icon @click="sendForm(item.id)">
+                            <v-icon v-on="on"> mdi-file-send </v-icon>
+                          </v-btn>
+                        </template>
+                        <span>Enviar Formulário</span>
+                      </v-tooltip>
 
                       <v-btn
                         small
@@ -176,7 +205,12 @@
                         v-if="isAdmin"
                         @click="openDeleteFormDialog(item)"
                       >
-                        <v-icon> mdi-delete </v-icon>
+                        <v-tooltip bottom>
+                          <template v-slot:activator="{ on }">
+                            <v-icon v-on="on"> mdi-delete </v-icon>
+                          </template>
+                          <span>Excluir</span>
+                        </v-tooltip>
                       </v-btn>
                     </template>
                   </v-data-table>
