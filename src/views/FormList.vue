@@ -46,9 +46,8 @@
           <v-tab href="#tab-2">MODELOS</v-tab>
         </v-tabs>
       </v-card>
-
-      <v-row class="mx-0">
-        <v-card elevation="3" color="basil" flat outilined>
+      <v-card elevation="3" color="basil" flat outilined>
+        <v-row class="mx-0">
           <v-col class="pa-0">
             <v-tabs-items v-model="tab">
               <v-tab-item style="padding: 8px" :value="'tab-1'">
@@ -218,8 +217,8 @@
               </v-tab-item>
             </v-tabs-items>
           </v-col>
-        </v-card>
-      </v-row>
+        </v-row>
+      </v-card>
     </div>
   </v-container>
 </template>
