@@ -9,7 +9,7 @@
           class="d-flex flex-column pa-6"
         >
           <v-card-title class="justify-center"
-            >Recupere sua conta
+            >Redefinição de Senha
           </v-card-title>
 
           <v-card
@@ -40,7 +40,7 @@
                 :loading="loading"
                 :disabled="loading"
               >
-                Solicitar redefinição
+                Redefinir Senha
               </v-btn>
             </v-card-actions>
           </div>

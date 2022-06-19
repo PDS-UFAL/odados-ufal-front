@@ -10,6 +10,7 @@
     <v-form v-model="valid" ref="form" style="margin-bottom: 4rem">
       <v-row style="padding-top: 20px">
         <v-select
+          background-color="white"
           :items="this.forms"
           v-on:change="this.changeSelectedForm"
           :rules="requiredRule"
@@ -25,6 +26,7 @@
       </v-row>
       <v-row>
         <v-select
+          background-color="white"
           :items="this.sectors"
           v-on:change="this.changeSelectedSector"
           :rules="requiredRule"
@@ -38,6 +40,7 @@
           :readonly="loading"
         />
         <v-text-field
+          background-color="white"
           v-model="date"
           :rules="requiredRule"
           label="Ano"
@@ -85,6 +88,7 @@
             v-bind="attrs"
             v-on="on"
             :loading="loading"
+            :disabled="loading"
             @click="saveResponse"
           >
             <v-icon>mdi-check</v-icon>
