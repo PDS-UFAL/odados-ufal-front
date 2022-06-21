@@ -272,13 +272,13 @@
         search_sends: '',
         search_forms: '',
         select: 'Todos',
-        items_admin: ['Todos', 'Abertos', 'Finalizados', 'Não iniciados'],
+        items_admin: ['Todos', 'Abertos', 'Fechados', 'Não iniciados'],
         items_sector: [
           'Todos',
           'Abertos',
-          'Finalizados',
+          'Fechados',
           'Não iniciados',
-          'Respondido',
+          'Respondidos',
         ],
         loading_sends: true,
         loading_templates: true,
@@ -459,9 +459,9 @@
       filterStatus() {
         const temp_hash = {
           Abertos: 'open',
-          Finalizados: 'closed',
+          Fechados: 'closed',
           'Não iniciados': 'not_started',
-          Respondido: 'sectorHasAnswered',
+          Respondidos: 'sectorHasAnswered',
         };
         if (this.select !== 'Todos')
           this.form_sends = this.form_sends_backup.filter(
