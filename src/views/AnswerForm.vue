@@ -15,7 +15,9 @@
 
       <v-spacer />
 
-      <span class="font-weight-light">{{ relativeTime }}</span>
+      <span class="font-weight-light" v-if="!hasResponse">{{
+        relativeTime
+      }}</span>
     </v-row>
 
     <h4 style="margin-top: -2rem; margin-bottom: 2rem; color: #6b7280">
