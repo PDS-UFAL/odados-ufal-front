@@ -53,7 +53,7 @@
               <v-tab-item style="padding: 8px" :value="'tab-1'">
                 <v-select
                   style="width: 256px; margin: 32px 0"
-                  :items="items"
+                  :items="isAdmin ? items_admin : items_sector"
                   v-model="select"
                   label="Status do formulário"
                   dense
@@ -239,7 +239,14 @@
       return {
         tab: 'tab-1',
         select: 'Todos',
-        items: ['Todos', 'Abertos', 'Finalizados', 'Não iniciados'],
+        items_admin: ['Todos', 'Abertos', 'Finalizados', 'Não iniciados'],
+        items_sector: [
+          'Todos',
+          'Abertos',
+          'Finalizados',
+          'Não iniciados',
+          'Respondido',
+        ],
         loading_sends: true,
         loading_templates: true,
         forms: [],
@@ -421,6 +428,7 @@
           Abertos: 'open',
           Finalizados: 'closed',
           'Não iniciados': 'not_started',
+          Respondido: 'sectorHasAnswered',
         };
         if (this.select !== 'Todos')
           this.form_sends = this.form_sends_backup.filter(
