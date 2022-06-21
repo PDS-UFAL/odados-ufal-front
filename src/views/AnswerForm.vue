@@ -32,6 +32,9 @@
     <h4 style="color: #34d399; margin-bottom: 1rem" v-if="hasResponse">
       Você já respondeu este formulário
     </h4>
+    <h4 style="color: #f87171; margin-bottom: 1rem" v-if="notStarted">
+      O formulário ainda não foi aberto
+    </h4>
     <v-form v-model="valid" ref="form">
       <v-card
         v-for="(section, i) in form.form.sections"
@@ -268,17 +271,34 @@
       ...mapGetters(['getQuestions', 'getUser']),
       relativeTime() {
         if (!this.form.end_date) return null;
+        const today = new Date();
 
-        const info =
-          new Date(this.form.end_date) >= new Date() ? 'Fechará' : 'Finalizado';
+        if (new Date(this.form.start_date) > today) {
+          const info = 'Abrirá';
 
-        return `${info} ${getRelativeTime(
-          new Date(this.form.end_date).getTime(),
-          'pt-BR',
-        )}`;
+          return `${info} ${getRelativeTime(
+            new Date(this.form.start_date).getTime(),
+            'pt-BR',
+          )}`;
+        } else {
+          const info =
+            new Date(this.form.end_date) >= new Date()
+              ? 'Fechará'
+              : 'Finalizado';
+
+          return `${info} ${getRelativeTime(
+            new Date(this.form.end_date).getTime(),
+            'pt-BR',
+          )}`;
+        }
       },
       isAdmin() {
         return this.getUser?.role === 'admin';
+      },
+      notStarted() {
+        const today = new Date();
+
+        return new Date(this.form.start_date) > today;
       },
       canEdit() {
         const today = new Date();
