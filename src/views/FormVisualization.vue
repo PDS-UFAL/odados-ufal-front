@@ -43,13 +43,6 @@
                   <v-card-title
                     >{{ item.abbreviation }} — {{ item.name }}
                   </v-card-title>
-                  <v-row>
-                    <v-col>
-                      <v-card-text>
-                        <b> Responsável:</b> {{ item.responsible }}</v-card-text
-                      >
-                    </v-col>
-                  </v-row>
                 </v-card>
               </div>
             </v-card>
