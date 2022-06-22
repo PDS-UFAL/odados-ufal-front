@@ -18,6 +18,7 @@
         auto-grow
         :clearable="canEdit"
         :readonly="!canEdit"
+        :disabled="!canEdit"
       />
     </v-col>
   </v-row>
