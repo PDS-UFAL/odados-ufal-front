@@ -51,19 +51,35 @@
           <v-col class="pa-0">
             <v-tabs-items v-model="tab">
               <v-tab-item style="padding: 8px" :value="'tab-1'">
-                <v-select
-                  style="width: 256px; margin: 32px 0"
-                  :items="items"
-                  v-model="select"
-                  label="Status do formulário"
-                  dense
-                  outlined
-                  hide-details
-                  @change="filterStatus"
-                />
+                <div class="d-flex align-start" style="margin: 32px 0">
+                  <div style="width: 25%; margin-right: 2rem">
+                    <v-text-field
+                      v-model="search_sends"
+                      name="search_sends"
+                      label="Pesquisar"
+                      prepend-inner-icon="mdi-magnify"
+                      outlined
+                      dense
+                      clearable
+                      hide-details
+                    />
+                  </div>
+                  <div style="width: 15%">
+                    <v-select
+                      :items="isAdmin ? items_admin : items_sector"
+                      v-model="select"
+                      label="Status do formulário"
+                      dense
+                      outlined
+                      hide-details
+                      @change="filterStatus"
+                    />
+                  </div>
+                </div>
                 <v-col class="pa-0">
                   <v-data-table
                     :headers="headers_1"
+                    :search="search_sends"
                     :items="form_sends"
                     :item-class="itemRowBackground"
                     class="elevation-2"
@@ -156,9 +172,24 @@
                 </v-col>
               </v-tab-item>
               <v-tab-item style="padding: 8px" :value="'tab-2'">
+                <div class="d-flex align-start" style="margin: 32px 0">
+                  <div style="width: 25%; margin-right: 2rem">
+                    <v-text-field
+                      v-model="search_forms"
+                      name="search_forms"
+                      label="Pesquisar"
+                      prepend-inner-icon="mdi-magnify"
+                      outlined
+                      dense
+                      clearable
+                      hide-details
+                    />
+                  </div>
+                </div>
                 <v-col class="pa-0">
                   <v-data-table
                     :headers="headers_2"
+                    :search="search_forms"
                     :items="forms"
                     class="elevation-2"
                     disable-pagination
@@ -238,8 +269,17 @@
     data: () => {
       return {
         tab: 'tab-1',
+        search_sends: '',
+        search_forms: '',
         select: 'Todos',
-        items: ['Todos', 'Abertos', 'Finalizados', 'Não iniciados'],
+        items_admin: ['Todos', 'Abertos', 'Fechados', 'Não iniciados'],
+        items_sector: [
+          'Todos',
+          'Abertos',
+          'Fechados',
+          'Não iniciados',
+          'Respondidos',
+        ],
         loading_sends: true,
         loading_templates: true,
         forms: [],
@@ -419,8 +459,9 @@
       filterStatus() {
         const temp_hash = {
           Abertos: 'open',
-          Finalizados: 'closed',
+          Fechados: 'closed',
           'Não iniciados': 'not_started',
+          Respondidos: 'sectorHasAnswered',
         };
         if (this.select !== 'Todos')
           this.form_sends = this.form_sends_backup.filter(

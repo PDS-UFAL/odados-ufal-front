@@ -123,7 +123,7 @@
     <v-row style="margin-top: 10px">
       <v-btn
         color="primary"
-        @click="this.sendForm"
+        @click="showSendFormDialog"
         light
         :loading="loading"
         :disabled="loading"
@@ -188,7 +188,7 @@
       formatedDate(date) {
         return formatDate(date);
       },
-      sendFormDialog() {
+      showSendFormDialog() {
         this.$refs.showSendFormDialog.open(() => {
           this.sendForm();
         });

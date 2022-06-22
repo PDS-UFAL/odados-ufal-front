@@ -99,9 +99,9 @@
       //...mapActions(['createFormResult']),
       setChartTypes() {
         if (this.chartQuestionTypes.includes(this.question.type)) {
-          this.currentChart = { name: 'Barra', type: 'bar' };
+          this.currentChart = { name: 'Gráfico de Barras', type: 'bar' };
           this.chartTypes = [
-            { name: 'Barra', type: 'bar' },
+            { name: 'Gráfico de Barras', type: 'bar' },
             // { name: 'Pizza', type: 'pie' },
             // { name: 'Linha', type: 'line' },
             { name: 'Tabela', type: 'table' },
@@ -111,7 +111,7 @@
             this.question.type !== 'grouped' &&
             (this.sectors.length === 1 || this.formSends.length === 1)
           ) {
-            this.chartTypes.push({ name: 'Pizza', type: 'pie' });
+            this.chartTypes.push({ name: 'Gráfico de Pizza', type: 'pie' });
           }
         } else {
           this.currentChart = { name: 'Tabela', type: 'table' };
@@ -150,12 +150,18 @@
           return inFormSends && inSectors;
         });
 
+        if (this.question.type === 'checkbox') {
+          this.responses = this.responses.map((response) => ({
+            ...response,
+            answer: response.answer.replace(';@;', ', '),
+          }));
+        }
+
         if (this.sectors.length > 1 && this.formSends.length > 1) {
           this.updateResponsesRowColumn('sector_form_send');
         }
 
         // this.sortResponsesBySectorId();
-
         this.answers = this.responses.map((response) => response.answer);
       },
 

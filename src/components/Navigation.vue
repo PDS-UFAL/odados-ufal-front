@@ -38,7 +38,7 @@
             roles: ['admin'],
           },
           {
-            title: 'Inserir histórico',
+            title: 'Inserir Histórico',
             icon: 'mdi-clipboard-text-clock',
             path: '/inserir-historico',
             roles: ['admin'],

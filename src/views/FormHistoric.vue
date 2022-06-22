@@ -1,5 +1,12 @@
 <template>
   <v-container class="px-sm-12">
+    <confirmation-dialog
+      ref="showFormHistoricDialog"
+      width="300"
+      title="Salvar histórico?"
+      description="Salvar o histórico?"
+      confirmButton="Salvar"
+    />
     <v-row class="pa-0 align-center mt-md-4 mb-8">
       <v-btn @click="back" text fab small class="mr-2">
         <v-icon>mdi-arrow-left</v-icon>
@@ -89,7 +96,7 @@
             v-on="on"
             :loading="loading"
             :disabled="loading"
-            @click="saveResponse"
+            @click="showFormDialog"
           >
             <v-icon>mdi-check</v-icon>
           </v-btn>
@@ -112,9 +119,13 @@
   import Select from '@/components/form/answers/Select';
   import Checkbox from '@/components/form/answers/Checkbox';
   import Radio from '@/components/form/answers/Radio';
+  import ConfirmationDialog from '@/components/ConfirmationDialog';
 
   export default {
     name: 'FormHistoric',
+    components: {
+      ConfirmationDialog,
+    },
     data: () => {
       return {
         loading: false,
@@ -243,6 +254,11 @@
             },
           };
         }
+      },
+      showFormDialog() {
+        this.$refs.showFormHistoricDialog.open(() => {
+          this.saveResponse();
+        });
       },
       async saveResponse() {
         try {
