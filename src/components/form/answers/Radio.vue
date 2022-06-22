@@ -17,6 +17,7 @@
           :label="option"
           :value="option"
           :readonly="!canEdit"
+          :disabled="!canEdit"
         />
       </v-radio-group>
     </v-col>

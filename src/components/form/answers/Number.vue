@@ -32,6 +32,7 @@
         dense
         outlined
         :readonly="!canEdit"
+        :disabled="!canEdit"
       />
     </v-col>
   </v-row>

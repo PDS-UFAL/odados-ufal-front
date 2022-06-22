@@ -15,6 +15,7 @@
           :hide-details="!last(index)"
           dense
           :readonly="!canEdit"
+          :disabled="!canEdit"
         />
       </div>
     </v-col>

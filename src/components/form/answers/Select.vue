@@ -17,6 +17,7 @@
         outlined
         no-data-text="Nenhuma opção disponível"
         :readonly="!canEdit"
+        :disabled="!canEdit"
       />
     </v-col>
   </v-row>
