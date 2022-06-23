@@ -133,14 +133,23 @@
         }
         this.updateRows();
       },
+      defaultRowValue(row) {
+        this.headers.forEach((header) => {
+          row[header.value] = '-';
+        });
+
+        return row;
+      },
       updateRows() {
         this.rows = [];
         if (this.question.type === 'grouped') {
           if (this.formSends.length > 1) {
             this.question.responseColumns.forEach((responseRow) => {
-              let row = {
-                name: responseRow[0].title,
-              };
+              let row = {};
+
+              row = this.defaultRowValue(row);
+
+              row = { ...row, name: responseRow[0].title };
 
               responseRow.forEach((item) => {
                 row[item.form_send_name] = item.answer;
@@ -149,9 +158,11 @@
             });
           } else {
             this.question.responseRows.forEach((responseRow) => {
-              let row = {
-                name: responseRow[0].sector_name,
-              };
+              let row = {};
+
+              row = this.defaultRowValue(row);
+
+              row = { ...row, name: responseRow[0].title };
 
               responseRow.forEach((item) => {
                 row[item.title] = item.answer;
@@ -162,9 +173,11 @@
         } else {
           if (this.formSends.length > 1 && this.sectors.length > 1) {
             this.question.responseColumns.forEach((responseRow) => {
-              let row = {
-                name: responseRow[0].sector_name,
-              };
+              let row = {};
+
+              row = this.defaultRowValue(row);
+
+              row = { ...row, name: responseRow[0].sector_name };
 
               responseRow.forEach((item) => {
                 row[item.form_send_name] = item.answer;

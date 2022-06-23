@@ -47,6 +47,7 @@
           :readonly="loading"
         />
         <v-text-field
+          @wheel="$event.target.blur()"
           background-color="white"
           v-model="date"
           :rules="requiredRule"
