@@ -3,7 +3,7 @@ export const chipStatusColor = (status) => {
     {
       open: 'yellow',
       closed: 'red',
-      not_started: 'red',
+      not_started: '#80808087',
       sectorHasAnswered: 'green',
     }[status] || 'primary'
   );
