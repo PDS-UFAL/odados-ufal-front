@@ -86,6 +86,7 @@
               outlined
               hide-details
               :disabled="disabled"
+              v-on:change="this.cleanParameters"
             />
           </v-col>
         </v-row>
@@ -189,6 +190,10 @@
             section: this.section,
           });
         });
+      },
+      cleanParameters() {
+        this.question.max_value = null;
+        this.question.min_value = null;
       },
     },
     computed: {
