@@ -83,8 +83,6 @@
                     :items="form_sends"
                     :item-class="itemRowBackground"
                     class="elevation-2"
-                    disable-pagination
-                    hide-default-footer
                     :loading="loading_sends"
                     loading-text="Carregando... Por favor aguarde"
                   >
@@ -192,8 +190,6 @@
                     :search="search_forms"
                     :items="forms"
                     class="elevation-2"
-                    disable-pagination
-                    hide-default-footer
                     :loading="loading_templates"
                     loading-text="Carregando... Por favor aguarde"
                     v-if="isAdmin"

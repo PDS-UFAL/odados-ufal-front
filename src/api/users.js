@@ -14,4 +14,7 @@ export default {
   deleteUser(id) {
     return request.$http.delete(`${'/api/users'}/${id}`);
   },
+  turnInactiveUser(id) {
+    return request.$http.put(`${'/api/users'}/${id}/turn_inactive`);
+  },
 };
