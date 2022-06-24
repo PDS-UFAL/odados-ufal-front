@@ -21,7 +21,7 @@
         <h5 style="color: #9ca3af">Descrição</h5>
         <p style="color: #64748b">{{ form.description }}</p>
       </div>
-      <v-card v-else elevation="3" color="basil" outilined flat>
+      <v-card elevation="3" color="basil" outilined flat>
         <v-tabs centered v-model="tab">
           <v-tab href="#tab-1">SETORES</v-tab>
           <v-tab href="#tab-2">ENVIOS</v-tab>
