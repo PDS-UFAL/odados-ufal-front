@@ -156,7 +156,7 @@
     },
 
     methods: {
-      ...mapActions(['createUser', 'deleteUser', 'setAlert']),
+      ...mapActions(['createUser', 'turnInactiveUser', 'setAlert']),
       back() {
         this.$router.back();
       },
@@ -183,7 +183,7 @@
 
       deleteItemConfirm() {
         let userId = this.editedItem.id;
-        this.deleteUser({ id: userId })
+        this.turnInactiveUser({ id: userId })
           .then(() => {
             this.sucess = true;
             this.userRows.splice(this.editedIndex, 1);

@@ -16,4 +16,7 @@ export default {
   async deleteUser(store, { id }) {
     return await usersApi.deleteUser(id);
   },
+  async turnInactiveUser(store, { id }) {
+    return await usersApi.turnInactiveUser(id);
+  },
 };
