@@ -86,6 +86,7 @@
               outlined
               hide-details
               :disabled="disabled"
+              v-on:change="this.cleanParameters"
             />
           </v-col>
         </v-row>
@@ -181,14 +182,25 @@
       };
     },
     methods: {
-      ...mapActions(['removeQuestion', 'duplicateQuestion']),
+      ...mapActions(['removeQuestion', 'duplicateQuestion', 'setAlert']),
       openRemoveQuestionDialog() {
         this.$refs.showRemoveQuestionDialog.open(() => {
+          if (this.section.questions_attributes.length === 1) {
+            this.setAlert({
+              alertMessage: 'Não é possível apagar a única pergunta da seção',
+              alertColor: 'red',
+            });
+            return;
+          }
           this.removeQuestion({
             question: this.question,
             section: this.section,
           });
         });
+      },
+      cleanParameters() {
+        this.question.max_value = null;
+        this.question.min_value = null;
       },
     },
     computed: {

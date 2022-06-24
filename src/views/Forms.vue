@@ -365,6 +365,7 @@
     async mounted() {
       // this.resetQuestions();
       this.resetSections();
+
       await this.loadSectors();
 
       if (this.$route.params.id) {
@@ -421,9 +422,9 @@
         section.canEdit = !section.canEdit;
       },
       deleteSection(item, section) {
-        if (this.sections[0] === section) {
+        if (this.sections.length === 1) {
           this.setAlert({
-            alertMessage: 'Não é possível deletar a primeira seção',
+            alertMessage: 'Não é possível deletar a única seção',
             alertColor: 'red',
           });
           return;

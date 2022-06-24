@@ -6,7 +6,7 @@
         <span style="color: red">{{ question.required ? '*' : '' }}</span>
       </span>
 
-      <div v-for="(option, index) in question.options" :key="index">
+      <div v-for="(option, index) in question.options" :key="option + index">
         <v-checkbox
           v-model="response"
           :label="option"
