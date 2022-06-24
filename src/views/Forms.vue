@@ -364,8 +364,8 @@
     },
     async mounted() {
       // this.resetQuestions();
-      // this.resetSections();
-      console.log('hmm');
+      this.resetSections();
+
       await this.loadSectors();
 
       if (this.$route.params.id) {
