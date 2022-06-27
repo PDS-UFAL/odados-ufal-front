@@ -49,6 +49,12 @@
             path: '/usuario/setor',
             roles: ['admin'],
           },
+          {
+            title: 'Ajuda',
+            icon: 'mdi-help-circle-outline',
+            path: '/ajuda',
+            roles: ['admin', 'employee'],
+          },
           // {
           //   title: 'Notificações',
           //   icon: 'mdi-bell',
