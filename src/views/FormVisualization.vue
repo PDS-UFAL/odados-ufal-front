@@ -322,7 +322,7 @@
         let csvRows = [];
         let rowToAdd, formSendResponses;
 
-        csvRows.push('Ano de envio,Seção,Pergunta,Setor,Resposta');
+        csvRows.push('"Ano de envio","Seção","Pergunta","Setor","Resposta"');
 
         this.formSendSelected.forEach((form_send) => {
           this.form.sections.forEach((section) => {
@@ -332,11 +332,11 @@
               );
               formSendResponses.forEach((response) => {
                 rowToAdd = [
-                  form_send.year,
-                  section.name,
-                  question.title,
-                  response.sector_name,
-                  response.answer,
+                  '"' + form_send.year + '"',
+                  '"' + section.name + '"',
+                  '"' + question.title + '"',
+                  '"' + response.sector_name + '"',
+                  '"' + response.answer + '"',
                 ].join(',');
                 csvRows.push(rowToAdd);
               });
