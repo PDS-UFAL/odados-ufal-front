@@ -182,8 +182,9 @@
     computed: {
       ...mapGetters(['getUser']),
       today() {
-        let date = new Date();
-        return date.toISOString();
+        return new Date(
+          Date.now() - new Date().getTimezoneOffset() * 60000,
+        ).toISOString();
       },
     },
     methods: {
