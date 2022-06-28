@@ -38,7 +38,7 @@
             roles: ['admin'],
           },
           {
-            title: 'Inserir histórico',
+            title: 'Inserir Histórico',
             icon: 'mdi-clipboard-text-clock',
             path: '/inserir-historico',
             roles: ['admin'],
@@ -48,6 +48,12 @@
             icon: 'mdi-domain',
             path: '/usuario/setor',
             roles: ['admin'],
+          },
+          {
+            title: 'Ajuda',
+            icon: 'mdi-help-circle-outline',
+            path: '/ajuda',
+            roles: ['admin', 'employee'],
           },
           // {
           //   title: 'Notificações',

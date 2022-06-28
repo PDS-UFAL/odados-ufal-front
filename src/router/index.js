@@ -57,6 +57,12 @@ const routes = [
         name: 'UsersSectors',
         component: () => import('@/views/UsersSectors.vue'),
       },
+      {
+        path: '/ajuda',
+        name: 'Help',
+
+        component: () => import('@/views/Help.vue'),
+      },
       /* {
         path: '404',
         component: () => import('@/views/NotFound.vue'),
