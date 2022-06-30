@@ -294,8 +294,12 @@
         } catch (err) {
           this.setAlert({
             alertMessage:
-              err.response?.data.error ||
-              'Occorreu um erro ao tentar salvar a resposta.',
+              err.response?.data.error ===
+              'This history has already been created'
+                ? 'Esse histórico já foi criado'
+                : '' ||
+                  err.response?.data.error ||
+                  'Occorreu um erro ao tentar salvar a resposta.',
             alertColor: 'red',
           });
         } finally {

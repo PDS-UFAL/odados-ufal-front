@@ -1,4 +1,5 @@
 import formsApi from '@/api/forms';
+import TYPES from '../types';
 
 export default {
   async fetchForms(store, options = {}) {
@@ -18,5 +19,14 @@ export default {
   },
   async deleteForm(store, { id }) {
     return await formsApi.deleteForm(id);
+  },
+  setTitle({ commit }, title) {
+    commit(TYPES.SET_TITLE, title);
+  },
+  setDescription({ commit }, description) {
+    commit(TYPES.SET_DESCRIPTION, description);
+  },
+  setSelectedSectors({ commit }, selectedSectors) {
+    commit(TYPES.SET_SELECTEDSECTORS, selectedSectors);
   },
 };
