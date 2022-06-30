@@ -506,6 +506,10 @@
           this.errorFunction(err);
         } finally {
           this.loading = false;
+
+          this.setTitle('');
+          this.setDescription('');
+          this.setSelectedSectors([]);
         }
       },
       formatedDate(date) {
