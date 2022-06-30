@@ -367,7 +367,6 @@
       this.description = this.getDescription;
       this.selectedSectors = this.getSelectedSectors;
       // this.resetQuestions();
-      this.resetSections();
 
       await this.loadSectors();
 
@@ -510,6 +509,7 @@
           this.setTitle('');
           this.setDescription('');
           this.setSelectedSectors([]);
+          this.resetSections();
         }
       },
       formatedDate(date) {
