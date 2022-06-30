@@ -363,6 +363,9 @@
       if (!this.isAdmin()) this.$router.push({ name: 'Home' });
     },
     async mounted() {
+      this.title = this.getTitle;
+      this.description = this.getDescription;
+      this.selectedSectors = this.getSelectedSectors;
       // this.resetQuestions();
       this.resetSections();
 
@@ -387,6 +390,9 @@
         'setQuestions',
         'resetQuestions',
         'resetSections',
+        'setTitle',
+        'setDescription',
+        'setSelectedSectors',
       ]),
       isAdmin() {
         return this.getUser.role === 'admin';
@@ -583,7 +589,14 @@
       },
     },
     computed: {
-      ...mapGetters(['getQuestions', 'getSections', 'getUser']),
+      ...mapGetters([
+        'getQuestions',
+        'getSections',
+        'getUser',
+        'getTitle',
+        'getDescription',
+        'getSelectedSectors',
+      ]),
       // formSectors() {
       //   return (
       //     this.form?.sectors.filter((sector) => sector.status === 'answered') ||
@@ -612,6 +625,15 @@
         if (this.endDate && val > this.endDate) {
           this.endDate = '';
         }
+      },
+      title(val) {
+        this.setTitle(val);
+      },
+      description(val) {
+        this.setDescription(val);
+      },
+      selectedSectors(val) {
+        this.setSelectedSectors(val);
       },
     },
   };
